@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36109.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingJournal", "TradingJournal.csproj", "{EC314EEE-E3B3-4A73-93BD-9F27F723FA0D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC314EEE-E3B3-4A73-93BD-9F27F723FA0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC314EEE-E3B3-4A73-93BD-9F27F723FA0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC314EEE-E3B3-4A73-93BD-9F27F723FA0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC314EEE-E3B3-4A73-93BD-9F27F723FA0D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {85C2EB54-3469-4C70-A0E8-36E0272F8B6C}
+	EndGlobalSection
+EndGlobal
