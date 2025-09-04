@@ -35,9 +35,9 @@ public static class RoundedFormHelper
     private const int WM_NCLBUTTONDOWN = 0xA1;
     private const int HTCAPTION = 0x2;
 
-    public static void EnableDrag(Form form)
+    public static void EnableDrag(Form form, Control dragArea)
     {
-        form.MouseDown += (s, e) =>
+        dragArea.MouseDown += (s, e) =>
         {
             if (e.Button == MouseButtons.Left)
             {
