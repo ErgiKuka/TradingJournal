@@ -19,7 +19,6 @@ namespace TradingJournal.Pl.Startup
             InitializeComponent();
 
             RoundedFormHelper.ApplyRoundedCorners(this, 60);
-            RoundedFormHelper.EnableDrag(this);
         }
 
         private void button1_Click(object sender, EventArgs e)

@@ -24,7 +24,7 @@ namespace TradingJournal.Core
             string apiUrl = $"https://api.github.com/repos/{_repoOwner}/{_repoName}/releases/latest";
 
             using HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("request"); // Required by GitHub API
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("request");
 
             try
             {
@@ -72,7 +72,7 @@ namespace TradingJournal.Core
             catch (Exception ex)
             {
                 // Optional: show error
-                statusLabel.Invoke((Action)(() => statusLabel.Text = "Update check failed"));
+                statusLabel.Invoke((Action)(() => statusLabel.Text = "  Update check failed!"));
                 Console.WriteLine("Update check failed: " + ex.Message);
             }
         }
