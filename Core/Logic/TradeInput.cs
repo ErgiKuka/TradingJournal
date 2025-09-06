@@ -12,7 +12,7 @@
         public decimal ProfitLoss { get; set; }
 
         // Screenshots
-        public string ScreenshotLink { get; set; }    // optional link
-        public byte[] ScreenshotImage { get; set; }   // actual file bytes
+        public string? ScreenshotLink { get; set; }    // optional link
+        public byte[]? ScreenshotImage { get; set; }   // actual file bytes
     }
 }

@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             pnlInformations = new Panel();
+            btnClearData = new FontAwesome.Sharp.IconButton();
+            btnCancelUpdate = new FontAwesome.Sharp.IconButton();
+            btnUpdateTrade = new FontAwesome.Sharp.IconButton();
             txtScreenshotLink = new TextBox();
             lblMargin = new Label();
             lblProfitLoss = new Label();
@@ -50,14 +53,21 @@
             lblSymbol = new Label();
             cbSymbol = new ComboBox();
             pnlData = new Panel();
+            dtpFilterDate = new DateTimePicker();
+            dgvData = new DataGridView();
             openFileDialog = new OpenFileDialog();
             pnlInformations.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pbScreenshot).BeginInit();
+            pnlData.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvData).BeginInit();
             SuspendLayout();
             // 
             // pnlInformations
             // 
             pnlInformations.BackColor = Color.FromArgb(27, 38, 59);
+            pnlInformations.Controls.Add(btnClearData);
+            pnlInformations.Controls.Add(btnCancelUpdate);
+            pnlInformations.Controls.Add(btnUpdateTrade);
             pnlInformations.Controls.Add(txtScreenshotLink);
             pnlInformations.Controls.Add(lblMargin);
             pnlInformations.Controls.Add(lblProfitLoss);
@@ -83,6 +93,59 @@
             pnlInformations.Size = new Size(1167, 330);
             pnlInformations.TabIndex = 0;
             // 
+            // btnClearData
+            // 
+            btnClearData.BackColor = Color.IndianRed;
+            btnClearData.FlatAppearance.BorderSize = 0;
+            btnClearData.FlatStyle = FlatStyle.Flat;
+            btnClearData.Font = new Font("Times New Roman", 12F);
+            btnClearData.IconChar = FontAwesome.Sharp.IconChar.None;
+            btnClearData.IconColor = Color.Black;
+            btnClearData.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnClearData.Location = new Point(560, 275);
+            btnClearData.Name = "btnClearData";
+            btnClearData.Size = new Size(190, 37);
+            btnClearData.TabIndex = 13;
+            btnClearData.Text = "Clear Data";
+            btnClearData.UseVisualStyleBackColor = false;
+            btnClearData.Click += btnClearData_Click;
+            // 
+            // btnCancelUpdate
+            // 
+            btnCancelUpdate.BackColor = Color.Crimson;
+            btnCancelUpdate.FlatAppearance.BorderSize = 0;
+            btnCancelUpdate.FlatStyle = FlatStyle.Flat;
+            btnCancelUpdate.Font = new Font("Times New Roman", 12F);
+            btnCancelUpdate.IconChar = FontAwesome.Sharp.IconChar.None;
+            btnCancelUpdate.IconColor = Color.Black;
+            btnCancelUpdate.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnCancelUpdate.Location = new Point(680, 245);
+            btnCancelUpdate.Name = "btnCancelUpdate";
+            btnCancelUpdate.Size = new Size(131, 49);
+            btnCancelUpdate.TabIndex = 12;
+            btnCancelUpdate.Text = "Cancel";
+            btnCancelUpdate.UseVisualStyleBackColor = false;
+            btnCancelUpdate.Visible = false;
+            btnCancelUpdate.Click += btnCancelUpdate_Click;
+            // 
+            // btnUpdateTrade
+            // 
+            btnUpdateTrade.BackColor = Color.DarkGreen;
+            btnUpdateTrade.FlatAppearance.BorderSize = 0;
+            btnUpdateTrade.FlatStyle = FlatStyle.Flat;
+            btnUpdateTrade.Font = new Font("Times New Roman", 12F);
+            btnUpdateTrade.IconChar = FontAwesome.Sharp.IconChar.None;
+            btnUpdateTrade.IconColor = Color.Black;
+            btnUpdateTrade.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnUpdateTrade.Location = new Point(519, 245);
+            btnUpdateTrade.Name = "btnUpdateTrade";
+            btnUpdateTrade.Size = new Size(131, 49);
+            btnUpdateTrade.TabIndex = 11;
+            btnUpdateTrade.Text = "Update";
+            btnUpdateTrade.UseVisualStyleBackColor = false;
+            btnUpdateTrade.Visible = false;
+            btnUpdateTrade.Click += btnUpdateTrade_Click;
+            // 
             // txtScreenshotLink
             // 
             txtScreenshotLink.BackColor = Color.FromArgb(30, 58, 95);
@@ -92,14 +155,14 @@
             txtScreenshotLink.Name = "txtScreenshotLink";
             txtScreenshotLink.PlaceholderText = "Upload link";
             txtScreenshotLink.Size = new Size(203, 30);
-            txtScreenshotLink.TabIndex = 20;
+            txtScreenshotLink.TabIndex = 8;
             // 
             // lblMargin
             // 
             lblMargin.AutoSize = true;
             lblMargin.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblMargin.ForeColor = Color.FromArgb(156, 163, 175);
-            lblMargin.Location = new Point(556, 122);
+            lblMargin.Location = new Point(556, 116);
             lblMargin.Name = "lblMargin";
             lblMargin.Size = new Size(67, 22);
             lblMargin.TabIndex = 19;
@@ -119,22 +182,24 @@
             // txtMargin
             // 
             txtMargin.BackColor = Color.FromArgb(30, 58, 95);
-            txtMargin.BorderStyle = BorderStyle.FixedSingle;
+            txtMargin.BorderStyle = BorderStyle.None;
             txtMargin.Font = new Font("Times New Roman", 13.8F);
-            txtMargin.Location = new Point(555, 156);
+            txtMargin.Location = new Point(555, 154);
             txtMargin.Name = "txtMargin";
-            txtMargin.Size = new Size(203, 34);
-            txtMargin.TabIndex = 17;
+            txtMargin.Size = new Size(203, 27);
+            txtMargin.TabIndex = 7;
+            txtMargin.Text = "   ";
             // 
             // txtProfitLoss
             // 
             txtProfitLoss.BackColor = Color.FromArgb(30, 58, 95);
-            txtProfitLoss.BorderStyle = BorderStyle.FixedSingle;
+            txtProfitLoss.BorderStyle = BorderStyle.None;
             txtProfitLoss.Font = new Font("Times New Roman", 13.8F);
             txtProfitLoss.Location = new Point(556, 53);
             txtProfitLoss.Name = "txtProfitLoss";
-            txtProfitLoss.Size = new Size(203, 34);
-            txtProfitLoss.TabIndex = 16;
+            txtProfitLoss.Size = new Size(203, 27);
+            txtProfitLoss.TabIndex = 6;
+            txtProfitLoss.Text = "   ";
             // 
             // pbScreenshot
             // 
@@ -153,16 +218,17 @@
             btnAddTrade.IconChar = FontAwesome.Sharp.IconChar.None;
             btnAddTrade.IconColor = Color.Black;
             btnAddTrade.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnAddTrade.Location = new Point(547, 245);
+            btnAddTrade.Location = new Point(547, 211);
             btnAddTrade.Name = "btnAddTrade";
             btnAddTrade.Size = new Size(219, 49);
-            btnAddTrade.TabIndex = 14;
+            btnAddTrade.TabIndex = 10;
             btnAddTrade.Text = "Add Trade";
             btnAddTrade.UseVisualStyleBackColor = false;
             btnAddTrade.Click += btnAddTrade_Click;
             // 
             // btnUploadScreenshot
             // 
+            btnUploadScreenshot.AllowDrop = true;
             btnUploadScreenshot.BackColor = Color.FromArgb(30, 58, 95);
             btnUploadScreenshot.FlatAppearance.BorderSize = 0;
             btnUploadScreenshot.FlatStyle = FlatStyle.Flat;
@@ -173,10 +239,12 @@
             btnUploadScreenshot.Location = new Point(870, 45);
             btnUploadScreenshot.Name = "btnUploadScreenshot";
             btnUploadScreenshot.Size = new Size(240, 49);
-            btnUploadScreenshot.TabIndex = 13;
+            btnUploadScreenshot.TabIndex = 9;
             btnUploadScreenshot.Text = "Upload Screenshot";
             btnUploadScreenshot.UseVisualStyleBackColor = false;
             btnUploadScreenshot.Click += btnUploadScreenshot_Click;
+            btnUploadScreenshot.DragDrop += btnUploadScreenshot_DragDrop;
+            btnUploadScreenshot.DragEnter += btnUploadScreenshot_DragEnter;
             // 
             // lblTakeProfit
             // 
@@ -236,53 +304,59 @@
             // txtTakeProfit
             // 
             txtTakeProfit.BackColor = Color.FromArgb(30, 58, 95);
-            txtTakeProfit.BorderStyle = BorderStyle.FixedSingle;
+            txtTakeProfit.BorderStyle = BorderStyle.None;
             txtTakeProfit.Font = new Font("Times New Roman", 13.8F);
             txtTakeProfit.Location = new Point(284, 260);
             txtTakeProfit.Name = "txtTakeProfit";
-            txtTakeProfit.Size = new Size(203, 34);
-            txtTakeProfit.TabIndex = 6;
+            txtTakeProfit.Size = new Size(203, 27);
+            txtTakeProfit.TabIndex = 5;
+            txtTakeProfit.Text = "   ";
             // 
             // txtStopLoss
             // 
             txtStopLoss.BackColor = Color.FromArgb(30, 58, 95);
-            txtStopLoss.BorderStyle = BorderStyle.FixedSingle;
+            txtStopLoss.BorderStyle = BorderStyle.None;
             txtStopLoss.Font = new Font("Times New Roman", 13.8F);
             txtStopLoss.Location = new Point(42, 260);
             txtStopLoss.Name = "txtStopLoss";
-            txtStopLoss.Size = new Size(203, 34);
-            txtStopLoss.TabIndex = 5;
+            txtStopLoss.Size = new Size(203, 27);
+            txtStopLoss.TabIndex = 4;
+            txtStopLoss.Text = "   ";
             // 
             // txtExitPrice
             // 
             txtExitPrice.BackColor = Color.FromArgb(30, 58, 95);
-            txtExitPrice.BorderStyle = BorderStyle.FixedSingle;
+            txtExitPrice.BorderStyle = BorderStyle.None;
             txtExitPrice.Font = new Font("Times New Roman", 13.8F);
             txtExitPrice.Location = new Point(285, 153);
             txtExitPrice.Name = "txtExitPrice";
-            txtExitPrice.Size = new Size(203, 34);
-            txtExitPrice.TabIndex = 4;
+            txtExitPrice.Size = new Size(203, 27);
+            txtExitPrice.TabIndex = 3;
+            txtExitPrice.Text = "   ";
             // 
             // txtEntryPrice
             // 
             txtEntryPrice.BackColor = Color.FromArgb(30, 58, 95);
-            txtEntryPrice.BorderStyle = BorderStyle.FixedSingle;
+            txtEntryPrice.BorderStyle = BorderStyle.None;
             txtEntryPrice.Font = new Font("Times New Roman", 13.8F);
             txtEntryPrice.Location = new Point(42, 153);
             txtEntryPrice.Name = "txtEntryPrice";
-            txtEntryPrice.Size = new Size(203, 34);
-            txtEntryPrice.TabIndex = 3;
+            txtEntryPrice.Size = new Size(203, 27);
+            txtEntryPrice.TabIndex = 2;
+            txtEntryPrice.Text = "   ";
             // 
             // cbTradeType
             // 
             cbTradeType.BackColor = Color.FromArgb(30, 58, 95);
+            cbTradeType.DropDownStyle = ComboBoxStyle.DropDownList;
             cbTradeType.FlatStyle = FlatStyle.Flat;
             cbTradeType.Font = new Font("Times New Roman", 13.8F);
             cbTradeType.FormattingEnabled = true;
+            cbTradeType.Items.AddRange(new object[] { "Long", "Short" });
             cbTradeType.Location = new Point(285, 52);
             cbTradeType.Name = "cbTradeType";
             cbTradeType.Size = new Size(202, 34);
-            cbTradeType.TabIndex = 2;
+            cbTradeType.TabIndex = 1;
             // 
             // lblSymbol
             // 
@@ -301,18 +375,60 @@
             cbSymbol.FlatStyle = FlatStyle.Flat;
             cbSymbol.Font = new Font("Times New Roman", 13.8F);
             cbSymbol.FormattingEnabled = true;
+            cbSymbol.Items.AddRange(new object[] { "BTC/USDT", "SOL/USDT" });
             cbSymbol.Location = new Point(42, 52);
             cbSymbol.Name = "cbSymbol";
             cbSymbol.Size = new Size(203, 34);
             cbSymbol.TabIndex = 0;
+            cbSymbol.Text = "  ";
             // 
             // pnlData
             // 
             pnlData.BackColor = Color.FromArgb(27, 38, 59);
+            pnlData.Controls.Add(dtpFilterDate);
+            pnlData.Controls.Add(dgvData);
             pnlData.Location = new Point(32, 402);
             pnlData.Name = "pnlData";
             pnlData.Size = new Size(1167, 426);
             pnlData.TabIndex = 1;
+            // 
+            // dtpFilterDate
+            // 
+            dtpFilterDate.CalendarFont = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dtpFilterDate.CalendarForeColor = Color.IndianRed;
+            dtpFilterDate.CalendarMonthBackground = Color.FromArgb(24, 30, 54);
+            dtpFilterDate.CalendarTitleBackColor = Color.FromArgb(45, 51, 73);
+            dtpFilterDate.CalendarTitleForeColor = Color.White;
+            dtpFilterDate.CalendarTrailingForeColor = Color.Gray;
+            dtpFilterDate.CustomFormat = "dd/MM/yyyy";
+            dtpFilterDate.DropDownAlign = LeftRightAlignment.Right;
+            dtpFilterDate.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dtpFilterDate.Format = DateTimePickerFormat.Custom;
+            dtpFilterDate.Location = new Point(961, 12);
+            dtpFilterDate.MinDate = new DateTime(2025, 9, 6, 0, 0, 0, 0);
+            dtpFilterDate.Name = "dtpFilterDate";
+            dtpFilterDate.RightToLeft = RightToLeft.No;
+            dtpFilterDate.Size = new Size(149, 30);
+            dtpFilterDate.TabIndex = 14;
+            dtpFilterDate.Value = new DateTime(2025, 9, 6, 16, 53, 29, 0);
+            dtpFilterDate.ValueChanged += dtpFilterDate_ValueChanged;
+            // 
+            // dgvData
+            // 
+            dgvData.AllowUserToAddRows = false;
+            dgvData.AllowUserToDeleteRows = false;
+            dgvData.AllowUserToResizeColumns = false;
+            dgvData.AllowUserToResizeRows = false;
+            dgvData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvData.Location = new Point(20, 49);
+            dgvData.Name = "dgvData";
+            dgvData.ReadOnly = true;
+            dgvData.RowHeadersWidth = 51;
+            dgvData.Size = new Size(1124, 357);
+            dgvData.TabIndex = 0;
+            dgvData.CellContentClick += dgvData_CellContentClick;
+            dgvData.CellDoubleClick += dgvData_CellDoubleClick;
+            dgvData.CellPainting += dgvData_CellPainting;
             // 
             // openFileDialog
             // 
@@ -333,6 +449,8 @@
             pnlInformations.ResumeLayout(false);
             pnlInformations.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pbScreenshot).EndInit();
+            pnlData.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvData).EndInit();
             ResumeLayout(false);
         }
 
@@ -361,5 +479,10 @@
         private TextBox txtProfitLoss;
         private TextBox txtScreenshotLink;
         private OpenFileDialog openFileDialog;
+        private DataGridView dgvData;
+        private DateTimePicker dtpFilterDate;
+        private FontAwesome.Sharp.IconButton btnUpdateTrade;
+        private FontAwesome.Sharp.IconButton btnCancelUpdate;
+        private FontAwesome.Sharp.IconButton btnClearData;
     }
 }
