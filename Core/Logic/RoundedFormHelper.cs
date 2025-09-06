@@ -46,4 +46,38 @@ public static class RoundedFormHelper
             }
         };
     }
+    public static void MakeButtonRounded(Button btn, int radius)
+    {
+        GraphicsPath path = new GraphicsPath();
+        path.StartFigure();
+        path.AddArc(new Rectangle(0, 0, radius, radius), 180, 90); // top-left
+        path.AddArc(new Rectangle(btn.Width - radius, 0, radius, radius), 270, 90); // top-right
+        path.AddArc(new Rectangle(btn.Width - radius, btn.Height - radius, radius, radius), 0, 90); // bottom-right
+        path.AddArc(new Rectangle(0, btn.Height - radius, radius, radius), 90, 90); // bottom-left
+        path.CloseFigure();
+        btn.Region = new Region(path);
+    }
+    public static void RoundPanel(Panel panel, int radius = 15)
+    {
+        var path = new GraphicsPath();
+        path.AddArc(0, 0, radius, radius, 180, 90);
+        path.AddArc(panel.Width - radius, 0, radius, radius, 270, 90);
+        path.AddArc(panel.Width - radius, panel.Height - radius, radius, radius, 0, 90);
+        path.AddArc(0, panel.Height - radius, radius, radius, 90, 90);
+        path.CloseAllFigures();
+        panel.Region = new Region(path);
+    }
+
+    public static void RoundTextBox(TextBox textBox, int radius = 15)
+    {
+        var path = new GraphicsPath();
+        path.StartFigure();
+        path.AddArc(new Rectangle(0, 0, radius, radius), 180, 90); // top-left
+        path.AddArc(new Rectangle(textBox.Width - radius, 0, radius, radius), 270, 90); // top-right
+        path.AddArc(new Rectangle(textBox.Width - radius, textBox.Height - radius, radius, radius), 0, 90); // bottom-right
+        path.AddArc(new Rectangle(0, textBox.Height - radius, radius, radius), 90, 90); // bottom-left
+        path.CloseFigure();
+
+        textBox.Region = new Region(path);
+    }
 }
