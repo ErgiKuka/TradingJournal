@@ -1,3 +1,4 @@
+using TradingJournal.Core.Data;
 using TradingJournal.Pl.Startup;
 
 namespace TradingJournal
@@ -14,6 +15,12 @@ namespace TradingJournal
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.Run(new FrmLoading());
+
+
+            using (var db = new AppDbContext())
+            {
+                db.Database.EnsureCreated();
+            }
         }
     }
 }

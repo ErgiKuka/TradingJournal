@@ -25,10 +25,10 @@ namespace TradingJournal.Pl.Skeleton
             RoundedFormHelper.ApplyRoundedCorners(this, 80);
             RoundedFormHelper.EnableDrag(this, pnlTopBar);
 
-            MakeButtonRounded(btnDashboard, 40);
-            MakeButtonRounded(btnJournal, 40);
-            MakeButtonRounded(btnStatistics, 40);
-            MakeButtonRounded(btnSettings, 40);
+            RoundedFormHelper.MakeButtonRounded(btnDashboard, 40);
+            RoundedFormHelper.MakeButtonRounded(btnJournal, 40);
+            RoundedFormHelper.MakeButtonRounded(btnStatistics, 40);
+            RoundedFormHelper.MakeButtonRounded(btnSettings, 40);
 
         }
         private void LoadPanels(Form form)
@@ -83,17 +83,7 @@ namespace TradingJournal.Pl.Skeleton
             this.Close();
         }
 
-        private void MakeButtonRounded(Button btn, int radius)
-        {
-            GraphicsPath path = new GraphicsPath();
-            path.StartFigure();
-            path.AddArc(new Rectangle(0, 0, radius, radius), 180, 90); // top-left
-            path.AddArc(new Rectangle(btn.Width - radius, 0, radius, radius), 270, 90); // top-right
-            path.AddArc(new Rectangle(btn.Width - radius, btn.Height - radius, radius, radius), 0, 90); // bottom-right
-            path.AddArc(new Rectangle(0, btn.Height - radius, radius, radius), 90, 90); // bottom-left
-            path.CloseFigure();
-            btn.Region = new Region(path);
-        }
+        
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
