@@ -34,6 +34,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(13, 27, 42);
             ClientSize = new Size(1229, 862);
             FormBorderStyle = FormBorderStyle.None;
             Name = "FrmSettings";
