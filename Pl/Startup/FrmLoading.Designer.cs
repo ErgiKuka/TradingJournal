@@ -61,7 +61,7 @@
             pictureBox2.BackgroundImageLayout = ImageLayout.Stretch;
             pictureBox2.Location = new Point(463, 123);
             pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(283, 250);
+            pictureBox2.Size = new Size(283, 279);
             pictureBox2.TabIndex = 3;
             pictureBox2.TabStop = false;
             // 
