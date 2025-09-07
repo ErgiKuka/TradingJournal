@@ -6,21 +6,27 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TradingJournal.Core.Data;
 using TradingJournal.Core.Data.Entities;
+using TradingJournal.Core.Logic.Services;
 using TradingJournal.Core.Managers;
 
 namespace TradingJournal.Pl.PlaceHolder.Journal
 {
     public partial class FrmJournal : Form
     {
+
+        private readonly HttpClient _httpClient = new HttpClient();
         private int? _tradeIdToUpdate = null;
         public FrmJournal()
         {
             InitializeComponent();
+            LoadSymbols();
 
             RoundedFormHelper.RoundPanel(pnlInformations, 30);
             RoundedFormHelper.RoundPanel(pnlData, 30);
@@ -504,6 +510,38 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 TextRenderer.DrawText(e.Graphics, "Update", e.CellStyle.Font, buttonBounds, Color.White, TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter);
 
                 e.Handled = true;
+            }
+        }
+
+        private async void LoadSymbols()
+        {
+            try
+            {
+                string url = "https://api.binance.com/api/v3/exchangeInfo";
+                var response = await _httpClient.GetStringAsync(url);
+
+                using var doc = JsonDocument.Parse(response);
+                var symbols = new List<string>();
+
+                foreach (var element in doc.RootElement.GetProperty("symbols").EnumerateArray())
+                {
+                    string symbol = element.GetProperty("symbol").GetString();
+
+                    // Only take symbols ending with "USDT"
+                    if (symbol.EndsWith("USDT"))
+                    {
+                        // Insert a slash before USDT → e.g., "SOLUSDT" → "SOL/USDT"
+                        string formatted = symbol.Replace("USDT", "/USDT");
+                        symbols.Add(formatted);
+                    }
+                }
+
+                cbSymbol.DataSource = symbols;
+                cbSymbol.SelectedIndex = -1; // No default selection
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading symbols: {ex.Message}");
             }
         }
     }

@@ -375,7 +375,6 @@
             cbSymbol.FlatStyle = FlatStyle.Flat;
             cbSymbol.Font = new Font("Times New Roman", 13.8F);
             cbSymbol.FormattingEnabled = true;
-            cbSymbol.Items.AddRange(new object[] { "BTC/USDT", "SOL/USDT" });
             cbSymbol.Location = new Point(42, 52);
             cbSymbol.Name = "cbSymbol";
             cbSymbol.Size = new Size(203, 34);
