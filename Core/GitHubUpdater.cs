@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.IO.Compression;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace TradingJournal.Core
 {
@@ -28,7 +29,6 @@ namespace TradingJournal.Core
 
             try
             {
-                // Update label: checking updates
                 statusLabel.Invoke((Action)(() => statusLabel.Text = "Checking for updates..."));
 
                 string json = await client.GetStringAsync(apiUrl);
@@ -41,38 +41,46 @@ namespace TradingJournal.Core
                     if (latestVersion != currentVersion)
                     {
                         string downloadUrl = release.assets[0].browser_download_url;
+                        string tempFile = Path.Combine(Path.GetTempPath(), "TradingJournalUpdate.zip");
 
-                        // Update label: updating
-                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Updating..."));
+                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Downloading update..."));
 
-                        // Ask user to download
-                        DialogResult result = MessageBox.Show(
-                            $"New version {latestVersion} available! Download now?",
-                            "Update Available",
-                            MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Information
-                        );
-
-                        if (result == DialogResult.Yes)
+                        // Download the file
+                        using (var stream = await client.GetStreamAsync(downloadUrl))
+                        using (var fileStream = new FileStream(tempFile, FileMode.Create))
                         {
-                            Process.Start(new ProcessStartInfo
-                            {
-                                FileName = downloadUrl,
-                                UseShellExecute = true
-                            });
+                            await stream.CopyToAsync(fileStream);
                         }
+
+                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Applying update..."));
+
+                        string appPath = AppDomain.CurrentDomain.BaseDirectory;
+
+                        // Extract zip and overwrite files
+                        ZipFile.ExtractToDirectory(tempFile, appPath, true);
+
+                        // Restart app
+                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Restarting..."));
+
+                        string exePath = Application.ExecutablePath;
+
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = exePath,
+                            UseShellExecute = true
+                        });
+
+                        Application.Exit();
                     }
                     else
                     {
-                        // Update label: no updates
                         statusLabel.Invoke((Action)(() => statusLabel.Text = "No updates found!"));
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Optional: show error
-                statusLabel.Invoke((Action)(() => statusLabel.Text = "  Update check failed!"));
+                statusLabel.Invoke((Action)(() => statusLabel.Text = "Update check failed!"));
                 Console.WriteLine("Update check failed: " + ex.Message);
             }
         }
