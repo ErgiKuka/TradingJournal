@@ -18,6 +18,11 @@ namespace TradingJournal.Pl.Skeleton
 {
     public partial class FrmHome : Form
     {
+        private Button activeButton = null;
+        private Color activeColor = Color.FromArgb(30, 58, 95); // #1E3A5F
+        private Color normalColor = Color.FromArgb(27, 38, 59);
+        private Color hoverColor = Color.FromArgb(35, 52, 74);
+
         public FrmHome()
         {
             InitializeComponent();
@@ -30,7 +35,46 @@ namespace TradingJournal.Pl.Skeleton
             RoundedFormHelper.MakeButtonRounded(btnStatistics, 40);
             RoundedFormHelper.MakeButtonRounded(btnSettings, 40);
 
+            // Set up event handlers for all buttons
+            SetupButtonEvents();
         }
+
+        private void SetupButtonEvents()
+        {
+            // Dashboard button
+            btnDashboard.MouseEnter += MouseEnterEffect;
+            btnDashboard.MouseLeave += MouseLeaveEffect;
+            btnDashboard.Click += btnDashboard_Click;
+
+            // Journal button
+            btnJournal.MouseEnter += MouseEnterEffect;
+            btnJournal.MouseLeave += MouseLeaveEffect;
+            btnJournal.Click += btnJournal_Click;
+
+            // Statistics button
+            btnStatistics.MouseEnter += MouseEnterEffect;
+            btnStatistics.MouseLeave += MouseLeaveEffect;
+            btnStatistics.Click += btnStatistics_Click;
+
+            // Settings button
+            btnSettings.MouseEnter += MouseEnterEffect;
+            btnSettings.MouseLeave += MouseLeaveEffect;
+            btnSettings.Click += btnSettings_Click;
+        }
+
+        private void SetActiveButton(Button button)
+        {
+            // Reset previous active button
+            if (activeButton != null)
+            {
+                activeButton.BackColor = normalColor;
+            }
+
+            // Set new active button
+            activeButton = button;
+            activeButton.BackColor = activeColor;
+        }
+
         private void LoadPanels(Form form)
         {
             form.TopLevel = false;
@@ -48,29 +92,25 @@ namespace TradingJournal.Pl.Skeleton
             btnDashboard.IconColor = Color.White;
             btnDashboard.IconSize = 30;
             btnDashboard.TextImageRelation = TextImageRelation.ImageBeforeText;
-            //btnDashboard.ImageAlign = ContentAlignment.MiddleLeft;
-            //btnDashboard.TextAlign = ContentAlignment.MiddleLeft;
 
             btnJournal.IconChar = IconChar.Book;
             btnJournal.IconColor = Color.White;
             btnJournal.IconSize = 30;
             btnJournal.TextImageRelation = TextImageRelation.ImageBeforeText;
-            //btnJournal.ImageAlign = ContentAlignment.MiddleLeft;
-            //btnJournal.TextAlign = ContentAlignment.MiddleLeft;
 
             btnStatistics.IconChar = IconChar.ChartLine;
             btnStatistics.IconColor = Color.White;
             btnStatistics.IconSize = 30;
             btnStatistics.TextImageRelation = TextImageRelation.ImageBeforeText;
-            //btnStatistics.ImageAlign = ContentAlignment.MiddleLeft;
-            //btnStatistics.TextAlign = ContentAlignment.MiddleLeft;
 
             btnSettings.IconChar = IconChar.Cog;
             btnSettings.IconColor = Color.White;
             btnSettings.IconSize = 30;
             btnSettings.TextImageRelation = TextImageRelation.ImageBeforeText;
-            //btnSettings.ImageAlign = ContentAlignment.MiddleLeft;
-            //btnSettings.TextAlign = ContentAlignment.MiddleLeft;
+
+            // Load dashboard and set it as active
+            LoadPanels(new FrmDashboard());
+            SetActiveButton(btnDashboard);
         }
 
         private void BtnMinimize_Click(object sender, EventArgs e)
@@ -83,46 +123,52 @@ namespace TradingJournal.Pl.Skeleton
             this.Close();
         }
 
-        
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
             Application.Exit();
         }
+
         private void MouseEnterEffect(object sender, EventArgs e)
         {
             Button btn = sender as Button;
-            btn.BackColor = Color.FromArgb(35, 52, 74);
+            if (btn != activeButton)
+            {
+                btn.BackColor = hoverColor;
+            }
         }
+
         private void MouseLeaveEffect(object sender, EventArgs e)
         {
             Button btn = sender as Button;
-            btn.BackColor = Color.FromArgb(27, 38, 59);
-        }
-        private void ActiveButtonEffect(object sender, EventArgs e)
-        {
-            Button btn = sender as Button;
-            btn.BackColor = Color.FromArgb(30, 58, 95);
+            if (btn != activeButton)
+            {
+                btn.BackColor = normalColor;
+            }
         }
 
         private void btnDashboard_Click(object sender, EventArgs e)
         {
             LoadPanels(new FrmDashboard());
+            SetActiveButton(btnDashboard);
         }
 
         private void btnJournal_Click(object sender, EventArgs e)
         {
             LoadPanels(new FrmJournal());
+            SetActiveButton(btnJournal);
         }
 
         private void btnStatistics_Click(object sender, EventArgs e)
         {
             LoadPanels(new FrmStatistics());
+            SetActiveButton(btnStatistics);
         }
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
             LoadPanels(new FrmSettings());
+            SetActiveButton(btnSettings);
         }
     }
 }
