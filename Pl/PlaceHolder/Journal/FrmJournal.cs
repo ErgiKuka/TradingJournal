@@ -119,7 +119,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 );
 
                 MessageBox.Show("Trade added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadTrades();
+                LoadTrades(dtpFilterDate.Value);
                 ClearForm();
             }
             catch (Exception ex)
@@ -164,7 +164,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
                 dgvData.DataSource = trades.Select(t => new
                 {
-                    //t.Id,
+                    t.Id,
                     t.Symbol,
                     t.TradeType,
                     t.EntryPrice,
@@ -179,6 +179,11 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                     Reward = t.Reward,   // This will now execute the C# getter
                     RR = t.RR            // This will now execute the C# getter
                 }).ToList();
+
+                if (dgvData.Columns["Id"] != null)
+                {
+                    dgvData.Columns["Id"].Visible = false;
+                }
 
                 decimal totalPnl = trades.Sum(t => t.ProfitLoss);
             }

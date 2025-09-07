@@ -47,6 +47,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(13, 27, 42);
             ClientSize = new Size(800, 450);
             Controls.Add(pbFullImage);
             FormBorderStyle = FormBorderStyle.FixedSingle;
