@@ -21,10 +21,14 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
 
         private void btnCalculate_Click(object sender, EventArgs e)
         {
-            if (!decimal.TryParse(txtEntryPrice.Text, out decimal entryPrice) ||
-         !decimal.TryParse(txtMargin.Text, out decimal margin))
+            if (!decimal.TryParse(txtEntryPrice.Text, out decimal entryPrice))
             {
-                MessageBox.Show("Please enter a valid Entry Price and Margin.", "Input Error");
+                MessageBox.Show("Please enter a valid Entry Price.", "Input Error");
+                return;
+            }
+            if (!decimal.TryParse(txtMargin.Text, out decimal margin))
+            {
+                MessageBox.Show("Please enter a valid Margin.", "Input Error");
                 return;
             }
 
@@ -38,10 +42,14 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             // --- Mode: PnL / Risk-Reward ---
             if (rbModePnl.Checked)
             {
-                if (!decimal.TryParse(txtPnlExitPrice.Text, out decimal exitPrice) ||
-                    !decimal.TryParse(txtPnlStopLoss.Text, out decimal stopLoss))
+                if (!decimal.TryParse(txtPnlExitPrice.Text, out decimal exitPrice))
                 {
-                    MessageBox.Show("Please enter a valid Exit Price and Stop-Loss.", "Input Error");
+                    MessageBox.Show("Please enter a valid Exit Price", "Input Error");
+                    return;
+                }
+                if (!decimal.TryParse(txtPnlStopLoss.Text, out decimal stopLoss))
+                {
+                    MessageBox.Show("Please enter a valid Stop-Loss.", "Input Error");
                     return;
                 }
 
@@ -63,7 +71,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
                 {
                     if (!decimal.TryParse(txtWalletBalance.Text, out decimal walletBalance))
                     {
-                        MessageBox.Show("Please enter a valid Wallet Balance for Cross Margin calculation.", "Input Error");
+                        MessageBox.Show("Please enter a valid Wallet Balance for Cross Margin calculation.3", "Input Error");
                         return;
                     }
 
@@ -127,7 +135,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
                     targetPnl = margin * (roiInput / 100);
                 else
                 {
-                    MessageBox.Show("Please enter a valid Target Profit ($) or Target ROI (%).", "Input Error");
+                    MessageBox.Show("Please enter a valid Target Profit ($) or a valid Target ROI (%).", "Input Error");
                     return;
                 }
 
@@ -172,9 +180,6 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             txtTargetPnl.TextChanged += txtTargetPnl_TextChanged;
             txtTargetRoi.TextChanged += txtTargetRoi_TextChanged;
             cmbMarginMode.SelectedIndexChanged += cmbMarginMode_SelectedIndexChanged;
-            btnCalculate.Click += btnCalculate_Click;
-            btnReset.Click += btnReset_Click;
-            btnCopyResults.Click += btnCopyResults_Click;
 
             // Set initial UI state
             rbMode_CheckedChanged(null, null);

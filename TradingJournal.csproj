@@ -6,6 +6,38 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
+    <IncludeSymbols>False</IncludeSymbols>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Trading Journal</Title>
+    <PackageId></PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Ergi Kuka</Authors>
+    <Company>Ergi Kuka</Company>
+    <Product>Trading Journal</Product>
+    <Description>A Trading Journal </Description>
+    <Copyright>Copyright Ergi Kuka</Copyright>
+    <PackageProjectUrl>https://github.com/ErgiKuka/TradingJournal/releases/tag/v1.0.0</PackageProjectUrl>
+    <PackageIcon></PackageIcon>
+    <RepositoryUrl>https://github.com/ErgiKuka/TradingJournal/releases/tag/v1.0.0</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Journal</PackageTags>
+    <PackageReleaseNotes>First Release
+</PackageReleaseNotes>
+    <PackAsTool>False</PackAsTool>
+    <ToolCommandName>Trading Journal</ToolCommandName>
+    <PackageOutputPath>bin\Release\</PackageOutputPath>
+    <EnableNETAnalyzers>False</EnableNETAnalyzers>
+    <ApplicationIcon>25_Journal_And_Pen_icon-icons.com_61466.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <IsPublishable>True</IsPublishable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <IsPublishable>True</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +46,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="25_Journal_And_Pen_icon-icons.com_61466.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\LoadingSpinner.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

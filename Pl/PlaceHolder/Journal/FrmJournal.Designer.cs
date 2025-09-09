@@ -53,6 +53,7 @@
             lblSymbol = new Label();
             cbSymbol = new ComboBox();
             pnlData = new Panel();
+            chbAllTrades = new CheckBox();
             dtpFilterDate = new DateTimePicker();
             dgvData = new DataGridView();
             openFileDialog = new OpenFileDialog();
@@ -384,12 +385,26 @@
             // pnlData
             // 
             pnlData.BackColor = Color.FromArgb(27, 38, 59);
+            pnlData.Controls.Add(chbAllTrades);
             pnlData.Controls.Add(dtpFilterDate);
             pnlData.Controls.Add(dgvData);
             pnlData.Location = new Point(32, 402);
             pnlData.Name = "pnlData";
             pnlData.Size = new Size(1167, 426);
             pnlData.TabIndex = 1;
+            // 
+            // chbAllTrades
+            // 
+            chbAllTrades.AutoSize = true;
+            chbAllTrades.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            chbAllTrades.ForeColor = Color.FromArgb(156, 163, 175);
+            chbAllTrades.Location = new Point(784, 15);
+            chbAllTrades.Name = "chbAllTrades";
+            chbAllTrades.Size = new Size(156, 26);
+            chbAllTrades.TabIndex = 15;
+            chbAllTrades.Text = "Show all trades";
+            chbAllTrades.UseVisualStyleBackColor = true;
+            chbAllTrades.CheckedChanged += chbAllTrades_CheckedChanged;
             // 
             // dtpFilterDate
             // 
@@ -449,6 +464,7 @@
             pnlInformations.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pbScreenshot).EndInit();
             pnlData.ResumeLayout(false);
+            pnlData.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvData).EndInit();
             ResumeLayout(false);
         }
@@ -483,5 +499,6 @@
         private FontAwesome.Sharp.IconButton btnUpdateTrade;
         private FontAwesome.Sharp.IconButton btnCancelUpdate;
         private FontAwesome.Sharp.IconButton btnClearData;
+        private CheckBox chbAllTrades;
     }
 }

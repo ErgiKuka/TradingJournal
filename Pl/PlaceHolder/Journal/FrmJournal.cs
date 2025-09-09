@@ -72,14 +72,18 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             deleteButtonColumn.UseColumnTextForButtonValue = true; // This makes every button show "Delete"
             dgvData.Columns.Add(deleteButtonColumn);
 
-
+            chbAllTrades.Checked = false;
+            dtpFilterDate.Enabled = true;
 
             dtpFilterDate.Parent.BackColor = Color.FromArgb(13, 27, 42);
 
             ApplyStyling();
 
             dtpFilterDate.Value = DateTime.Now;
-            LoadTrades(dtpFilterDate.Value);
+            if (chbAllTrades.Checked)
+                LoadTrades(null); // Load all trades
+            else
+                LoadTrades(dtpFilterDate.Value);
         }
 
         private void btnAddTrade_Click(object sender, EventArgs e)
@@ -125,7 +129,10 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 );
 
                 MessageBox.Show("Trade added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadTrades(dtpFilterDate.Value);
+                if (chbAllTrades.Checked)
+                    LoadTrades(null); // Load all trades
+                else
+                    LoadTrades(dtpFilterDate.Value);
                 ClearForm();
             }
             catch (Exception ex)
@@ -347,7 +354,10 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                             db.SaveChanges();
                         }
                     }
-                    LoadTrades(dtpFilterDate.Value); // Refresh the grid
+                    if (chbAllTrades.Checked)
+                        LoadTrades(null); // Load all trades
+                    else
+                        LoadTrades(dtpFilterDate.Value); // Refresh the grid
                 }
             }
             // --- Check if the UPDATE button was clicked ---
@@ -419,7 +429,11 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                     screenshotFilePath: screenshotPath
                 );
 
-                LoadTrades(dtpFilterDate.Value); // Refresh the grid
+                if (chbAllTrades.Checked)
+                    LoadTrades(null); // Load all trades
+                else
+                    LoadTrades(dtpFilterDate.Value); // Refresh the grid
+
                 ExitUpdateMode(); // Revert the form to "Add Mode"
                 MessageBox.Show("Trade updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -542,6 +556,20 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading symbols: {ex.Message}");
+            }
+        }
+
+        private void chbAllTrades_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chbAllTrades.Checked)
+            {
+                dtpFilterDate.Enabled = false;       // Disable calendar
+                LoadTrades(null);                    // Show ALL trades
+            }
+            else
+            {
+                dtpFilterDate.Enabled = true;        // Enable calendar
+                LoadTrades(dtpFilterDate.Value);     // Show trades for selected day
             }
         }
     }

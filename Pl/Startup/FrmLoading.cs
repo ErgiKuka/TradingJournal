@@ -30,12 +30,7 @@ namespace TradingJournal.Pl.Startup
         {
             pictureBox1.Image = Properties.Resources.LoadingSpinner;
 
-            await Task.Delay(500);
-
-            var updater = new GitHubUpdater("ErgiKuka", "TradingJournal");
-            await updater.CheckForUpdatesAsync(Application.ProductVersion, label1);
-
-            await Task.Delay(1300);
+            await Task.Delay(1700);
 
             FrmHome frm = new FrmHome();
             frm.Show();
