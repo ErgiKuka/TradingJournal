@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmImageViewer));
             pbFullImage = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)pbFullImage).BeginInit();
             SuspendLayout();
@@ -51,6 +52,7 @@
             ClientSize = new Size(800, 450);
             Controls.Add(pbFullImage);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmImageViewer";
             ((System.ComponentModel.ISupportInitialize)pbFullImage).EndInit();
             ResumeLayout(false);

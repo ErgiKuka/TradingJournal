@@ -30,7 +30,7 @@ namespace TradingJournal.Pl.Startup
         {
             pictureBox1.Image = Properties.Resources.LoadingSpinner;
 
-            await Task.Delay(1700);
+            await Task.Delay(2000);
 
             FrmHome frm = new FrmHome();
             frm.Show();

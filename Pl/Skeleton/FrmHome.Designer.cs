@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmHome));
             panel1 = new Panel();
             pnlTopBar = new Panel();
             BtnMinimize = new Button();
@@ -243,6 +244,7 @@
             Controls.Add(pnlTopBar);
             Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.None;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmHome";
             StartPosition = FormStartPosition.CenterScreen;
             Load += FrmHome_Load;

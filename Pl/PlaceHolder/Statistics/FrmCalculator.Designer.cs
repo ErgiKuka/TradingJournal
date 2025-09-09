@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmCalculator));
             rbModePnl = new RadioButton();
             rbModeLiquidation = new RadioButton();
             rbModeTargetPrice = new RadioButton();
@@ -48,6 +49,8 @@
             btnCopyResults = new FontAwesome.Sharp.IconButton();
             btnCalculate = new FontAwesome.Sharp.IconButton();
             pnlPnlRr = new Panel();
+            lblMaxLoss = new Label();
+            label10 = new Label();
             label13 = new Label();
             lblRiskValue = new Label();
             lblRewardValue = new Label();
@@ -75,8 +78,6 @@
             label12 = new Label();
             lblWalletBalance = new Label();
             label9 = new Label();
-            label10 = new Label();
-            lblMaxLoss = new Label();
             panel1.SuspendLayout();
             pnlSharedInputs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBarLeverage).BeginInit();
@@ -355,6 +356,28 @@
             pnlPnlRr.Name = "pnlPnlRr";
             pnlPnlRr.Size = new Size(282, 386);
             pnlPnlRr.TabIndex = 9;
+            // 
+            // lblMaxLoss
+            // 
+            lblMaxLoss.AutoSize = true;
+            lblMaxLoss.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblMaxLoss.ForeColor = Color.FromArgb(156, 163, 175);
+            lblMaxLoss.Location = new Point(128, 351);
+            lblMaxLoss.Name = "lblMaxLoss";
+            lblMaxLoss.Size = new Size(24, 22);
+            lblMaxLoss.TabIndex = 18;
+            lblMaxLoss.Text = "--";
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label10.ForeColor = Color.FromArgb(156, 163, 175);
+            label10.Location = new Point(25, 351);
+            label10.Name = "label10";
+            label10.Size = new Size(93, 22);
+            label10.TabIndex = 17;
+            label10.Text = "Max Loss:";
             // 
             // label13
             // 
@@ -674,28 +697,6 @@
             label9.TabIndex = 5;
             label9.Text = "Margin Mode";
             // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label10.ForeColor = Color.FromArgb(156, 163, 175);
-            label10.Location = new Point(25, 351);
-            label10.Name = "label10";
-            label10.Size = new Size(93, 22);
-            label10.TabIndex = 17;
-            label10.Text = "Max Loss:";
-            // 
-            // lblMaxLoss
-            // 
-            lblMaxLoss.AutoSize = true;
-            lblMaxLoss.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblMaxLoss.ForeColor = Color.FromArgb(156, 163, 175);
-            lblMaxLoss.Location = new Point(128, 351);
-            lblMaxLoss.Name = "lblMaxLoss";
-            lblMaxLoss.Size = new Size(24, 22);
-            lblMaxLoss.TabIndex = 18;
-            lblMaxLoss.Text = "--";
-            // 
             // FrmCalculator
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -708,6 +709,7 @@
             Controls.Add(pnlPnlRr);
             Controls.Add(pnlLiquidation);
             Controls.Add(pnlTargetPrice);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmCalculator";
             StartPosition = FormStartPosition.CenterScreen;
             Load += FrmCalculator_Load;
