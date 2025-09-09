@@ -108,9 +108,13 @@ namespace TradingJournal.Pl.Skeleton
             btnSettings.IconSize = 30;
             btnSettings.TextImageRelation = TextImageRelation.ImageBeforeText;
 
-            // Load dashboard and set it as active
+            pnlControls.SuspendLayout();
+            pnlControls.Visible = false;
             LoadPanels(new FrmDashboard());
             SetActiveButton(btnDashboard);
+
+            pnlControls.ResumeLayout();
+            pnlControls.Visible = true;
         }
 
         private void BtnMinimize_Click(object sender, EventArgs e)
@@ -149,26 +153,46 @@ namespace TradingJournal.Pl.Skeleton
 
         private void btnDashboard_Click(object sender, EventArgs e)
         {
+            pnlControls.SuspendLayout();
+            pnlControls.Visible = false;
             LoadPanels(new FrmDashboard());
             SetActiveButton(btnDashboard);
+
+            pnlControls.ResumeLayout();
+            pnlControls.Visible = true;
         }
 
         private void btnJournal_Click(object sender, EventArgs e)
         {
+            pnlControls.SuspendLayout();
+            pnlControls.Visible = false;
             LoadPanels(new FrmJournal());
             SetActiveButton(btnJournal);
+
+            pnlControls.ResumeLayout();
+            pnlControls.Visible = true;
         }
 
         private void btnStatistics_Click(object sender, EventArgs e)
         {
+            pnlControls.SuspendLayout();
+            pnlControls.Visible = false;
             LoadPanels(new FrmStatistics());
             SetActiveButton(btnStatistics);
+
+            pnlControls.ResumeLayout();
+            pnlControls.Visible = true;
         }
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
+            pnlControls.SuspendLayout();
+            pnlControls.Visible = false;
             LoadPanels(new FrmSettings());
             SetActiveButton(btnSettings);
+
+            pnlControls.ResumeLayout();
+            pnlControls.Visible = true;
         }
     }
 }

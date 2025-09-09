@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmStatistics));
             panel1 = new Panel();
             lblTotalPnlValue = new Label();
             lblSymbol = new Label();
@@ -371,6 +372,7 @@
             Controls.Add(panel4);
             Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.None;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmStatistics";
             Text = "FrmStatistics";
             Load += FrmStatistics_Load;

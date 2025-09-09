@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmJournal));
             pnlInformations = new Panel();
             btnClearData = new FontAwesome.Sharp.IconButton();
             btnCancelUpdate = new FontAwesome.Sharp.IconButton();
@@ -457,6 +458,7 @@
             Controls.Add(pnlData);
             Controls.Add(pnlInformations);
             FormBorderStyle = FormBorderStyle.None;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmJournal";
             Text = "FrmJournal";
             Load += FrmJournal_Load;
