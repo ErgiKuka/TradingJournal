@@ -28,7 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
+            panel1 = new Panel();
             SuspendLayout();
+            // 
+            // panel1
+            // 
+            panel1.BackColor = Color.FromArgb(27, 38, 59);
+            panel1.Location = new Point(46, 45);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(1125, 764);
+            panel1.TabIndex = 0;
             // 
             // FrmSettings
             // 
@@ -36,6 +45,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 27, 42);
             ClientSize = new Size(1229, 862);
+            Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.None;
             Name = "FrmSettings";
             Text = "FrmSettings";
@@ -43,5 +53,7 @@
         }
 
         #endregion
+
+        private Panel panel1;
     }
 }

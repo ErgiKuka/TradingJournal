@@ -247,6 +247,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmHome";
             StartPosition = FormStartPosition.CenterScreen;
+            Text = "Trading Journal";
             Load += FrmHome_Load;
             pnlTopBar.ResumeLayout(false);
             pnlNavigation.ResumeLayout(false);
