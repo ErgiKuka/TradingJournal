@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
+using System.Linq; // Required for .FirstOrDefault()
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -25,67 +25,72 @@ namespace TradingJournal.Core
             string apiUrl = $"https://api.github.com/repos/{_repoOwner}/{_repoName}/releases/latest";
 
             using HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("request");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("TradingJournal-UpdateChecker"); // Good practice to name your app
 
             try
             {
                 statusLabel.Invoke((Action)(() => statusLabel.Text = "Checking for updates..."));
-
                 string json = await client.GetStringAsync(apiUrl);
                 var release = JsonSerializer.Deserialize<GitHubRelease>(json);
 
-                if (release != null)
+                if (release == null || release.assets == null || release.assets.Length == 0)
                 {
-                    string latestVersion = release.tag_name.TrimStart('v');
+                    statusLabel.Invoke((Action)(() => statusLabel.Text = "Ready to start.")); // No release found, so just continue
+                    return;
+                }
 
-                    if (latestVersion != currentVersion)
+                string latestVersionStr = release.tag_name.TrimStart('v');
+
+                if (new Version(latestVersionStr) > new Version(currentVersion))
+                {
+                    var setupAsset = release.assets.FirstOrDefault(a => a.name.EndsWith(".exe"));
+                    if (setupAsset == null)
                     {
-                        string downloadUrl = release.assets[0].browser_download_url;
-                        string tempFile = Path.Combine(Path.GetTempPath(), "TradingJournalUpdate.zip");
+                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Update found, but no installer."));
+                        return;
+                    }
 
+                    var result = MessageBox.Show(
+                        $"A new version ({latestVersionStr}) is available! You have version {currentVersion}.\n\nWould you like to download and install it now?",
+                        "Update Available",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        string tempInstallerPath = Path.Combine(Path.GetTempPath(), setupAsset.name);
                         statusLabel.Invoke((Action)(() => statusLabel.Text = "Downloading update..."));
 
-                        // Download the file
-                        using (var stream = await client.GetStreamAsync(downloadUrl))
-                        using (var fileStream = new FileStream(tempFile, FileMode.Create))
+                        using (var stream = await client.GetStreamAsync(setupAsset.browser_download_url))
+                        using (var fileStream = new FileStream(tempInstallerPath, FileMode.Create, FileAccess.Write, FileShare.None))
                         {
                             await stream.CopyToAsync(fileStream);
                         }
 
-                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Applying update..."));
-
-                        string appPath = AppDomain.CurrentDomain.BaseDirectory;
-
-                        // Extract zip and overwrite files
-                        ZipFile.ExtractToDirectory(tempFile, appPath, true);
-
-                        // Restart app
-                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Restarting..."));
-
-                        string exePath = Application.ExecutablePath;
-
-                        Process.Start(new ProcessStartInfo
-                        {
-                            FileName = exePath,
-                            UseShellExecute = true
-                        });
-
-                        Application.Exit();
+                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Starting installer..."));
+                        Process.Start(tempInstallerPath);
+                        Application.Exit(); // Close the current app so the installer can run
                     }
                     else
                     {
-                        statusLabel.Invoke((Action)(() => statusLabel.Text = "No updates found!"));
+                        // User said no, so just continue starting the app
+                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Update deferred. Starting app..."));
                     }
+                }
+                else
+                {
+                    statusLabel.Invoke((Action)(() => statusLabel.Text = "You are up to date!"));
                 }
             }
             catch (Exception ex)
             {
-                statusLabel.Invoke((Action)(() => statusLabel.Text = "Update check failed!"));
-                Console.WriteLine("Update check failed: " + ex.Message);
+                statusLabel.Invoke((Action)(() => statusLabel.Text = "Update check failed. Starting app..."));
+                Console.WriteLine("Update check failed: " + ex.Message); // Log error for debugging
             }
         }
     }
 
+    // These helper classes are fine as they are
     public class GitHubRelease
     {
         public string tag_name { get; set; }

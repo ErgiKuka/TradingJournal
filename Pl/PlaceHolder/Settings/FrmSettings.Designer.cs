@@ -29,15 +29,29 @@
         private void InitializeComponent()
         {
             panel1 = new Panel();
+            label1 = new Label();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(27, 38, 59);
+            panel1.Controls.Add(label1);
             panel1.Location = new Point(46, 45);
             panel1.Name = "panel1";
             panel1.Size = new Size(1125, 764);
             panel1.TabIndex = 0;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Times New Roman", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label1.ForeColor = Color.FromArgb(156, 163, 175);
+            label1.Location = new Point(25, 25);
+            label1.Name = "label1";
+            label1.Size = new Size(141, 26);
+            label1.TabIndex = 5;
+            label1.Text = "Irdi eshte nub";
             // 
             // FrmSettings
             // 
@@ -49,11 +63,14 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "FrmSettings";
             Text = "FrmSettings";
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
         private Panel panel1;
+        private Label label1;
     }
 }

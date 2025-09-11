@@ -30,11 +30,34 @@ namespace TradingJournal.Pl.Startup
         {
             pictureBox1.Image = Properties.Resources.LoadingSpinner;
 
-            await Task.Delay(2000);
+            // --- Start of Update Code ---
+            try
+            {
+                string currentVersion = "1.2"; // This MUST match the version in your Inno Setup script
+                string repoOwner = "ErgiKuka";
+                string repoName = "TradingJournal"; // Your main repository
 
-            FrmHome frm = new FrmHome();
-            frm.Show();
-            this.Hide();
+                var updater = new GitHubUpdater(repoOwner, repoName);
+                await updater.CheckForUpdatesAsync(currentVersion, lblStatus); // Use your label here
+            }
+            catch (Exception ex)
+            {
+                // If the update check itself fails, we don't want the app to crash.
+                // We just log it and continue.
+                Console.WriteLine("A critical error occurred in the update process: " + ex.Message);
+                lblStatus.Text = "Could not check for updates.";
+            }
+            // --- End of Update Code ---
+
+            // If the app wasn't closed by the updater, continue starting
+            if (!this.IsDisposed)
+            {
+                await Task.Delay(1500); // A short delay so the user can read the final status message
+
+                FrmHome frm = new FrmHome();
+                frm.Show();
+                this.Hide();
+            }
         }
 
     }
