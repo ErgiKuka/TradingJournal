@@ -76,10 +76,10 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             _layoutManager.RegisterControl(txtStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 272), new Size(203, 32));
             _layoutManager.RegisterControl(lblTakeProfit, pnlInformations, pnlInformations_Max, new Point(456, 236), new Size(115, 26));
             _layoutManager.RegisterControl(txtTakeProfit, pnlInformations, pnlInformations_Max, new Point(456, 272), new Size(203, 32));
-            _layoutManager.RegisterControl(lblProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 17), new Size(126, 26));
-            _layoutManager.RegisterControl(txtProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 50), new Size(203, 32));
-            _layoutManager.RegisterControl(lblMargin, pnlInformations, pnlInformations_Max, new Point(877, 113), new Size(78, 26));
-            _layoutManager.RegisterControl(txtMargin, pnlInformations, pnlInformations_Max, new Point(876, 151), new Size(203, 32));
+            _layoutManager.RegisterControl(lblProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 32), new Size(126, 26));
+            _layoutManager.RegisterControl(txtProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 65), new Size(203, 32));
+            _layoutManager.RegisterControl(lblMargin, pnlInformations, pnlInformations_Max, new Point(877, 120), new Size(78, 26));
+            _layoutManager.RegisterControl(txtMargin, pnlInformations, pnlInformations_Max, new Point(876, 160), new Size(203, 32));
             _layoutManager.RegisterControl(btnUploadScreenshot, pnlInformations, pnlInformations_Max, new Point(1266, 50), new Size(240, 49));
             _layoutManager.RegisterControl(txtScreenshotLink, pnlInformations, pnlInformations_Max, new Point(1282, 113), new Size(203, 34));
             _layoutManager.RegisterControl(pbScreenshot, pnlInformations, pnlInformations_Max, new Point(1241, 166), new Size(294, 182));
