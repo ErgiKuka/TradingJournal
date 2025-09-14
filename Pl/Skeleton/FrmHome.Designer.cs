@@ -100,7 +100,7 @@
             BtnExit.Location = new Point(169, 5);
             BtnExit.Name = "BtnExit";
             BtnExit.Size = new Size(43, 27);
-            BtnExit.TabIndex = 8;
+            BtnExit.TabIndex = 12;
             BtnExit.Text = "X";
             BtnExit.UseVisualStyleBackColor = false;
             BtnExit.Click += BtnExit_Click;

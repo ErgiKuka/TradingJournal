@@ -15,12 +15,14 @@ namespace TradingJournal.Core.Logic.Manager
         private readonly List<Action> _normalStateActions = new List<Action>();
         private readonly List<Action> _maximizedStateActions = new List<Action>();
 
+        // THE FIX: Change Panel to the more generic Control type.
         private class ControlLayoutInfo
         {
-            public Panel NormalParent { get; set; }
+            public Control NormalParent { get; set; }
             public Point NormalLocation { get; set; }
             public Size NormalSize { get; set; }
-            public Panel MaximizedParent { get; set; }
+
+            public Control MaximizedParent { get; set; }
             public Point MaximizedLocation { get; set; }
             public Size MaximizedSize { get; set; }
         }
@@ -30,9 +32,11 @@ namespace TradingJournal.Core.Logic.Manager
             _hostForm = hostForm;
         }
 
-        public void RegisterControl(Control control, Panel normalParent, Panel maximizedParent, Point maximizedLocation, Size maximizedSize)
+        // THE FIX: Change Panel to Control in the method signature.
+        public void RegisterControl(Control control, Control normalParent, Control maximizedParent, Point maximizedLocation, Size maximizedSize)
         {
             if (_controlLayouts.ContainsKey(control)) return;
+
             _controlLayouts[control] = new ControlLayoutInfo
             {
                 NormalParent = normalParent,
@@ -46,14 +50,8 @@ namespace TradingJournal.Core.Logic.Manager
 
         public void RegisterStateAction(FormWindowStateExtended state, Action action)
         {
-            if (state == FormWindowStateExtended.Normal)
-            {
-                _normalStateActions.Add(action);
-            }
-            else
-            {
-                _maximizedStateActions.Add(action);
-            }
+            if (state == FormWindowStateExtended.Normal) _normalStateActions.Add(action);
+            else _maximizedStateActions.Add(action);
         }
 
         public void SetWindowState(FormWindowStateExtended newState)
@@ -63,7 +61,6 @@ namespace TradingJournal.Core.Logic.Manager
 
             _hostForm.SuspendLayout();
 
-            // *** THIS IS THE CORRECTED LOOP ***
             foreach (var entry in _controlLayouts)
             {
                 var control = entry.Key;
@@ -71,34 +68,32 @@ namespace TradingJournal.Core.Logic.Manager
 
                 if (newState == FormWindowStateExtended.Maximized)
                 {
-                    // Switch to Maximized State
-                    layoutInfo.MaximizedParent.Controls.Add(control); // Re-parent the control
+                    // Check if the parent needs to change before re-parenting
+                    if (control.Parent != layoutInfo.MaximizedParent)
+                    {
+                        layoutInfo.MaximizedParent.Controls.Add(control);
+                    }
                     control.Location = layoutInfo.MaximizedLocation;
                     control.Size = layoutInfo.MaximizedSize;
                 }
                 else
                 {
-                    // Switch back to Normal State
-                    layoutInfo.NormalParent.Controls.Add(control); // Re-parent the control
+                    if (control.Parent != layoutInfo.NormalParent)
+                    {
+                        layoutInfo.NormalParent.Controls.Add(control);
+                    }
                     control.Location = layoutInfo.NormalLocation;
                     control.Size = layoutInfo.NormalSize;
                 }
             }
 
-            // Execute custom actions for the new state
             if (newState == FormWindowStateExtended.Maximized)
             {
-                foreach (var action in _maximizedStateActions)
-                {
-                    action.Invoke();
-                }
+                foreach (var action in _maximizedStateActions) action.Invoke();
             }
             else
             {
-                foreach (var action in _normalStateActions)
-                {
-                    action.Invoke();
-                }
+                foreach (var action in _normalStateActions) action.Invoke();
             }
 
             ToggleParentPanelVisibility(newState);
@@ -107,18 +102,25 @@ namespace TradingJournal.Core.Logic.Manager
 
         private void ToggleParentPanelVisibility(FormWindowStateExtended state)
         {
-            var allPanels = _controlLayouts.Values.Select(info => info.NormalParent).Concat(_controlLayouts.Values.Select(info => info.MaximizedParent)).Distinct();
-            foreach (var panel in allPanels)
+            // This logic now correctly handles any Control, including Panels.
+            var allParents = _controlLayouts.Values
+                .Select(info => info.NormalParent)
+                .Concat(_controlLayouts.Values.Select(info => info.MaximizedParent))
+                .Where(p => p is Panel) // We only need to toggle visibility of Panels
+                .Distinct();
+
+            foreach (var parent in allParents)
             {
-                bool isNormalParent = _controlLayouts.Values.Any(info => info.NormalParent == panel);
-                bool isMaximizedParent = _controlLayouts.Values.Any(info => info.MaximizedParent == panel);
+                bool isNormalParent = _controlLayouts.Values.Any(info => info.NormalParent == parent);
+                bool isMaximizedParent = _controlLayouts.Values.Any(info => info.MaximizedParent == parent);
+
                 if (state == FormWindowStateExtended.Normal)
                 {
-                    panel.Visible = isNormalParent;
+                    parent.Visible = isNormalParent;
                 }
                 else // Maximized
                 {
-                    panel.Visible = isMaximizedParent;
+                    parent.Visible = isMaximizedParent;
                 }
             }
         }

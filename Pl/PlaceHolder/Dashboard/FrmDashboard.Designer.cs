@@ -28,27 +28,29 @@
         /// </summary>
         private void InitializeComponent()
         {
-            panel1 = new Panel();
+            pnlPortfolio = new Panel();
             lblTodaysPnl = new Label();
             lblPortfolioValue = new Label();
             label1 = new Label();
-            panel2 = new Panel();
+            pnlLivePrices = new Panel();
             btnRefresh = new FontAwesome.Sharp.IconButton();
             lblCurrentDate = new Label();
-            button1 = new Button();
-            panel1.SuspendLayout();
+            pnlPortfolio_Max = new Panel();
+            pnlLivePrices_Max = new Panel();
+            pnlPortfolio.SuspendLayout();
             SuspendLayout();
             // 
-            // panel1
+            // pnlPortfolio
             // 
-            panel1.BackColor = Color.FromArgb(27, 38, 59);
-            panel1.Controls.Add(lblTodaysPnl);
-            panel1.Controls.Add(lblPortfolioValue);
-            panel1.Controls.Add(label1);
-            panel1.Location = new Point(37, 71);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(1152, 180);
-            panel1.TabIndex = 0;
+            pnlPortfolio.BackColor = Color.FromArgb(27, 38, 59);
+            pnlPortfolio.Controls.Add(lblTodaysPnl);
+            pnlPortfolio.Controls.Add(lblPortfolioValue);
+            pnlPortfolio.Controls.Add(label1);
+            pnlPortfolio.Location = new Point(37, 71);
+            pnlPortfolio.Name = "pnlPortfolio";
+            pnlPortfolio.Size = new Size(1152, 180);
+            pnlPortfolio.TabIndex = 0;
+            pnlPortfolio.Paint += panel1_Paint;
             // 
             // lblTodaysPnl
             // 
@@ -83,13 +85,13 @@
             label1.TabIndex = 4;
             label1.Text = "Portfolio";
             // 
-            // panel2
+            // pnlLivePrices
             // 
-            panel2.BackColor = Color.FromArgb(27, 38, 59);
-            panel2.Location = new Point(37, 303);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(1152, 508);
-            panel2.TabIndex = 1;
+            pnlLivePrices.BackColor = Color.FromArgb(27, 38, 59);
+            pnlLivePrices.Location = new Point(37, 303);
+            pnlLivePrices.Name = "pnlLivePrices";
+            pnlLivePrices.Size = new Size(1152, 508);
+            pnlLivePrices.TabIndex = 1;
             // 
             // btnRefresh
             // 
@@ -117,45 +119,56 @@
             lblCurrentDate.TabIndex = 3;
             lblCurrentDate.Text = "------";
             // 
-            // button1
+            // pnlPortfolio_Max
             // 
-            button1.Location = new Point(1550, 952);
-            button1.Name = "button1";
-            button1.Size = new Size(94, 29);
-            button1.TabIndex = 13;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
+            pnlPortfolio_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlPortfolio_Max.Location = new Point(37, 71);
+            pnlPortfolio_Max.Name = "pnlPortfolio_Max";
+            pnlPortfolio_Max.Size = new Size(1577, 211);
+            pnlPortfolio_Max.TabIndex = 12;
+            pnlPortfolio_Max.Visible = false;
+            // 
+            // pnlLivePrices_Max
+            // 
+            pnlLivePrices_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlLivePrices_Max.Location = new Point(37, 303);
+            pnlLivePrices_Max.Name = "pnlLivePrices_Max";
+            pnlLivePrices_Max.Size = new Size(1577, 653);
+            pnlLivePrices_Max.TabIndex = 13;
+            pnlLivePrices_Max.Visible = false;
             // 
             // FrmDashboard
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Olive;
+            BackColor = Color.FromArgb(13, 27, 42);
             ClientSize = new Size(1645, 982);
-            Controls.Add(button1);
             Controls.Add(btnRefresh);
             Controls.Add(lblCurrentDate);
-            Controls.Add(panel2);
-            Controls.Add(panel1);
+            Controls.Add(pnlLivePrices);
+            Controls.Add(pnlPortfolio);
+            Controls.Add(pnlLivePrices_Max);
+            Controls.Add(pnlPortfolio_Max);
             FormBorderStyle = FormBorderStyle.None;
             Name = "FrmDashboard";
             Text = "FrmDashboard";
             Load += FrmDashboard_Load;
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
+            pnlPortfolio.ResumeLayout(false);
+            pnlPortfolio.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Panel panel1;
-        private Panel panel2;
+        private Panel pnlPortfolio;
+        private Panel pnlLivePrices;
         private Label lblPortfolioValue;
         private Label label1;
         private Label lblCurrentDate;
         private Label lblTodaysPnl;
         private FontAwesome.Sharp.IconButton btnRefresh;
-        private Button button1;
+        private Panel pnlPortfolio_Max;
+        private Panel pnlLivePrices_Max;
     }
 }

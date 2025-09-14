@@ -441,7 +441,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Olive;
+            BackColor = Color.FromArgb(13, 27, 42);
             ClientSize = new Size(1645, 982);
             Controls.Add(pnlCalculator);
             Controls.Add(pnlChart);
