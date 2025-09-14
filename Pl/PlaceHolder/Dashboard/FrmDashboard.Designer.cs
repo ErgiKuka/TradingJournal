@@ -35,6 +35,7 @@
             panel2 = new Panel();
             btnRefresh = new FontAwesome.Sharp.IconButton();
             lblCurrentDate = new Label();
+            button1 = new Button();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -116,12 +117,22 @@
             lblCurrentDate.TabIndex = 3;
             lblCurrentDate.Text = "------";
             // 
+            // button1
+            // 
+            button1.Location = new Point(1550, 952);
+            button1.Name = "button1";
+            button1.Size = new Size(94, 29);
+            button1.TabIndex = 13;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
+            // 
             // FrmDashboard
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(13, 27, 42);
-            ClientSize = new Size(1229, 862);
+            BackColor = Color.Olive;
+            ClientSize = new Size(1645, 982);
+            Controls.Add(button1);
             Controls.Add(btnRefresh);
             Controls.Add(lblCurrentDate);
             Controls.Add(panel2);
@@ -145,5 +156,6 @@
         private Label lblCurrentDate;
         private Label lblTodaysPnl;
         private FontAwesome.Sharp.IconButton btnRefresh;
+        private Button button1;
     }
 }

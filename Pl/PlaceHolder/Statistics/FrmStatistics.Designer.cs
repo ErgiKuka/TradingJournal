@@ -55,6 +55,7 @@
             rbDaily = new RadioButton();
             btnOpenCalculator = new FontAwesome.Sharp.IconButton();
             panel8 = new Panel();
+            button1 = new Button();
             panel1.SuspendLayout();
             panel4.SuspendLayout();
             panel2.SuspendLayout();
@@ -357,12 +358,22 @@
             panel8.Size = new Size(1173, 124);
             panel8.TabIndex = 12;
             // 
+            // button1
+            // 
+            button1.Location = new Point(1552, 952);
+            button1.Name = "button1";
+            button1.Size = new Size(94, 29);
+            button1.TabIndex = 13;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
+            // 
             // FrmStatistics
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(13, 27, 42);
-            ClientSize = new Size(1229, 857);
+            BackColor = Color.Olive;
+            ClientSize = new Size(1645, 982);
+            Controls.Add(button1);
             Controls.Add(panel8);
             Controls.Add(panel7);
             Controls.Add(panel6);
@@ -422,5 +433,6 @@
         private RadioButton rbWeekly;
         private FontAwesome.Sharp.IconButton btnOpenCalculator;
         private Panel panel8;
+        private Button button1;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FontAwesome.Sharp;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using FontAwesome.Sharp;
+using TradingJournal.Core.Logic;
 using TradingJournal.Pl.PlaceHolder.Dashboard;
 using TradingJournal.Pl.PlaceHolder.Journal;
 using TradingJournal.Pl.PlaceHolder.Settings;
@@ -23,9 +24,23 @@ namespace TradingJournal.Pl.Skeleton
         private Color normalColor = Color.FromArgb(27, 38, 59);
         private Color hoverColor = Color.FromArgb(35, 52, 74);
 
+        private Rectangle _restoreBounds;
+        private bool _isCustomMaximized = false;
+        private const int FAKE_MAX_MARGIN = 12;
+
         public FrmHome()
         {
             InitializeComponent();
+
+            btnMaximize.IconChar = IconChar.Square;
+            btnMaximize.IconColor = Color.Black;
+            btnMaximize.IconSize = 20;
+
+            btnMaximize.Click += BtnMaximize_Click;
+            pnlTopBar.DoubleClick += PnlTopBar_DoubleClick;
+            this.Resize += FrmHome_Resize;
+            this.MinimumSize = new Size(1024, 720);
+            this.AutoScaleMode = AutoScaleMode.Dpi;
 
             this.SetStyle(ControlStyles.DoubleBuffer |
               ControlStyles.UserPaint |
@@ -34,7 +49,7 @@ namespace TradingJournal.Pl.Skeleton
             this.UpdateStyles();
 
             pnlControls.GetType().GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-    ?.SetValue(pnlControls, true, null);
+                         ?.SetValue(pnlControls, true, null);
 
             RoundedFormHelper.ApplyRoundedCorners(this, 80);
             RoundedFormHelper.EnableDrag(this, pnlTopBar);
@@ -46,6 +61,68 @@ namespace TradingJournal.Pl.Skeleton
 
             // Set up event handlers for all buttons
             SetupButtonEvents();
+        }
+
+        private void BtnMaximize_Click(object sender, EventArgs e)
+        {
+            ToggleMaximize(false); // pass true to use fake maximize (keeps rounded corner margin)
+        }
+
+        private void PnlTopBar_DoubleClick(object sender, EventArgs e)
+        {
+            ToggleMaximize(false); // double-click top bar toggles maximize
+        }
+
+        private void ToggleMaximize(bool useFakeMaximize)
+        {
+            FormWindowStateExtended newState;
+            if (!_isCustomMaximized)
+            {
+                _restoreBounds = this.Bounds;
+                var wa = Screen.FromHandle(this.Handle).WorkingArea;
+                this.Bounds = useFakeMaximize
+                    ? new Rectangle(wa.X + FAKE_MAX_MARGIN, wa.Y + FAKE_MAX_MARGIN, wa.Width - FAKE_MAX_MARGIN * 2, wa.Height - FAKE_MAX_MARGIN * 2)
+                    : wa;
+
+                if (!useFakeMaximize) this.Region = null;
+
+                _isCustomMaximized = true;
+                newState = FormWindowStateExtended.Maximized;
+            }
+            else
+            {
+                this.Bounds = _restoreBounds;
+                _isCustomMaximized = false;
+                if (this.WindowState == FormWindowState.Normal)
+                    RoundedFormHelper.ApplyRoundedCorners(this, 80);
+
+                newState = FormWindowStateExtended.Normal;
+            }
+
+            // Notify the active child form of the state change.
+            var activeResponsiveForm = pnlControls.Controls.OfType<IResponsiveChildForm>().FirstOrDefault();
+            activeResponsiveForm?.SetWindowState(newState);
+        }
+
+        private void FrmHome_Resize(object sender, EventArgs e)
+        {
+            // If manually maximized or minimized via keyboard / OS, keep visuals consistent
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                // When truly maximized by Windows, remove rounding so edges don't get cut
+                this.Region = null;
+                _isCustomMaximized = true;
+            }
+            else if (this.WindowState == FormWindowState.Normal && !_isCustomMaximized)
+            {
+                // Reapply rounding when returning to normal state (if not in custom maximized)
+                RoundedFormHelper.ApplyRoundedCorners(this, 80);
+            }
+        }
+
+        public static void RemoveRoundedCorners(Form form)
+        {
+            form.Region = null;
         }
 
         private void SetupButtonEvents()
@@ -87,7 +164,6 @@ namespace TradingJournal.Pl.Skeleton
         private void LoadPanels(Form form)
         {
             pnlControls.SuspendLayout();
-
             pnlControls.Controls.Clear();
 
             form.TopLevel = false;
@@ -97,6 +173,13 @@ namespace TradingJournal.Pl.Skeleton
             pnlControls.Controls.Add(form);
             form.Show();
             form.BringToFront();
+
+            // **CRITICAL:** After loading, immediately set the form to the current window state.
+            if (form is IResponsiveChildForm responsiveForm)
+            {
+                var currentState = _isCustomMaximized ? FormWindowStateExtended.Maximized : FormWindowStateExtended.Normal;
+                responsiveForm.SetWindowState(currentState);
+            }
 
             pnlControls.ResumeLayout();
         }
