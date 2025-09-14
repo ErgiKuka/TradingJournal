@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmJournal));
-            pnlInformations = new Panel();
+            openFileDialog1 = new OpenFileDialog();
+            openFileDialog = new OpenFileDialog();
             btnClearData = new FontAwesome.Sharp.IconButton();
             btnCancelUpdate = new FontAwesome.Sharp.IconButton();
             btnUpdateTrade = new FontAwesome.Sharp.IconButton();
@@ -40,6 +40,11 @@
             txtProfitLoss = new TextBox();
             pbScreenshot = new PictureBox();
             btnAddTrade = new FontAwesome.Sharp.IconButton();
+            pnlData = new Panel();
+            chbAllTrades = new CheckBox();
+            dtpFilterDate = new DateTimePicker();
+            dgvData = new DataGridView();
+            pnlInformations = new Panel();
             btnUploadScreenshot = new FontAwesome.Sharp.IconButton();
             lblTakeProfit = new Label();
             lblStopLoss = new Label();
@@ -53,47 +58,21 @@
             cbTradeType = new ComboBox();
             lblSymbol = new Label();
             cbSymbol = new ComboBox();
-            pnlData = new Panel();
-            chbAllTrades = new CheckBox();
-            dtpFilterDate = new DateTimePicker();
-            dgvData = new DataGridView();
-            openFileDialog = new OpenFileDialog();
-            pnlInformations.SuspendLayout();
+            pnlData_Max = new Panel();
+            pnlInformations_Max = new Panel();
             ((System.ComponentModel.ISupportInitialize)pbScreenshot).BeginInit();
             pnlData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvData).BeginInit();
+            pnlInformations.SuspendLayout();
             SuspendLayout();
             // 
-            // pnlInformations
+            // openFileDialog1
             // 
-            pnlInformations.BackColor = Color.FromArgb(27, 38, 59);
-            pnlInformations.Controls.Add(btnClearData);
-            pnlInformations.Controls.Add(btnCancelUpdate);
-            pnlInformations.Controls.Add(btnUpdateTrade);
-            pnlInformations.Controls.Add(txtScreenshotLink);
-            pnlInformations.Controls.Add(lblMargin);
-            pnlInformations.Controls.Add(lblProfitLoss);
-            pnlInformations.Controls.Add(txtMargin);
-            pnlInformations.Controls.Add(txtProfitLoss);
-            pnlInformations.Controls.Add(pbScreenshot);
-            pnlInformations.Controls.Add(btnAddTrade);
-            pnlInformations.Controls.Add(btnUploadScreenshot);
-            pnlInformations.Controls.Add(lblTakeProfit);
-            pnlInformations.Controls.Add(lblStopLoss);
-            pnlInformations.Controls.Add(lblExitPrice);
-            pnlInformations.Controls.Add(lblEntryPrice);
-            pnlInformations.Controls.Add(lblTradeType);
-            pnlInformations.Controls.Add(txtTakeProfit);
-            pnlInformations.Controls.Add(txtStopLoss);
-            pnlInformations.Controls.Add(txtExitPrice);
-            pnlInformations.Controls.Add(txtEntryPrice);
-            pnlInformations.Controls.Add(cbTradeType);
-            pnlInformations.Controls.Add(lblSymbol);
-            pnlInformations.Controls.Add(cbSymbol);
-            pnlInformations.Location = new Point(32, 33);
-            pnlInformations.Name = "pnlInformations";
-            pnlInformations.Size = new Size(1167, 330);
-            pnlInformations.TabIndex = 0;
+            openFileDialog1.FileName = "openFileDialog";
+            // 
+            // openFileDialog
+            // 
+            openFileDialog.FileName = "openFileDialog";
             // 
             // btnClearData
             // 
@@ -155,7 +134,7 @@
             txtScreenshotLink.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtScreenshotLink.Location = new Point(886, 108);
             txtScreenshotLink.Name = "txtScreenshotLink";
-            txtScreenshotLink.PlaceholderText = "Upload link";
+            txtScreenshotLink.PlaceholderText = "Upload link . . .";
             txtScreenshotLink.Size = new Size(203, 30);
             txtScreenshotLink.TabIndex = 8;
             // 
@@ -205,9 +184,11 @@
             // 
             // pbScreenshot
             // 
+            pbScreenshot.BackgroundImageLayout = ImageLayout.Stretch;
             pbScreenshot.Location = new Point(886, 161);
             pbScreenshot.Name = "pbScreenshot";
             pbScreenshot.Size = new Size(208, 133);
+            pbScreenshot.SizeMode = PictureBoxSizeMode.Zoom;
             pbScreenshot.TabIndex = 15;
             pbScreenshot.TabStop = false;
             // 
@@ -228,6 +209,99 @@
             btnAddTrade.UseVisualStyleBackColor = false;
             btnAddTrade.Click += btnAddTrade_Click;
             // 
+            // pnlData
+            // 
+            pnlData.BackColor = Color.FromArgb(27, 38, 59);
+            pnlData.Controls.Add(chbAllTrades);
+            pnlData.Controls.Add(dtpFilterDate);
+            pnlData.Controls.Add(dgvData);
+            pnlData.Location = new Point(31, 403);
+            pnlData.Name = "pnlData";
+            pnlData.Size = new Size(1167, 426);
+            pnlData.TabIndex = 11;
+            // 
+            // chbAllTrades
+            // 
+            chbAllTrades.AutoSize = true;
+            chbAllTrades.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            chbAllTrades.ForeColor = Color.FromArgb(156, 163, 175);
+            chbAllTrades.Location = new Point(784, 15);
+            chbAllTrades.Name = "chbAllTrades";
+            chbAllTrades.Size = new Size(156, 26);
+            chbAllTrades.TabIndex = 15;
+            chbAllTrades.Text = "Show all trades";
+            chbAllTrades.UseVisualStyleBackColor = true;
+            chbAllTrades.CheckedChanged += chbAllTrades_CheckedChanged;
+            // 
+            // dtpFilterDate
+            // 
+            dtpFilterDate.CalendarFont = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dtpFilterDate.CalendarForeColor = Color.IndianRed;
+            dtpFilterDate.CalendarMonthBackground = Color.FromArgb(24, 30, 54);
+            dtpFilterDate.CalendarTitleBackColor = Color.FromArgb(45, 51, 73);
+            dtpFilterDate.CalendarTitleForeColor = Color.White;
+            dtpFilterDate.CalendarTrailingForeColor = Color.Gray;
+            dtpFilterDate.CustomFormat = "dd/MM/yyyy";
+            dtpFilterDate.DropDownAlign = LeftRightAlignment.Right;
+            dtpFilterDate.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dtpFilterDate.Format = DateTimePickerFormat.Custom;
+            dtpFilterDate.Location = new Point(961, 12);
+            dtpFilterDate.MinDate = new DateTime(2025, 9, 6, 0, 0, 0, 0);
+            dtpFilterDate.Name = "dtpFilterDate";
+            dtpFilterDate.RightToLeft = RightToLeft.No;
+            dtpFilterDate.Size = new Size(149, 30);
+            dtpFilterDate.TabIndex = 14;
+            dtpFilterDate.Value = new DateTime(2025, 9, 6, 16, 53, 29, 0);
+            dtpFilterDate.ValueChanged += dtpFilterDate_ValueChanged;
+            // 
+            // dgvData
+            // 
+            dgvData.AllowUserToAddRows = false;
+            dgvData.AllowUserToDeleteRows = false;
+            dgvData.AllowUserToResizeColumns = false;
+            dgvData.AllowUserToResizeRows = false;
+            dgvData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvData.Location = new Point(20, 49);
+            dgvData.Name = "dgvData";
+            dgvData.ReadOnly = true;
+            dgvData.RowHeadersWidth = 51;
+            dgvData.Size = new Size(1124, 357);
+            dgvData.TabIndex = 0;
+            dgvData.CellContentClick += dgvData_CellContentClick;
+            dgvData.CellDoubleClick += dgvData_CellDoubleClick;
+            dgvData.CellPainting += dgvData_CellPainting;
+            // 
+            // pnlInformations
+            // 
+            pnlInformations.BackColor = Color.FromArgb(27, 38, 59);
+            pnlInformations.Controls.Add(btnClearData);
+            pnlInformations.Controls.Add(btnCancelUpdate);
+            pnlInformations.Controls.Add(btnUpdateTrade);
+            pnlInformations.Controls.Add(txtScreenshotLink);
+            pnlInformations.Controls.Add(lblMargin);
+            pnlInformations.Controls.Add(lblProfitLoss);
+            pnlInformations.Controls.Add(txtMargin);
+            pnlInformations.Controls.Add(txtProfitLoss);
+            pnlInformations.Controls.Add(pbScreenshot);
+            pnlInformations.Controls.Add(btnAddTrade);
+            pnlInformations.Controls.Add(btnUploadScreenshot);
+            pnlInformations.Controls.Add(lblTakeProfit);
+            pnlInformations.Controls.Add(lblStopLoss);
+            pnlInformations.Controls.Add(lblExitPrice);
+            pnlInformations.Controls.Add(lblEntryPrice);
+            pnlInformations.Controls.Add(lblTradeType);
+            pnlInformations.Controls.Add(txtTakeProfit);
+            pnlInformations.Controls.Add(txtStopLoss);
+            pnlInformations.Controls.Add(txtExitPrice);
+            pnlInformations.Controls.Add(txtEntryPrice);
+            pnlInformations.Controls.Add(cbTradeType);
+            pnlInformations.Controls.Add(lblSymbol);
+            pnlInformations.Controls.Add(cbSymbol);
+            pnlInformations.Location = new Point(31, 34);
+            pnlInformations.Name = "pnlInformations";
+            pnlInformations.Size = new Size(1167, 330);
+            pnlInformations.TabIndex = 10;
+            // 
             // btnUploadScreenshot
             // 
             btnUploadScreenshot.AllowDrop = true;
@@ -245,8 +319,6 @@
             btnUploadScreenshot.Text = "Upload Screenshot";
             btnUploadScreenshot.UseVisualStyleBackColor = false;
             btnUploadScreenshot.Click += btnUploadScreenshot_Click;
-            btnUploadScreenshot.DragDrop += btnUploadScreenshot_DragDrop;
-            btnUploadScreenshot.DragEnter += btnUploadScreenshot_DragEnter;
             // 
             // lblTakeProfit
             // 
@@ -383,124 +455,78 @@
             cbSymbol.TabIndex = 0;
             cbSymbol.Text = "  ";
             // 
-            // pnlData
+            // pnlData_Max
             // 
-            pnlData.BackColor = Color.FromArgb(27, 38, 59);
-            pnlData.Controls.Add(chbAllTrades);
-            pnlData.Controls.Add(dtpFilterDate);
-            pnlData.Controls.Add(dgvData);
-            pnlData.Location = new Point(32, 402);
-            pnlData.Name = "pnlData";
-            pnlData.Size = new Size(1167, 426);
-            pnlData.TabIndex = 1;
+            pnlData_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlData_Max.Location = new Point(31, 403);
+            pnlData_Max.Name = "pnlData_Max";
+            pnlData_Max.Size = new Size(1582, 544);
+            pnlData_Max.TabIndex = 12;
+            pnlData_Max.Visible = false;
             // 
-            // chbAllTrades
+            // pnlInformations_Max
             // 
-            chbAllTrades.AutoSize = true;
-            chbAllTrades.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            chbAllTrades.ForeColor = Color.FromArgb(156, 163, 175);
-            chbAllTrades.Location = new Point(784, 15);
-            chbAllTrades.Name = "chbAllTrades";
-            chbAllTrades.Size = new Size(156, 26);
-            chbAllTrades.TabIndex = 15;
-            chbAllTrades.Text = "Show all trades";
-            chbAllTrades.UseVisualStyleBackColor = true;
-            chbAllTrades.CheckedChanged += chbAllTrades_CheckedChanged;
-            // 
-            // dtpFilterDate
-            // 
-            dtpFilterDate.CalendarFont = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            dtpFilterDate.CalendarForeColor = Color.IndianRed;
-            dtpFilterDate.CalendarMonthBackground = Color.FromArgb(24, 30, 54);
-            dtpFilterDate.CalendarTitleBackColor = Color.FromArgb(45, 51, 73);
-            dtpFilterDate.CalendarTitleForeColor = Color.White;
-            dtpFilterDate.CalendarTrailingForeColor = Color.Gray;
-            dtpFilterDate.CustomFormat = "dd/MM/yyyy";
-            dtpFilterDate.DropDownAlign = LeftRightAlignment.Right;
-            dtpFilterDate.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            dtpFilterDate.Format = DateTimePickerFormat.Custom;
-            dtpFilterDate.Location = new Point(961, 12);
-            dtpFilterDate.MinDate = new DateTime(2025, 9, 6, 0, 0, 0, 0);
-            dtpFilterDate.Name = "dtpFilterDate";
-            dtpFilterDate.RightToLeft = RightToLeft.No;
-            dtpFilterDate.Size = new Size(149, 30);
-            dtpFilterDate.TabIndex = 14;
-            dtpFilterDate.Value = new DateTime(2025, 9, 6, 16, 53, 29, 0);
-            dtpFilterDate.ValueChanged += dtpFilterDate_ValueChanged;
-            // 
-            // dgvData
-            // 
-            dgvData.AllowUserToAddRows = false;
-            dgvData.AllowUserToDeleteRows = false;
-            dgvData.AllowUserToResizeColumns = false;
-            dgvData.AllowUserToResizeRows = false;
-            dgvData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvData.Location = new Point(20, 49);
-            dgvData.Name = "dgvData";
-            dgvData.ReadOnly = true;
-            dgvData.RowHeadersWidth = 51;
-            dgvData.Size = new Size(1124, 357);
-            dgvData.TabIndex = 0;
-            dgvData.CellContentClick += dgvData_CellContentClick;
-            dgvData.CellDoubleClick += dgvData_CellDoubleClick;
-            dgvData.CellPainting += dgvData_CellPainting;
-            // 
-            // openFileDialog
-            // 
-            openFileDialog.FileName = "openFileDialog";
+            pnlInformations_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlInformations_Max.Location = new Point(31, 22);
+            pnlInformations_Max.Name = "pnlInformations_Max";
+            pnlInformations_Max.Size = new Size(1582, 367);
+            pnlInformations_Max.TabIndex = 13;
+            pnlInformations_Max.Visible = false;
             // 
             // FrmJournal
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 27, 42);
-            ClientSize = new Size(1229, 862);
+            ClientSize = new Size(1627, 1003);
             Controls.Add(pnlData);
             Controls.Add(pnlInformations);
-            FormBorderStyle = FormBorderStyle.None;
-            Icon = (Icon)resources.GetObject("$this.Icon");
+            Controls.Add(pnlData_Max);
+            Controls.Add(pnlInformations_Max);
             Name = "FrmJournal";
-            Text = "FrmJournal";
             Load += FrmJournal_Load;
-            pnlInformations.ResumeLayout(false);
-            pnlInformations.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pbScreenshot).EndInit();
             pnlData.ResumeLayout(false);
             pnlData.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvData).EndInit();
+            pnlInformations.ResumeLayout(false);
+            pnlInformations.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
-        private Panel pnlInformations;
+        private OpenFileDialog openFileDialog1;
+        private OpenFileDialog openFileDialog;
+        private FontAwesome.Sharp.IconButton btnClearData;
+        private FontAwesome.Sharp.IconButton btnCancelUpdate;
+        private FontAwesome.Sharp.IconButton btnUpdateTrade;
+        private TextBox txtScreenshotLink;
+        private Label lblMargin;
+        private Label lblProfitLoss;
+        private TextBox txtMargin;
+        private TextBox txtProfitLoss;
+        private PictureBox pbScreenshot;
+        private FontAwesome.Sharp.IconButton btnAddTrade;
         private Panel pnlData;
-        private TextBox txtEntryPrice;
-        private ComboBox cbTradeType;
-        private Label lblSymbol;
-        private ComboBox cbSymbol;
-        private TextBox txtTakeProfit;
-        private TextBox txtStopLoss;
-        private TextBox txtExitPrice;
+        private CheckBox chbAllTrades;
+        private DateTimePicker dtpFilterDate;
+        private DataGridView dgvData;
+        private Panel pnlInformations;
+        private FontAwesome.Sharp.IconButton btnUploadScreenshot;
         private Label lblTakeProfit;
         private Label lblStopLoss;
         private Label lblExitPrice;
         private Label lblEntryPrice;
         private Label lblTradeType;
-        private FontAwesome.Sharp.IconButton btnUploadScreenshot;
-        private FontAwesome.Sharp.IconButton btnAddTrade;
-        private PictureBox pbScreenshot;
-        private Label lblMargin;
-        private Label lblProfitLoss;
-        private TextBox txtMargin;
-        private TextBox txtProfitLoss;
-        private TextBox txtScreenshotLink;
-        private OpenFileDialog openFileDialog;
-        private DataGridView dgvData;
-        private DateTimePicker dtpFilterDate;
-        private FontAwesome.Sharp.IconButton btnUpdateTrade;
-        private FontAwesome.Sharp.IconButton btnCancelUpdate;
-        private FontAwesome.Sharp.IconButton btnClearData;
-        private CheckBox chbAllTrades;
+        private TextBox txtTakeProfit;
+        private TextBox txtStopLoss;
+        private TextBox txtExitPrice;
+        private TextBox txtEntryPrice;
+        private ComboBox cbTradeType;
+        private Label lblSymbol;
+        private ComboBox cbSymbol;
+        private Panel pnlData_Max;
+        private Panel pnlInformations_Max;
     }
 }

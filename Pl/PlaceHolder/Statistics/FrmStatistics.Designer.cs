@@ -29,51 +29,59 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmStatistics));
-            panel1 = new Panel();
+            pnlTotalPnl = new Panel();
             lblTotalPnlValue = new Label();
             lblSymbol = new Label();
-            panel4 = new Panel();
+            pnlWinRate = new Panel();
             lblWinRateValue = new Label();
             label5 = new Label();
-            panel2 = new Panel();
+            pnlProfitFactor = new Panel();
             lblProfitFactorValue = new Label();
             label2 = new Label();
-            panel3 = new Panel();
+            pnlTotalTrades = new Panel();
             lblTotalTradesValue = new Label();
             label7 = new Label();
-            panel5 = new Panel();
+            pnlAvgWinning = new Panel();
             lblAvgWinValue = new Label();
             label9 = new Label();
-            panel6 = new Panel();
+            pnlAvgLosing = new Panel();
             lblAvgLossValue = new Label();
             label11 = new Label();
             formsPlotPnl = new ScottPlot.WinForms.FormsPlot();
-            panel7 = new Panel();
+            pnlChart = new Panel();
             rbAllTime = new RadioButton();
             rbMonthly = new RadioButton();
             rbWeekly = new RadioButton();
             rbDaily = new RadioButton();
             btnOpenCalculator = new FontAwesome.Sharp.IconButton();
-            panel8 = new Panel();
-            panel1.SuspendLayout();
-            panel4.SuspendLayout();
-            panel2.SuspendLayout();
-            panel3.SuspendLayout();
-            panel5.SuspendLayout();
-            panel6.SuspendLayout();
-            panel7.SuspendLayout();
-            panel8.SuspendLayout();
+            pnlCalculator = new Panel();
+            pnlChart_Max = new Panel();
+            pnlCalculator_Max = new Panel();
+            pnlTotalPnl_Max = new Panel();
+            pnlProfitFactor_Max = new Panel();
+            pnlWinRate_Max = new Panel();
+            pnlAvgWinning_Max = new Panel();
+            pnlTotalTrades_Max = new Panel();
+            pnlAvgLosing_Max = new Panel();
+            pnlTotalPnl.SuspendLayout();
+            pnlWinRate.SuspendLayout();
+            pnlProfitFactor.SuspendLayout();
+            pnlTotalTrades.SuspendLayout();
+            pnlAvgWinning.SuspendLayout();
+            pnlAvgLosing.SuspendLayout();
+            pnlChart.SuspendLayout();
+            pnlCalculator.SuspendLayout();
             SuspendLayout();
             // 
-            // panel1
+            // pnlTotalPnl
             // 
-            panel1.BackColor = Color.FromArgb(27, 38, 59);
-            panel1.Controls.Add(lblTotalPnlValue);
-            panel1.Controls.Add(lblSymbol);
-            panel1.Location = new Point(48, 32);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(165, 147);
-            panel1.TabIndex = 0;
+            pnlTotalPnl.BackColor = Color.FromArgb(27, 38, 59);
+            pnlTotalPnl.Controls.Add(lblTotalPnlValue);
+            pnlTotalPnl.Controls.Add(lblSymbol);
+            pnlTotalPnl.Location = new Point(48, 32);
+            pnlTotalPnl.Name = "pnlTotalPnl";
+            pnlTotalPnl.Size = new Size(165, 147);
+            pnlTotalPnl.TabIndex = 0;
             // 
             // lblTotalPnlValue
             // 
@@ -97,15 +105,15 @@
             lblSymbol.TabIndex = 2;
             lblSymbol.Text = "Total Pnl";
             // 
-            // panel4
+            // pnlWinRate
             // 
-            panel4.BackColor = Color.FromArgb(27, 38, 59);
-            panel4.Controls.Add(lblWinRateValue);
-            panel4.Controls.Add(label5);
-            panel4.Location = new Point(243, 32);
-            panel4.Name = "panel4";
-            panel4.Size = new Size(165, 147);
-            panel4.TabIndex = 3;
+            pnlWinRate.BackColor = Color.FromArgb(27, 38, 59);
+            pnlWinRate.Controls.Add(lblWinRateValue);
+            pnlWinRate.Controls.Add(label5);
+            pnlWinRate.Location = new Point(243, 32);
+            pnlWinRate.Name = "pnlWinRate";
+            pnlWinRate.Size = new Size(165, 147);
+            pnlWinRate.TabIndex = 3;
             // 
             // lblWinRateValue
             // 
@@ -129,15 +137,15 @@
             label5.TabIndex = 2;
             label5.Text = "Win Rate";
             // 
-            // panel2
+            // pnlProfitFactor
             // 
-            panel2.BackColor = Color.FromArgb(27, 38, 59);
-            panel2.Controls.Add(lblProfitFactorValue);
-            panel2.Controls.Add(label2);
-            panel2.Location = new Point(438, 32);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(165, 147);
-            panel2.TabIndex = 4;
+            pnlProfitFactor.BackColor = Color.FromArgb(27, 38, 59);
+            pnlProfitFactor.Controls.Add(lblProfitFactorValue);
+            pnlProfitFactor.Controls.Add(label2);
+            pnlProfitFactor.Location = new Point(438, 32);
+            pnlProfitFactor.Name = "pnlProfitFactor";
+            pnlProfitFactor.Size = new Size(165, 147);
+            pnlProfitFactor.TabIndex = 4;
             // 
             // lblProfitFactorValue
             // 
@@ -161,15 +169,15 @@
             label2.TabIndex = 2;
             label2.Text = "Profit Factor";
             // 
-            // panel3
+            // pnlTotalTrades
             // 
-            panel3.BackColor = Color.FromArgb(27, 38, 59);
-            panel3.Controls.Add(lblTotalTradesValue);
-            panel3.Controls.Add(label7);
-            panel3.Location = new Point(633, 32);
-            panel3.Name = "panel3";
-            panel3.Size = new Size(165, 147);
-            panel3.TabIndex = 5;
+            pnlTotalTrades.BackColor = Color.FromArgb(27, 38, 59);
+            pnlTotalTrades.Controls.Add(lblTotalTradesValue);
+            pnlTotalTrades.Controls.Add(label7);
+            pnlTotalTrades.Location = new Point(633, 32);
+            pnlTotalTrades.Name = "pnlTotalTrades";
+            pnlTotalTrades.Size = new Size(165, 147);
+            pnlTotalTrades.TabIndex = 5;
             // 
             // lblTotalTradesValue
             // 
@@ -193,15 +201,15 @@
             label7.TabIndex = 2;
             label7.Text = "Total Trades";
             // 
-            // panel5
+            // pnlAvgWinning
             // 
-            panel5.BackColor = Color.FromArgb(27, 38, 59);
-            panel5.Controls.Add(lblAvgWinValue);
-            panel5.Controls.Add(label9);
-            panel5.Location = new Point(828, 32);
-            panel5.Name = "panel5";
-            panel5.Size = new Size(165, 147);
-            panel5.TabIndex = 6;
+            pnlAvgWinning.BackColor = Color.FromArgb(27, 38, 59);
+            pnlAvgWinning.Controls.Add(lblAvgWinValue);
+            pnlAvgWinning.Controls.Add(label9);
+            pnlAvgWinning.Location = new Point(828, 32);
+            pnlAvgWinning.Name = "pnlAvgWinning";
+            pnlAvgWinning.Size = new Size(165, 147);
+            pnlAvgWinning.TabIndex = 6;
             // 
             // lblAvgWinValue
             // 
@@ -225,15 +233,15 @@
             label9.TabIndex = 2;
             label9.Text = "Avg Winning Trade";
             // 
-            // panel6
+            // pnlAvgLosing
             // 
-            panel6.BackColor = Color.FromArgb(27, 38, 59);
-            panel6.Controls.Add(lblAvgLossValue);
-            panel6.Controls.Add(label11);
-            panel6.Location = new Point(1023, 32);
-            panel6.Name = "panel6";
-            panel6.Size = new Size(158, 147);
-            panel6.TabIndex = 7;
+            pnlAvgLosing.BackColor = Color.FromArgb(27, 38, 59);
+            pnlAvgLosing.Controls.Add(lblAvgLossValue);
+            pnlAvgLosing.Controls.Add(label11);
+            pnlAvgLosing.Location = new Point(1023, 32);
+            pnlAvgLosing.Name = "pnlAvgLosing";
+            pnlAvgLosing.Size = new Size(158, 147);
+            pnlAvgLosing.TabIndex = 7;
             // 
             // lblAvgLossValue
             // 
@@ -265,18 +273,18 @@
             formsPlotPnl.Size = new Size(1092, 346);
             formsPlotPnl.TabIndex = 8;
             // 
-            // panel7
+            // pnlChart
             // 
-            panel7.BackColor = Color.FromArgb(27, 38, 59);
-            panel7.Controls.Add(rbAllTime);
-            panel7.Controls.Add(rbMonthly);
-            panel7.Controls.Add(rbWeekly);
-            panel7.Controls.Add(rbDaily);
-            panel7.Controls.Add(formsPlotPnl);
-            panel7.Location = new Point(23, 225);
-            panel7.Name = "panel7";
-            panel7.Size = new Size(1173, 453);
-            panel7.TabIndex = 9;
+            pnlChart.BackColor = Color.FromArgb(27, 38, 59);
+            pnlChart.Controls.Add(rbAllTime);
+            pnlChart.Controls.Add(rbMonthly);
+            pnlChart.Controls.Add(rbWeekly);
+            pnlChart.Controls.Add(rbDaily);
+            pnlChart.Controls.Add(formsPlotPnl);
+            pnlChart.Location = new Point(23, 225);
+            pnlChart.Name = "pnlChart";
+            pnlChart.Size = new Size(1173, 453);
+            pnlChart.TabIndex = 9;
             // 
             // rbAllTime
             // 
@@ -348,79 +356,167 @@
             btnOpenCalculator.UseVisualStyleBackColor = false;
             btnOpenCalculator.Click += btnOpenCalculator_Click;
             // 
-            // panel8
+            // pnlCalculator
             // 
-            panel8.BackColor = Color.FromArgb(27, 38, 59);
-            panel8.Controls.Add(btnOpenCalculator);
-            panel8.Location = new Point(23, 706);
-            panel8.Name = "panel8";
-            panel8.Size = new Size(1173, 124);
-            panel8.TabIndex = 12;
+            pnlCalculator.BackColor = Color.FromArgb(27, 38, 59);
+            pnlCalculator.Controls.Add(btnOpenCalculator);
+            pnlCalculator.Location = new Point(23, 706);
+            pnlCalculator.Name = "pnlCalculator";
+            pnlCalculator.Size = new Size(1173, 124);
+            pnlCalculator.TabIndex = 12;
+            // 
+            // pnlChart_Max
+            // 
+            pnlChart_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlChart_Max.Location = new Point(23, 225);
+            pnlChart_Max.Name = "pnlChart_Max";
+            pnlChart_Max.Size = new Size(1599, 526);
+            pnlChart_Max.TabIndex = 14;
+            pnlChart_Max.Visible = false;
+            // 
+            // pnlCalculator_Max
+            // 
+            pnlCalculator_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlCalculator_Max.Location = new Point(23, 776);
+            pnlCalculator_Max.Name = "pnlCalculator_Max";
+            pnlCalculator_Max.Size = new Size(1599, 180);
+            pnlCalculator_Max.TabIndex = 15;
+            pnlCalculator_Max.Visible = false;
+            // 
+            // pnlTotalPnl_Max
+            // 
+            pnlTotalPnl_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlTotalPnl_Max.Location = new Point(59, 32);
+            pnlTotalPnl_Max.Name = "pnlTotalPnl_Max";
+            pnlTotalPnl_Max.Size = new Size(191, 167);
+            pnlTotalPnl_Max.TabIndex = 16;
+            pnlTotalPnl_Max.Visible = false;
+            // 
+            // pnlProfitFactor_Max
+            // 
+            pnlProfitFactor_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlProfitFactor_Max.Location = new Point(593, 32);
+            pnlProfitFactor_Max.Name = "pnlProfitFactor_Max";
+            pnlProfitFactor_Max.Size = new Size(191, 167);
+            pnlProfitFactor_Max.TabIndex = 18;
+            pnlProfitFactor_Max.Visible = false;
+            // 
+            // pnlWinRate_Max
+            // 
+            pnlWinRate_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlWinRate_Max.Location = new Point(326, 32);
+            pnlWinRate_Max.Name = "pnlWinRate_Max";
+            pnlWinRate_Max.Size = new Size(191, 167);
+            pnlWinRate_Max.TabIndex = 17;
+            pnlWinRate_Max.Visible = false;
+            // 
+            // pnlAvgWinning_Max
+            // 
+            pnlAvgWinning_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlAvgWinning_Max.Location = new Point(1127, 32);
+            pnlAvgWinning_Max.Name = "pnlAvgWinning_Max";
+            pnlAvgWinning_Max.Size = new Size(191, 167);
+            pnlAvgWinning_Max.TabIndex = 20;
+            pnlAvgWinning_Max.Visible = false;
+            // 
+            // pnlTotalTrades_Max
+            // 
+            pnlTotalTrades_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlTotalTrades_Max.Location = new Point(860, 32);
+            pnlTotalTrades_Max.Name = "pnlTotalTrades_Max";
+            pnlTotalTrades_Max.Size = new Size(191, 167);
+            pnlTotalTrades_Max.TabIndex = 19;
+            pnlTotalTrades_Max.Visible = false;
+            // 
+            // pnlAvgLosing_Max
+            // 
+            pnlAvgLosing_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlAvgLosing_Max.Location = new Point(1394, 32);
+            pnlAvgLosing_Max.Name = "pnlAvgLosing_Max";
+            pnlAvgLosing_Max.Size = new Size(191, 167);
+            pnlAvgLosing_Max.TabIndex = 21;
+            pnlAvgLosing_Max.Visible = false;
             // 
             // FrmStatistics
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 27, 42);
-            ClientSize = new Size(1229, 857);
-            Controls.Add(panel8);
-            Controls.Add(panel7);
-            Controls.Add(panel6);
-            Controls.Add(panel5);
-            Controls.Add(panel3);
-            Controls.Add(panel2);
-            Controls.Add(panel4);
-            Controls.Add(panel1);
+            ClientSize = new Size(1645, 982);
+            Controls.Add(pnlCalculator);
+            Controls.Add(pnlChart);
+            Controls.Add(pnlAvgLosing);
+            Controls.Add(pnlAvgWinning);
+            Controls.Add(pnlTotalTrades);
+            Controls.Add(pnlProfitFactor);
+            Controls.Add(pnlWinRate);
+            Controls.Add(pnlTotalPnl);
+            Controls.Add(pnlChart_Max);
+            Controls.Add(pnlCalculator_Max);
+            Controls.Add(pnlAvgLosing_Max);
+            Controls.Add(pnlAvgWinning_Max);
+            Controls.Add(pnlTotalTrades_Max);
+            Controls.Add(pnlProfitFactor_Max);
+            Controls.Add(pnlWinRate_Max);
+            Controls.Add(pnlTotalPnl_Max);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmStatistics";
             Text = "FrmStatistics";
             Load += FrmStatistics_Load;
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
-            panel4.ResumeLayout(false);
-            panel4.PerformLayout();
-            panel2.ResumeLayout(false);
-            panel2.PerformLayout();
-            panel3.ResumeLayout(false);
-            panel3.PerformLayout();
-            panel5.ResumeLayout(false);
-            panel5.PerformLayout();
-            panel6.ResumeLayout(false);
-            panel6.PerformLayout();
-            panel7.ResumeLayout(false);
-            panel7.PerformLayout();
-            panel8.ResumeLayout(false);
+            pnlTotalPnl.ResumeLayout(false);
+            pnlTotalPnl.PerformLayout();
+            pnlWinRate.ResumeLayout(false);
+            pnlWinRate.PerformLayout();
+            pnlProfitFactor.ResumeLayout(false);
+            pnlProfitFactor.PerformLayout();
+            pnlTotalTrades.ResumeLayout(false);
+            pnlTotalTrades.PerformLayout();
+            pnlAvgWinning.ResumeLayout(false);
+            pnlAvgWinning.PerformLayout();
+            pnlAvgLosing.ResumeLayout(false);
+            pnlAvgLosing.PerformLayout();
+            pnlChart.ResumeLayout(false);
+            pnlChart.PerformLayout();
+            pnlCalculator.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
 
-        private Panel panel1;
+        private Panel pnlTotalPnl;
         private Label lblSymbol;
         private Label lblTotalPnlValue;
-        private Panel panel4;
+        private Panel pnlWinRate;
         private Label lblWinRateValue;
         private Label label5;
-        private Panel panel2;
+        private Panel pnlProfitFactor;
         private Label lblProfitFactorValue;
         private Label label2;
-        private Panel panel3;
+        private Panel pnlTotalTrades;
         private Label lblTotalTradesValue;
         private Label label7;
-        private Panel panel5;
+        private Panel pnlAvgWinning;
         private Label lblAvgWinValue;
         private Label label9;
-        private Panel panel6;
+        private Panel pnlAvgLosing;
         private Label lblAvgLossValue;
         private Label label11;
         private ScottPlot.WinForms.FormsPlot formsPlotPnl;
-        private Panel panel7;
+        private Panel pnlChart;
         private RadioButton rbDaily;
         private RadioButton rbAllTime;
         private RadioButton rbMonthly;
         private RadioButton rbWeekly;
         private FontAwesome.Sharp.IconButton btnOpenCalculator;
-        private Panel panel8;
+        private Panel pnlCalculator;
+        private Panel pnlChart_Max;
+        private Panel pnlCalculator_Max;
+        private Panel pnlTotalPnl_Max;
+        private Panel pnlProfitFactor_Max;
+        private Panel pnlWinRate_Max;
+        private Panel pnlAvgWinning_Max;
+        private Panel pnlTotalTrades_Max;
+        private Panel pnlAvgLosing_Max;
     }
 }

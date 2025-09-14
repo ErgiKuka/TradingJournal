@@ -31,8 +31,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmHome));
             panel1 = new Panel();
             pnlTopBar = new Panel();
-            BtnMinimize = new Button();
+            panel6 = new Panel();
+            btnMaximize = new FontAwesome.Sharp.IconButton();
             BtnExit = new Button();
+            BtnMinimize = new Button();
             pnlNavigation = new Panel();
             btnSettings = new FontAwesome.Sharp.IconButton();
             panel4 = new Panel();
@@ -44,6 +46,7 @@
             panel5 = new Panel();
             pnlControls = new Panel();
             pnlTopBar.SuspendLayout();
+            panel6.SuspendLayout();
             pnlNavigation.SuspendLayout();
             SuspendLayout();
             // 
@@ -57,37 +60,63 @@
             // 
             // pnlTopBar
             // 
-            pnlTopBar.Controls.Add(BtnMinimize);
-            pnlTopBar.Controls.Add(BtnExit);
-            pnlTopBar.Dock = DockStyle.Top;
+            pnlTopBar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            pnlTopBar.Controls.Add(panel6);
             pnlTopBar.Location = new Point(5, 0);
             pnlTopBar.Name = "pnlTopBar";
             pnlTopBar.Size = new Size(1495, 38);
             pnlTopBar.TabIndex = 8;
             // 
+            // panel6
+            // 
+            panel6.Controls.Add(btnMaximize);
+            panel6.Controls.Add(BtnExit);
+            panel6.Controls.Add(BtnMinimize);
+            panel6.Dock = DockStyle.Right;
+            panel6.Location = new Point(1252, 0);
+            panel6.Name = "panel6";
+            panel6.Size = new Size(243, 38);
+            panel6.TabIndex = 12;
+            // 
+            // btnMaximize
+            // 
+            btnMaximize.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnMaximize.BackColor = Color.DarkGray;
+            btnMaximize.FlatStyle = FlatStyle.Flat;
+            btnMaximize.IconChar = FontAwesome.Sharp.IconChar.None;
+            btnMaximize.IconColor = Color.Black;
+            btnMaximize.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnMaximize.Location = new Point(122, 5);
+            btnMaximize.Name = "btnMaximize";
+            btnMaximize.Size = new Size(43, 27);
+            btnMaximize.TabIndex = 11;
+            btnMaximize.UseVisualStyleBackColor = false;
+            // 
+            // BtnExit
+            // 
+            BtnExit.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            BtnExit.BackColor = Color.Brown;
+            BtnExit.FlatStyle = FlatStyle.Flat;
+            BtnExit.Location = new Point(169, 5);
+            BtnExit.Name = "BtnExit";
+            BtnExit.Size = new Size(43, 27);
+            BtnExit.TabIndex = 12;
+            BtnExit.Text = "X";
+            BtnExit.UseVisualStyleBackColor = false;
+            BtnExit.Click += BtnExit_Click;
+            // 
             // BtnMinimize
             // 
+            BtnMinimize.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             BtnMinimize.BackColor = Color.DarkGray;
             BtnMinimize.FlatStyle = FlatStyle.Flat;
-            BtnMinimize.Location = new Point(1371, 8);
+            BtnMinimize.Location = new Point(75, 5);
             BtnMinimize.Name = "BtnMinimize";
-            BtnMinimize.Size = new Size(47, 27);
+            BtnMinimize.Size = new Size(43, 27);
             BtnMinimize.TabIndex = 9;
             BtnMinimize.Text = "―";
             BtnMinimize.UseVisualStyleBackColor = false;
             BtnMinimize.Click += BtnMinimize_Click;
-            // 
-            // BtnExit
-            // 
-            BtnExit.BackColor = Color.Brown;
-            BtnExit.FlatStyle = FlatStyle.Flat;
-            BtnExit.Location = new Point(1424, 8);
-            BtnExit.Name = "BtnExit";
-            BtnExit.Size = new Size(47, 27);
-            BtnExit.TabIndex = 8;
-            BtnExit.Text = "X";
-            BtnExit.UseVisualStyleBackColor = false;
-            BtnExit.Click += BtnExit_Click;
             // 
             // pnlNavigation
             // 
@@ -99,7 +128,6 @@
             pnlNavigation.Controls.Add(panel2);
             pnlNavigation.Controls.Add(btnDashboard);
             pnlNavigation.Controls.Add(panel5);
-            pnlNavigation.Dock = DockStyle.Left;
             pnlNavigation.Location = new Point(5, 38);
             pnlNavigation.Name = "pnlNavigation";
             pnlNavigation.Size = new Size(266, 862);
@@ -226,8 +254,9 @@
             // 
             // pnlControls
             // 
+            pnlControls.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             pnlControls.AutoScroll = true;
-            pnlControls.Dock = DockStyle.Fill;
+            pnlControls.BackColor = Color.FromArgb(13, 27, 42);
             pnlControls.Location = new Point(271, 38);
             pnlControls.Name = "pnlControls";
             pnlControls.Size = new Size(1229, 862);
@@ -239,9 +268,9 @@
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.FromArgb(13, 27, 42);
             ClientSize = new Size(1500, 900);
-            Controls.Add(pnlControls);
-            Controls.Add(pnlNavigation);
             Controls.Add(pnlTopBar);
+            Controls.Add(pnlNavigation);
+            Controls.Add(pnlControls);
             Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -250,6 +279,7 @@
             Text = "Trading Journal";
             Load += FrmHome_Load;
             pnlTopBar.ResumeLayout(false);
+            panel6.ResumeLayout(false);
             pnlNavigation.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -268,6 +298,8 @@
         private Panel panel2;
         private FontAwesome.Sharp.IconButton btnDashboard;
         private Panel panel5;
+        private FontAwesome.Sharp.IconButton btnMaximize;
+        private Panel panel6;
         private Panel pnlControls;
     }
 }

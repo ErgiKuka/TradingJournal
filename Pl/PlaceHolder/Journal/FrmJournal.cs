@@ -1,4 +1,5 @@
 ﻿using FontAwesome.Sharp;
+using ScottPlot;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,23 +14,36 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TradingJournal.Core.Data;
 using TradingJournal.Core.Data.Entities;
+using TradingJournal.Core.Logic;
+using TradingJournal.Core.Logic.Manager;
 using TradingJournal.Core.Logic.Services;
 using TradingJournal.Core.Managers;
+using Color = System.Drawing.Color;
+using FontStyle = System.Drawing.FontStyle;
+using Image = System.Drawing.Image;
 
 namespace TradingJournal.Pl.PlaceHolder.Journal
 {
-    public partial class FrmJournal : Form
+    public partial class FrmJournal : Form, IResponsiveChildForm
     {
 
         private readonly HttpClient _httpClient = new HttpClient();
         private int? _tradeIdToUpdate = null;
+        private readonly ResponsiveLayoutManager _layoutManager;
+
         public FrmJournal()
         {
             InitializeComponent();
+
+            _layoutManager = new ResponsiveLayoutManager(this);
+            InitializeResponsiveLayouts();
+
             LoadSymbols();
 
             RoundedFormHelper.RoundPanel(pnlInformations, 30);
             RoundedFormHelper.RoundPanel(pnlData, 30);
+            RoundedFormHelper.RoundPanel(pnlData_Max, 30);
+            RoundedFormHelper.RoundPanel(pnlInformations_Max, 30);
 
             RoundedFormHelper.MakeButtonRounded(btnUploadScreenshot, 30);
             RoundedFormHelper.MakeButtonRounded(btnAddTrade, 30);
@@ -45,10 +59,86 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             RoundedFormHelper.RoundTextBox(txtProfitLoss, 20);
         }
 
+        private void InitializeResponsiveLayouts()
+        {
+            // --- Register Controls in the TOP panel (pnlInformations) ---
+            // The manager will automatically store their current (normal) state.
+            // We just need to tell it the maximized parent and layout.
+            _layoutManager.RegisterControl(lblSymbol, pnlInformations, pnlInformations_Max, new Point(79, 37), new Size(85, 26));
+            _layoutManager.RegisterControl(cbSymbol, pnlInformations, pnlInformations_Max, new Point(79, 64), new Size(203, 39));
+            _layoutManager.RegisterControl(lblTradeType, pnlInformations, pnlInformations_Max, new Point(456, 37), new Size(117, 26));
+            _layoutManager.RegisterControl(cbTradeType, pnlInformations, pnlInformations_Max, new Point(456, 64), new Size(202, 39));
+            _layoutManager.RegisterControl(lblEntryPrice, pnlInformations, pnlInformations_Max, new Point(79, 132), new Size(116, 26));
+            _layoutManager.RegisterControl(txtEntryPrice, pnlInformations, pnlInformations_Max, new Point(79, 165), new Size(203, 32));
+            _layoutManager.RegisterControl(lblExitPrice, pnlInformations, pnlInformations_Max, new Point(456, 132), new Size(101, 26));
+            _layoutManager.RegisterControl(txtExitPrice, pnlInformations, pnlInformations_Max, new Point(456, 165), new Size(203, 32));
+            _layoutManager.RegisterControl(lblStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 236), new Size(104, 26));
+            _layoutManager.RegisterControl(txtStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 272), new Size(203, 32));
+            _layoutManager.RegisterControl(lblTakeProfit, pnlInformations, pnlInformations_Max, new Point(456, 236), new Size(115, 26));
+            _layoutManager.RegisterControl(txtTakeProfit, pnlInformations, pnlInformations_Max, new Point(456, 272), new Size(203, 32));
+            _layoutManager.RegisterControl(lblProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 32), new Size(126, 26));
+            _layoutManager.RegisterControl(txtProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 65), new Size(203, 32));
+            _layoutManager.RegisterControl(lblMargin, pnlInformations, pnlInformations_Max, new Point(877, 120), new Size(78, 26));
+            _layoutManager.RegisterControl(txtMargin, pnlInformations, pnlInformations_Max, new Point(876, 160), new Size(203, 32));
+            _layoutManager.RegisterControl(btnUploadScreenshot, pnlInformations, pnlInformations_Max, new Point(1266, 50), new Size(240, 49));
+            _layoutManager.RegisterControl(txtScreenshotLink, pnlInformations, pnlInformations_Max, new Point(1282, 113), new Size(203, 34));
+            _layoutManager.RegisterControl(pbScreenshot, pnlInformations, pnlInformations_Max, new Point(1241, 166), new Size(294, 182));
+            _layoutManager.RegisterControl(btnAddTrade, pnlInformations, pnlInformations_Max, new Point(863, 236), new Size(219, 49));
+            _layoutManager.RegisterControl(btnClearData, pnlInformations, pnlInformations_Max, new Point(876, 300), new Size(190, 37));
+            _layoutManager.RegisterControl(btnUpdateTrade, pnlInformations, pnlInformations_Max, new Point(835, 270), new Size(131, 49));
+            _layoutManager.RegisterControl(btnCancelUpdate, pnlInformations, pnlInformations_Max, new Point(996, 270), new Size(131, 49));
+
+            // --- Register Controls in the BOTTOM panel (pnlData) ---
+            _layoutManager.RegisterControl(dgvData, pnlData, pnlData_Max, new Point(20, 58), new Size(1542, 453));
+            _layoutManager.RegisterControl(chbAllTrades, pnlData, pnlData_Max, new Point(1204, 19), new Size(177, 30));
+            _layoutManager.RegisterControl(dtpFilterDate, pnlData, pnlData_Max, new Point(1387, 13), new Size(175, 39));
+
+            _layoutManager.RegisterStateAction(FormWindowStateExtended.Normal, ApplyNormalGridStyle);
+            _layoutManager.RegisterStateAction(FormWindowStateExtended.Maximized, ApplyMaximizedGridStyle);
+        }
+
+        private void ApplyNormalGridStyle()
+        {
+            // Header Style
+            dgvData.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            dgvData.ColumnHeadersHeight = 30; // Default height
+
+            // Row and Cell Style
+            dgvData.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+            dgvData.RowTemplate.Height = 25; // Default row height
+
+            // Button Column Font
+            dgvData.Columns["UpdateColumn"].DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+            dgvData.Columns["DeleteColumn"].DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+        }
+
+        private void ApplyMaximizedGridStyle()
+        {
+            // Header Style - Larger Font and Height
+            dgvData.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            dgvData.ColumnHeadersHeight = 40;
+
+            // Row and Cell Style - Larger Font and Height
+            dgvData.DefaultCellStyle.Font = new Font("Segoe UI", 10.5f, FontStyle.Regular);
+            dgvData.RowTemplate.Height = 35;
+
+            // Button Column Font - Larger Font
+            dgvData.Columns["UpdateColumn"].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            dgvData.Columns["DeleteColumn"].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+        }
+
+        /// <summary>
+        /// Implements the interface by delegating the call to the layout manager.
+        /// </summary>
+        public void SetWindowState(FormWindowStateExtended newState)
+        {
+            _layoutManager.SetWindowState(newState);
+        }
+
         private void FrmJournal_Load(object sender, EventArgs e)
         {
             btnUploadScreenshot.IconChar = IconChar.Upload;
-            btnUploadScreenshot.IconColor = Color.Black;
+            btnUploadScreenshot.IconColor = System.Drawing.Color.Black;
             btnUploadScreenshot.IconSize = 25;
             btnUploadScreenshot.TextImageRelation = TextImageRelation.ImageBeforeText;
 
@@ -75,9 +165,9 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             chbAllTrades.Checked = false;
             dtpFilterDate.Enabled = true;
 
-            dtpFilterDate.Parent.BackColor = Color.FromArgb(13, 27, 42);
+            ApplyBaseGridStyling();
 
-            ApplyStyling();
+            ApplyNormalGridStyle();
 
             dtpFilterDate.Value = DateTime.Now;
             if (chbAllTrades.Checked)
@@ -152,8 +242,10 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             txtTakeProfit.Text = "   ";
             txtMargin.Text = "   ";
             txtProfitLoss.Text = "   ";
-            txtScreenshotLink.Text = "   ";
+            txtScreenshotLink.Clear();
+            //txtScreenshotLink.Text = "   ";
             pbScreenshot.Image = null;
+            txtScreenshotLink.PlaceholderText = "Upload link . . .";
         }
 
         private void LoadTrades(DateTime? filterDate = null)
@@ -453,36 +545,34 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             ClearForm();
         }
 
-        private void ApplyStyling()
+        private void ApplyBaseGridStyling()
         {
-            // --- Core Colors & Look ---
-            dgvData.BackgroundColor = Color.FromArgb(24, 30, 54); // Dark background
+            // --- Core Colors & Look (unchanging styles) ---
+            dgvData.BackgroundColor = Color.FromArgb(27, 38, 59);
             dgvData.BorderStyle = BorderStyle.None;
-            dgvData.GridColor = Color.FromArgb(45, 51, 73); // A slightly lighter grid line color
+            dgvData.GridColor = Color.FromArgb(45, 51, 73);
 
-            // --- Header Styling ---
+            // --- Header Colors ---
             dgvData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dgvData.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(45, 51, 73); // Header background
-            dgvData.ColumnHeadersDefaultCellStyle.ForeColor = Color.White; // Header text
-            dgvData.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-            dgvData.EnableHeadersVisualStyles = false; // IMPORTANT: This allows our custom styles to apply
+            dgvData.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(45, 51, 73);
+            dgvData.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvData.EnableHeadersVisualStyles = false;
 
-            // --- Row & Cell Styling ---
-            dgvData.RowHeadersVisible = false; // This removes the arrow column on the left
-            dgvData.DefaultCellStyle.BackColor = Color.FromArgb(24, 30, 54); // Row background
-            dgvData.DefaultCellStyle.ForeColor = Color.FromArgb(200, 200, 200); // Row text color (light gray)
-            dgvData.DefaultCellStyle.SelectionBackColor = Color.FromArgb(45, 51, 73); // Selection background
-            dgvData.DefaultCellStyle.SelectionForeColor = Color.White; // Selection text color
+            // --- Row & Cell Colors ---
+            dgvData.RowHeadersVisible = false;
+            dgvData.DefaultCellStyle.BackColor = Color.FromArgb(24, 30, 54);
+            dgvData.DefaultCellStyle.ForeColor = Color.FromArgb(200, 200, 200);
+            dgvData.DefaultCellStyle.SelectionBackColor = Color.FromArgb(45, 51, 73);
+            dgvData.DefaultCellStyle.SelectionForeColor = Color.White;
 
-            // --- Alternating Row Style (Optional but recommended for readability) ---
+            // --- Alternating Row Style ---
             dgvData.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(34, 40, 64);
 
+            // --- Button Column Colors ---
             dgvData.Columns["UpdateColumn"].DefaultCellStyle.BackColor = Color.FromArgb(24, 30, 54);
             dgvData.Columns["DeleteColumn"].DefaultCellStyle.BackColor = Color.FromArgb(24, 30, 54);
-            // If using alternating rows, set this too:
             dgvData.Columns["UpdateColumn"].DefaultCellStyle.SelectionBackColor = Color.FromArgb(45, 51, 73);
             dgvData.Columns["DeleteColumn"].DefaultCellStyle.SelectionBackColor = Color.FromArgb(45, 51, 73);
-
         }
 
         private void dgvData_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)

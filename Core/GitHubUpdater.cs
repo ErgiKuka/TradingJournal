@@ -25,7 +25,7 @@ namespace TradingJournal.Core
             string apiUrl = $"https://api.github.com/repos/{_repoOwner}/{_repoName}/releases/latest";
 
             using HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("TradingJournal-UpdateChecker"); // Good practice to name your app
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("TradingJournal-UpdateChecker");
 
             try
             {
@@ -35,7 +35,7 @@ namespace TradingJournal.Core
 
                 if (release == null || release.assets == null || release.assets.Length == 0)
                 {
-                    statusLabel.Invoke((Action)(() => statusLabel.Text = "Ready to start.")); // No release found, so just continue
+                    statusLabel.Invoke((Action)(() => statusLabel.Text = "Ready to start."));
                     return;
                 }
 
@@ -67,13 +67,31 @@ namespace TradingJournal.Core
                             await stream.CopyToAsync(fileStream);
                         }
 
-                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Starting installer..."));
-                        Process.Start(tempInstallerPath);
-                        Application.Exit(); // Close the current app so the installer can run
+                        statusLabel.Invoke((Action)(() => statusLabel.Text = "Applying update... Please wait."));
+
+                        // --- THIS IS THE NEW, IMPROVED CODE ---
+
+                        // Get the full path of the currently running application
+                        string applicationPath = Application.ExecutablePath;
+
+                        // Set up the process to run the installer silently
+                        ProcessStartInfo startInfo = new ProcessStartInfo();
+                        startInfo.FileName = tempInstallerPath;
+
+                        // /VERYSILENT: No wizard, no progress bar. Completely quiet.
+                        // /SP-: Disables the "This will install... Do you wish to continue?" prompt.
+                        // /RESTARTAPPLICATIONS: Tells the installer to handle closing the app if needed.
+                        // /LOG: Creates a log file for debugging update issues.
+                        // /MERGETASKS="desktopicon,!runcode": Ensures desktop icon task is handled correctly.
+                        // /RESTARTRUN="path_to_your_exe": The magic command to restart your app after the update.
+                        startInfo.Arguments = $"/VERYSILENT /SP- /RESTARTRUN=\"{applicationPath}\"";
+
+                        // Run the installer and exit this application
+                        Process.Start(startInfo);
+                        Application.Exit();
                     }
                     else
                     {
-                        // User said no, so just continue starting the app
                         statusLabel.Invoke((Action)(() => statusLabel.Text = "Update deferred. Starting app..."));
                     }
                 }
@@ -85,7 +103,7 @@ namespace TradingJournal.Core
             catch (Exception ex)
             {
                 statusLabel.Invoke((Action)(() => statusLabel.Text = "Update check failed. Starting app..."));
-                Console.WriteLine("Update check failed: " + ex.Message); // Log error for debugging
+                Console.WriteLine("Update check failed: " + ex.Message);
             }
         }
     }
