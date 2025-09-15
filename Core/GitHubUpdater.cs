@@ -84,7 +84,7 @@ namespace TradingJournal.Core
                         // /LOG: Creates a log file for debugging update issues.
                         // /MERGETASKS="desktopicon,!runcode": Ensures desktop icon task is handled correctly.
                         // /RESTARTRUN="path_to_your_exe": The magic command to restart your app after the update.
-                        startInfo.Arguments = $"/VERYSILENT /SP- /RESTARTRUN=\"{applicationPath}\"";
+                        startInfo.Arguments = "/VERYSILENT /SP-";
 
                         // Run the installer and exit this application
                         Process.Start(startInfo);
