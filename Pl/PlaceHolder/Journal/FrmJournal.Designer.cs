@@ -319,6 +319,8 @@
             btnUploadScreenshot.Text = "Upload Screenshot";
             btnUploadScreenshot.UseVisualStyleBackColor = false;
             btnUploadScreenshot.Click += btnUploadScreenshot_Click;
+            btnUploadScreenshot.DragDrop += btnUploadScreenshot_DragDrop;
+            btnUploadScreenshot.DragEnter += btnUploadScreenshot_DragEnter;
             // 
             // lblTakeProfit
             // 
