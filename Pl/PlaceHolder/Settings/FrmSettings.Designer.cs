@@ -41,20 +41,21 @@
             label1.AutoSize = true;
             label1.Font = new Font("Times New Roman", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.FromArgb(156, 163, 175);
-            label1.Location = new Point(25, 21);
+            label1.Location = new Point(22, 16);
             label1.Name = "label1";
-            label1.Size = new Size(141, 26);
+            label1.Size = new Size(112, 21);
             label1.TabIndex = 8;
             label1.Text = "Irdi eshte nub";
             // 
             // FrmSettings
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 27, 42);
-            ClientSize = new Size(1645, 982);
+            ClientSize = new Size(1707, 1003);
             Controls.Add(label1);
             FormBorderStyle = FormBorderStyle.None;
+            Margin = new Padding(3, 2, 3, 2);
             Name = "FrmSettings";
             Text = "FrmSettings";
             ResumeLayout(false);

@@ -69,29 +69,29 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             _layoutManager.RegisterControl(lblTradeType, pnlInformations, pnlInformations_Max, new Point(456, 37), new Size(117, 26));
             _layoutManager.RegisterControl(cbTradeType, pnlInformations, pnlInformations_Max, new Point(456, 64), new Size(202, 39));
             _layoutManager.RegisterControl(lblEntryPrice, pnlInformations, pnlInformations_Max, new Point(79, 132), new Size(116, 26));
-            _layoutManager.RegisterControl(txtEntryPrice, pnlInformations, pnlInformations_Max, new Point(79, 165), new Size(203, 32));
+            _layoutManager.RegisterControl(txtEntryPrice, pnlInformations, pnlInformations_Max, new Point(79, 165), new Size(203, 50));
             _layoutManager.RegisterControl(lblExitPrice, pnlInformations, pnlInformations_Max, new Point(456, 132), new Size(101, 26));
-            _layoutManager.RegisterControl(txtExitPrice, pnlInformations, pnlInformations_Max, new Point(456, 165), new Size(203, 32));
+            _layoutManager.RegisterControl(txtExitPrice, pnlInformations, pnlInformations_Max, new Point(456, 165), new Size(203, 50));
             _layoutManager.RegisterControl(lblStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 236), new Size(104, 26));
-            _layoutManager.RegisterControl(txtStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 272), new Size(203, 32));
+            _layoutManager.RegisterControl(txtStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 272), new Size(203, 50));
             _layoutManager.RegisterControl(lblTakeProfit, pnlInformations, pnlInformations_Max, new Point(456, 236), new Size(115, 26));
-            _layoutManager.RegisterControl(txtTakeProfit, pnlInformations, pnlInformations_Max, new Point(456, 272), new Size(203, 32));
+            _layoutManager.RegisterControl(txtTakeProfit, pnlInformations, pnlInformations_Max, new Point(456, 272), new Size(203, 50));
             _layoutManager.RegisterControl(lblProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 32), new Size(126, 26));
-            _layoutManager.RegisterControl(txtProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 65), new Size(203, 32));
+            _layoutManager.RegisterControl(txtProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 65), new Size(203, 50));
             _layoutManager.RegisterControl(lblMargin, pnlInformations, pnlInformations_Max, new Point(877, 120), new Size(78, 26));
             _layoutManager.RegisterControl(txtMargin, pnlInformations, pnlInformations_Max, new Point(876, 160), new Size(203, 32));
-            _layoutManager.RegisterControl(btnUploadScreenshot, pnlInformations, pnlInformations_Max, new Point(1266, 50), new Size(240, 49));
+            _layoutManager.RegisterControl(btnUploadScreenshot, pnlInformations, pnlInformations_Max, new Point(1290, 50), new Size(240, 40));
             _layoutManager.RegisterControl(txtScreenshotLink, pnlInformations, pnlInformations_Max, new Point(1282, 113), new Size(203, 34));
             _layoutManager.RegisterControl(pbScreenshot, pnlInformations, pnlInformations_Max, new Point(1241, 166), new Size(294, 182));
-            _layoutManager.RegisterControl(btnAddTrade, pnlInformations, pnlInformations_Max, new Point(863, 236), new Size(219, 49));
-            _layoutManager.RegisterControl(btnClearData, pnlInformations, pnlInformations_Max, new Point(876, 300), new Size(190, 37));
-            _layoutManager.RegisterControl(btnUpdateTrade, pnlInformations, pnlInformations_Max, new Point(835, 270), new Size(131, 49));
-            _layoutManager.RegisterControl(btnCancelUpdate, pnlInformations, pnlInformations_Max, new Point(996, 270), new Size(131, 49));
+            _layoutManager.RegisterControl(btnAddTrade, pnlInformations, pnlInformations_Max, new Point(873, 248), new Size(219, 40));
+            _layoutManager.RegisterControl(btnClearData, pnlInformations, pnlInformations_Max, new Point(885, 300), new Size(155, 40));
+            _layoutManager.RegisterControl(btnUpdateTrade, pnlInformations, pnlInformations_Max, new Point(835, 270), new Size(111, 40));
+            _layoutManager.RegisterControl(btnCancelUpdate, pnlInformations, pnlInformations_Max, new Point(996, 270), new Size(111, 40));
 
             // --- Register Controls in the BOTTOM panel (pnlData) ---
-            _layoutManager.RegisterControl(dgvData, pnlData, pnlData_Max, new Point(20, 58), new Size(1542, 453));
-            _layoutManager.RegisterControl(chbAllTrades, pnlData, pnlData_Max, new Point(1204, 19), new Size(177, 30));
-            _layoutManager.RegisterControl(dtpFilterDate, pnlData, pnlData_Max, new Point(1387, 13), new Size(175, 39));
+            _layoutManager.RegisterControl(dgvData, pnlData, pnlData_Max, new Point(20, 58), new Size(1605, 453));
+            _layoutManager.RegisterControl(chbAllTrades, pnlData, pnlData_Max, new Point(1254, 14), new Size(177, 50));
+            _layoutManager.RegisterControl(dtpFilterDate, pnlData, pnlData_Max, new Point(1450, 13), new Size(175, 39));
 
             _layoutManager.RegisterStateAction(FormWindowStateExtended.Normal, ApplyNormalGridStyle);
             _layoutManager.RegisterStateAction(FormWindowStateExtended.Maximized, ApplyMaximizedGridStyle);
@@ -551,6 +551,8 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             dgvData.BackgroundColor = Color.FromArgb(27, 38, 59);
             dgvData.BorderStyle = BorderStyle.None;
             dgvData.GridColor = Color.FromArgb(45, 51, 73);
+
+            dgvData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             // --- Header Colors ---
             dgvData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;

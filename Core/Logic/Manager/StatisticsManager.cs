@@ -1,13 +1,14 @@
-﻿using System;
+﻿// TradingJournal.Core/Logic/Manager/StatisticsManager.cs
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TradingJournal.Core.Data.Entities;
-using TradingJournal.Core.Logic.Helpers;
+using TradingJournal.Core.Logic.Helpers; // Assuming your report classes are here
 
 namespace TradingJournal.Core.Logic.Manager
 {
+
     public class StatisticsManager
     {
         public TradingPerformanceReport GenerateReport(List<Trade> trades)
@@ -16,14 +17,16 @@ namespace TradingJournal.Core.Logic.Manager
 
             if (trades == null || !trades.Any())
             {
-                return report; // Return an empty report if there are no trades
+                return report; // Return an empty report
             }
 
-            report.TotalTrades = trades.Count;
-            report.TotalPnL = trades.Sum(t => t.ProfitLoss);
+            var orderedTrades = trades.OrderBy(t => t.Date).ToList();
 
-            var winningTrades = trades.Where(t => t.ProfitLoss > 0).ToList();
-            var losingTrades = trades.Where(t => t.ProfitLoss < 0).ToList();
+            report.TotalTrades = orderedTrades.Count;
+            report.TotalPnL = orderedTrades.Sum(t => t.ProfitLoss);
+
+            var winningTrades = orderedTrades.Where(t => t.ProfitLoss > 0).ToList();
+            var losingTrades = orderedTrades.Where(t => t.ProfitLoss < 0).ToList();
 
             // Win Rate
             if (report.TotalTrades > 0)
@@ -56,18 +59,22 @@ namespace TradingJournal.Core.Logic.Manager
             }
 
             // Best and Worst Trades
-            if (trades.Any())
+            if (orderedTrades.Any())
             {
-                report.BestTrade = trades.Max(t => t.ProfitLoss);
-                report.WorstTrade = trades.Min(t => t.ProfitLoss);
+                report.BestTrade = orderedTrades.Max(t => t.ProfitLoss);
+                report.WorstTrade = orderedTrades.Min(t => t.ProfitLoss);
             }
 
-            // Data for the chart: Cumulative PnL over time
+            // Data for the chart: Cumulative PnL and Individual PnLs
             decimal cumulativePnl = 0;
-            foreach (var trade in trades.OrderBy(t => t.Date))
+            foreach (var trade in orderedTrades)
             {
                 cumulativePnl += trade.ProfitLoss;
                 report.PnlOverTime.Add(new DataPoint { Date = trade.Date, Value = cumulativePnl });
+
+                // *** THIS IS THE NEW PART ***
+                // Store the individual PnL of each trade in sequence
+                report.IndividualPnLs.Add(trade.ProfitLoss);
             }
 
             return report;

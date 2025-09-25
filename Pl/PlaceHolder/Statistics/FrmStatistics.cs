@@ -1,4 +1,4 @@
-﻿// FrmStatistics.cs
+﻿// TradingJournal.Pl.PlaceHolder.Statistics/FrmStatistics.cs
 
 using FontAwesome.Sharp;
 using System;
@@ -8,33 +8,30 @@ using System.Linq;
 using System.Windows.Forms;
 using TradingJournal.Core.Data;
 using TradingJournal.Core.Data.Entities;
-using TradingJournal.Core.Logic; // For IResponsiveChildForm
+using TradingJournal.Core.Logic;
 using TradingJournal.Core.Logic.Helpers;
-using TradingJournal.Core.Logic.Manager; // For ResponsiveLayoutManager
-using TradingJournal.Core.Managers; // For StatisticsManager
+using TradingJournal.Core.Logic.Manager;
+using TradingJournal.Core.Managers;
+using ScottPlot;
 
 namespace TradingJournal.Pl.PlaceHolder.Statistics
 {
     public partial class FrmStatistics : Form, IResponsiveChildForm
     {
         private readonly ResponsiveLayoutManager _layoutManager;
-        private FrmCalculator _calculatorFormInstance;
+        private FrmCalculator? _calculatorFormInstance;
 
         public FrmStatistics()
         {
             InitializeComponent();
-
-            // Initialize the manager and configure all responsive layouts
             _layoutManager = new ResponsiveLayoutManager(this);
             InitializeResponsiveLayouts();
-
-            // Round the corners of all panels
             RoundAllPanels();
         }
 
+        #region Unchanged Layout and Setup Code
         private void RoundAllPanels()
         {
-            // Normal State Panels
             RoundedFormHelper.RoundPanel(pnlTotalPnl, 20);
             RoundedFormHelper.RoundPanel(pnlWinRate, 20);
             RoundedFormHelper.RoundPanel(pnlProfitFactor, 20);
@@ -44,8 +41,6 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             RoundedFormHelper.RoundPanel(pnlChart, 20);
             RoundedFormHelper.RoundPanel(pnlCalculator, 20);
             RoundedFormHelper.MakeButtonRounded(btnOpenCalculator, 30);
-
-            // Maximized State Panels
             RoundedFormHelper.RoundPanel(pnlTotalPnl_Max, 20);
             RoundedFormHelper.RoundPanel(pnlWinRate_Max, 20);
             RoundedFormHelper.RoundPanel(pnlProfitFactor_Max, 20);
@@ -58,43 +53,33 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
 
         private void InitializeResponsiveLayouts()
         {
-            // --- Register Top Statistics Panels and their Children ---
-            _layoutManager.RegisterControl(lblTotalPnlValue, pnlTotalPnl, pnlTotalPnl_Max, new Point(62, 94), new Size(23, 26));
-            _layoutManager.RegisterControl(lblSymbol, pnlTotalPnl, pnlTotalPnl_Max, new Point(44, 50), new Size(95, 26));
-
-            _layoutManager.RegisterControl(lblWinRateValue, pnlWinRate, pnlWinRate_Max, new Point(65, 94), new Size(23, 26));
-            _layoutManager.RegisterControl(label5, pnlWinRate, pnlWinRate_Max, new Point(44, 50), new Size(97, 26));
-
-            _layoutManager.RegisterControl(lblProfitFactorValue, pnlProfitFactor, pnlProfitFactor_Max, new Point(70, 94), new Size(23, 26));
-            _layoutManager.RegisterControl(label2, pnlProfitFactor, pnlProfitFactor_Max, new Point(30, 50), new Size(130, 26));
-
-            _layoutManager.RegisterControl(lblTotalTradesValue, pnlTotalTrades, pnlTotalTrades_Max, new Point(75, 94), new Size(23, 26));
-            _layoutManager.RegisterControl(label7, pnlTotalTrades, pnlTotalTrades_Max, new Point(30, 50), new Size(126, 26));
-
-            _layoutManager.RegisterControl(lblAvgWinValue, pnlAvgWinning, pnlAvgWinning_Max, new Point(63, 94), new Size(23, 26));
-            _layoutManager.RegisterControl(label9, pnlAvgWinning, pnlAvgWinning_Max, new Point(4, 50), new Size(193, 26));
-
-            _layoutManager.RegisterControl(lblAvgLossValue, pnlAvgLosing, pnlAvgLosing_Max, new Point(60, 94), new Size(23, 26));
-            _layoutManager.RegisterControl(label11, pnlAvgLosing, pnlAvgLosing_Max, new Point(10, 50), new Size(177, 26));
-
-            // --- Register Chart Panel and its Children ---
+            _layoutManager.RegisterControl(lblTotalPnlValue, pnlTotalPnl, pnlTotalPnl_Max, new Point(59, 71), new Size(24, 27));
+            _layoutManager.RegisterControl(lblSymbol, pnlTotalPnl, pnlTotalPnl_Max, new Point(45, 36), new Size(98, 27));
+            _layoutManager.RegisterControl(lblWinRateValue, pnlWinRate, pnlWinRate_Max, new Point(60, 71), new Size(24, 27));
+            _layoutManager.RegisterControl(label5, pnlWinRate, pnlWinRate_Max, new Point(43, 36), new Size(103, 27));
+            _layoutManager.RegisterControl(lblProfitFactorValue, pnlProfitFactor, pnlProfitFactor_Max, new Point(59, 71), new Size(24, 27));
+            _layoutManager.RegisterControl(label2, pnlProfitFactor, pnlProfitFactor_Max, new Point(32, 36), new Size(135, 400));
+            _layoutManager.RegisterControl(lblTotalTradesValue, pnlTotalTrades, pnlTotalTrades_Max, new Point(65, 71), new Size(24, 27));
+            _layoutManager.RegisterControl(label7, pnlTotalTrades, pnlTotalTrades_Max, new Point(35, 36), new Size(130, 27));
+            _layoutManager.RegisterControl(lblAvgWinValue, pnlAvgWinning, pnlAvgWinning_Max, new Point(43, 71), new Size(24, 27));
+            _layoutManager.RegisterControl(label9, pnlAvgWinning, pnlAvgWinning_Max, new Point(30, 36), new Size(198, 27));
+            _layoutManager.RegisterControl(lblAvgLossValue, pnlAvgLosing, pnlAvgLosing_Max, new Point(43, 71), new Size(24, 27));
+            _layoutManager.RegisterControl(label11, pnlAvgLosing, pnlAvgLosing_Max, new Point(30, 36), new Size(182, 27));
             _layoutManager.RegisterControl(formsPlotPnl, pnlChart, pnlChart_Max, new Point(41, 58), new Size(1507, 435));
             _layoutManager.RegisterControl(rbDaily, pnlChart, pnlChart_Max, new Point(563, 14), new Size(75, 26));
             _layoutManager.RegisterControl(rbWeekly, pnlChart, pnlChart_Max, new Point(683, 14), new Size(89, 26));
             _layoutManager.RegisterControl(rbMonthly, pnlChart, pnlChart_Max, new Point(815, 14), new Size(96, 26));
             _layoutManager.RegisterControl(rbAllTime, pnlChart, pnlChart_Max, new Point(939, 14), new Size(96, 26));
-
-            // --- Register Calculator Panel and its Children ---
-            _layoutManager.RegisterControl(btnOpenCalculator, pnlCalculator, pnlCalculator_Max, new Point(660, 55), new Size(279, 71));
+            _layoutManager.RegisterControl(btnOpenCalculator, pnlCalculator, pnlCalculator_Max, new Point(701, 70), new Size(310, 65));
         }
 
-        // This method correctly delegates the state change to the manager
         public void SetWindowState(FormWindowStateExtended newState)
         {
             _layoutManager.SetWindowState(newState);
         }
+        #endregion
 
-        #region --- Your Original Logic (Restored) ---
+        #region --- Form Logic (Updated) ---
 
         private void FrmStatistics_Load(object sender, EventArgs e)
         {
@@ -106,30 +91,35 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             List<Trade> trades;
             using (var db = new AppDbContext())
             {
-                DateTime now = DateTime.Now.Date;
+                DateTime today = DateTime.Now.Date;
+                DateTime tomorrow = today.AddDays(1);
+
                 IQueryable<Trade> query = db.Trades.AsQueryable();
 
                 if (rbDaily.Checked)
                 {
-                    query = query.Where(t => t.Date.Date == now);
+                    query = query.Where(t => t.Date >= today && t.Date < tomorrow);
                 }
                 else if (rbWeekly.Checked)
                 {
-                    DateTime oneWeekAgo = now.AddDays(-7);
-                    query = query.Where(t => t.Date >= oneWeekAgo && t.Date <= now);
+                    DateTime oneWeekAgo = today.AddDays(-7);
+                    query = query.Where(t => t.Date >= oneWeekAgo && t.Date < tomorrow);
                 }
                 else if (rbMonthly.Checked)
                 {
-                    DateTime oneMonthAgo = now.AddDays(-30);
-                    query = query.Where(t => t.Date >= oneMonthAgo && t.Date <= now);
+                    DateTime oneMonthAgo = today.AddDays(-30);
+                    query = query.Where(t => t.Date >= oneMonthAgo && t.Date < tomorrow);
                 }
-                // If rbAllTime is checked, no date filter is applied.
+                else if (rbAllTime.Checked)
+                {
+                    // no filter = all trades
+                }
 
                 trades = query.ToList();
             }
 
             btnOpenCalculator.IconChar = IconChar.Calculator;
-            btnOpenCalculator.IconColor = Color.Orange;
+            btnOpenCalculator.IconColor = System.Drawing.Color.Orange;
             btnOpenCalculator.IconSize = 25;
             btnOpenCalculator.TextImageRelation = TextImageRelation.ImageBeforeText;
 
@@ -142,14 +132,14 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
 
         private void UpdateKpiLabels(TradingPerformanceReport report)
         {
-            Color positiveColor = Color.FromArgb(46, 204, 113);
-            Color negativeColor = Color.FromArgb(231, 76, 60);
-            Color neutralColor = Color.White;
+            System.Drawing.Color positiveColor = System.Drawing.Color.FromArgb(46, 204, 113);
+            System.Drawing.Color negativeColor = System.Drawing.Color.FromArgb(231, 76, 60);
+            System.Drawing.Color neutralColor = System.Drawing.Color.White;
 
             lblTotalPnlValue.Text = report.TotalPnL.ToString("C");
             lblTotalPnlValue.ForeColor = report.TotalPnL >= 0 ? positiveColor : negativeColor;
 
-            lblWinRateValue.Text = $"{report.WinRate:F2}%"; // Using F2 for better formatting
+            lblWinRateValue.Text = $"{report.WinRate:F2}%";
             lblWinRateValue.ForeColor = report.WinRate >= 50 ? positiveColor : negativeColor;
 
             lblProfitFactorValue.Text = report.ProfitFactor.ToString("F2");
@@ -169,11 +159,12 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
         {
             formsPlotPnl.Plot.Clear();
 
-            formsPlotPnl.Plot.FigureBackground.Color = ScottPlot.Color.FromColor(Color.FromArgb(27, 38, 59));
-            formsPlotPnl.Plot.DataBackground.Color = ScottPlot.Color.FromColor(Color.FromArgb(27, 38, 59));
+            // styling
+            formsPlotPnl.Plot.FigureBackground.Color = ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(27, 38, 59));
+            formsPlotPnl.Plot.DataBackground.Color = ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(27, 38, 59));
             var xAxis = formsPlotPnl.Plot.Axes.Bottom;
             var yAxis = formsPlotPnl.Plot.Axes.Left;
-            formsPlotPnl.Plot.Grid.MajorLineColor = ScottPlot.Color.FromColor(Color.FromArgb(45, 51, 73));
+            formsPlotPnl.Plot.Grid.MajorLineColor = ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(45, 51, 73));
             xAxis.Label.Text = "Date";
             yAxis.Label.Text = "Cumulative PnL";
             xAxis.Label.ForeColor = ScottPlot.Colors.White;
@@ -183,18 +174,35 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
 
             if (report.PnlOverTime.Any())
             {
-                double[] pnlValues = report.PnlOverTime.Select(p => (double)p.Value).ToArray();
-                var linePlot = formsPlotPnl.Plot.Add.Signal(pnlValues);
-                linePlot.Color = ScottPlot.Colors.Blue;
+                // Use DateTime values as X axis
+                double[] xs = report.PnlOverTime.Select(p => p.Date.ToOADate()).ToArray();
+                double[] ys = report.PnlOverTime.Select(p => (double)p.Value).ToArray();
+
+                // main cumulative line
+                var linePlot = formsPlotPnl.Plot.Add.Scatter(xs, ys);
+                linePlot.Color = ScottPlot.Colors.CornflowerBlue;
                 linePlot.LineWidth = 2;
 
-                double[] tickPositions = Enumerable.Range(0, report.PnlOverTime.Count).Select(i => (double)i).ToArray();
-                string[] tickLabels = report.PnlOverTime.Select(p => p.Date.ToString("M/d")).ToArray();
+                // win/loss markers
+                for (int i = 0; i < report.IndividualPnLs.Count; i++)
+                {
+                    double x = xs[i];
+                    double y = ys[i];
+                    bool isWin = report.IndividualPnLs[i] >= 0;
 
-                xAxis.TickGenerator = new ScottPlot.TickGenerators.NumericManual(tickPositions, tickLabels);
-                xAxis.Label.Rotation = 45;
+                    var marker = formsPlotPnl.Plot.Add.Marker(x, y);
+                    marker.Shape = ScottPlot.MarkerShape.FilledCircle;
+                    marker.Size = 10;
+                    marker.Color = isWin
+                        ? ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(46, 204, 113))
+                        : ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(231, 76, 60));
+                }
+
+                // format axis as DateTime
+                xAxis.TickGenerator = new ScottPlot.TickGenerators.DateTimeAutomatic();
             }
 
+            formsPlotPnl.Plot.Axes.AutoScale();
             formsPlotPnl.Refresh();
         }
 
@@ -208,7 +216,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             if (rbWeekly.Checked) LoadStatistics();
         }
 
-        private void vrbMonthly_CheckedChanged(object sender, EventArgs e)
+        private void rbMonthly_CheckedChanged(object sender, EventArgs e)
         {
             if (rbMonthly.Checked) LoadStatistics();
         }
