@@ -53,8 +53,8 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             _layoutManager.RegisterControl(lblTodaysPnl, pnlPortfolio, pnlPortfolio_Max, new Point(1371, 109), new Size(34, 39));
 
             // --- Register Standalone Controls directly on the Form ---
-            _layoutManager.RegisterControl(lblCurrentDate, this, this, new Point(1383, 23), new Size(75, 35));
-            _layoutManager.RegisterControl(btnRefresh, this, this, new Point(1573, 23), new Size(41, 34));
+            _layoutManager.RegisterControl(lblCurrentDate, this, this, new Point(1473, 23), new Size(75, 35));
+            _layoutManager.RegisterControl(btnRefresh, this, this, new Point(1618, 20), new Size(41, 34));
 
             // *** THE FINAL FIX: Register the panels themselves with their correct parents. ***
             // This correctly informs the visibility logic.
@@ -280,5 +280,10 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             // This method can be left empty. It just needs to exist to prevent a designer error.
         }
         #endregion
+
+        private void pnlPortfolio_Max_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

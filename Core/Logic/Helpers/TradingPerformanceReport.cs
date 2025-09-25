@@ -17,6 +17,7 @@ namespace TradingJournal.Core.Logic.Helpers
         public decimal BestTrade { get; set; }
         public decimal WorstTrade { get; set; }
         public List<DataPoint> PnlOverTime { get; set; } = new List<DataPoint>();
+        public List<decimal> IndividualPnLs { get; set; } = new List<decimal>();
     }
 
     // A helper class to hold data for our chart

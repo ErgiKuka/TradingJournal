@@ -39,9 +39,10 @@
             // pictureBox1
             // 
             pictureBox1.BackgroundImageLayout = ImageLayout.Center;
-            pictureBox1.Location = new Point(512, 470);
+            pictureBox1.Location = new Point(459, 382);
+            pictureBox1.Margin = new Padding(2);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(186, 168);
+            pictureBox1.Size = new Size(173, 163);
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
@@ -49,9 +50,10 @@
             // 
             pictureBox2.BackgroundImage = Properties.Resources.Logo;
             pictureBox2.BackgroundImageLayout = ImageLayout.Stretch;
-            pictureBox2.Location = new Point(457, 114);
+            pictureBox2.Location = new Point(438, 96);
+            pictureBox2.Margin = new Padding(2);
             pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(301, 283);
+            pictureBox2.Size = new Size(241, 226);
             pictureBox2.TabIndex = 3;
             pictureBox2.TabStop = false;
             // 
@@ -60,23 +62,25 @@
             lblStatus.AutoSize = true;
             lblStatus.Font = new Font("Times New Roman", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblStatus.ForeColor = Color.FromArgb(156, 163, 175);
-            lblStatus.Location = new Point(518, 659);
+            lblStatus.Location = new Point(483, 563);
+            lblStatus.Margin = new Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(247, 26);
+            lblStatus.Size = new Size(200, 21);
             lblStatus.TabIndex = 4;
             lblStatus.Text = "Checking for updates . . .";
             // 
             // FrmLoading
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.FromArgb(13, 27, 42);
-            ClientSize = new Size(1208, 753);
+            ClientSize = new Size(1134, 682);
             Controls.Add(lblStatus);
             Controls.Add(pictureBox2);
             Controls.Add(pictureBox1);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(2);
             Name = "FrmLoading";
             StartPosition = FormStartPosition.CenterScreen;
             Load += FrmLoading_Load;
