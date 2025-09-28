@@ -10,19 +10,31 @@ namespace TradingJournal.Core.Logic.Manager
 {
     public class DashboardManager
     {
+        private readonly SettingsManager _settings;
+
+        public DashboardManager(SettingsManager settings)
+        {
+            _settings = settings;
+        }
+
         public DashboardReport GenerateReport(List<Trade> allTrades)
         {
             var report = new DashboardReport();
 
             if (allTrades == null || !allTrades.Any())
             {
-                return report; // Return an empty report (all zeros)
+                report.TotalPortfolioValue = _settings.AccountBalance;
+                report.TotalTradingAccountBalance = 0;
+                report.TodaysPnL = 0;
+                return report;
             }
 
-            // 1. Calculate Total Portfolio Value (the sum of all PnL ever)
-            report.TotalPortfolioValue = allTrades.Sum(t => t.ProfitLoss);
+            decimal totalPnL = allTrades.Sum(t => t.ProfitLoss);
 
-            // 2. Calculate Today's PnL
+            // This is the new base balance from settings
+            report.TotalPortfolioValue = _settings.AccountBalance + totalPnL;
+            report.TotalTradingAccountBalance = totalPnL;
+
             DateTime today = DateTime.Now.Date;
             report.TodaysPnL = allTrades
                 .Where(t => t.Date.Date == today)

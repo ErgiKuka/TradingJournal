@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TradingJournal.Core;
+using TradingJournal.Core.Logic.Helpers;
 using TradingJournal.Pl.Skeleton;
 
 namespace TradingJournal.Pl.Startup
@@ -19,6 +20,8 @@ namespace TradingJournal.Pl.Startup
             InitializeComponent();
 
             RoundedFormHelper.ApplyRoundedCorners(this, 60);
+            ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
+            ApplyTheme();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -26,14 +29,36 @@ namespace TradingJournal.Pl.Startup
             this.Close();
         }
 
+        private void ApplyTheme()
+        {
+            // Background i formës
+            this.BackColor = ThemeManager.BackgroundColor;
+            pictureBox2.BackColor = ThemeManager.BackgroundColor;
+
+            // Label
+            lblStatus.ForeColor = ThemeManager.TextColor;
+
+            // Nëse ke më shumë controls (p.sh. titull, logo, etj.)
+            // kalon nëpër ta dhe ndrysho ForeColor/BackColor sipas rastit
+            foreach (Control ctrl in this.Controls)
+            {
+                if (ctrl is Label lbl) lbl.ForeColor = ThemeManager.TextColor;
+                if (ctrl is TextBox txt)
+                {
+                    txt.BackColor = ThemeManager.TextBoxColor;
+                    txt.ForeColor = ThemeManager.TextColor;
+                }
+            }
+        }
+
         private async void FrmLoading_Load(object sender, EventArgs e)
         {
-            pictureBox1.Image = Properties.Resources.LoadingSpinner;
+            pictureBox1.Image = Properties.Resources.PacGif;
 
             // --- Start of Update Code ---
             try
             {
-                string currentVersion = "1.6.2"; // This MUST match the version in your Inno Setup script
+                string currentVersion = "1.7"; // This MUST match the version in your Inno Setup script
                 string repoOwner = "ErgiKuka";
                 string repoName = "TradingJournal"; // Your main repository
 
@@ -58,6 +83,7 @@ namespace TradingJournal.Pl.Startup
                 frm.Show();
                 this.Hide();
             }
+            ApplyTheme();
         }
 
     }

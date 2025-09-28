@@ -63,6 +63,16 @@ namespace TradingJournal.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap GifSpinner {
+            get {
+                object obj = ResourceManager.GetObject("GifSpinner", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap LoadingSpinner {
             get {
                 object obj = ResourceManager.GetObject("LoadingSpinner", resourceCulture);
@@ -76,6 +86,16 @@ namespace TradingJournal.Properties {
         internal static System.Drawing.Bitmap Logo {
             get {
                 object obj = ResourceManager.GetObject("Logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PacGif {
+            get {
+                object obj = ResourceManager.GetObject("PacGif", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

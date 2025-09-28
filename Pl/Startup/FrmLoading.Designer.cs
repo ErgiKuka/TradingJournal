@@ -39,10 +39,10 @@
             // pictureBox1
             // 
             pictureBox1.BackgroundImageLayout = ImageLayout.Center;
-            pictureBox1.Location = new Point(459, 382);
+            pictureBox1.Location = new Point(474, 347);
             pictureBox1.Margin = new Padding(2);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(173, 163);
+            pictureBox1.Size = new Size(159, 163);
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 

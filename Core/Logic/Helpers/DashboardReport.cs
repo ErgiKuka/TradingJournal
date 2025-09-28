@@ -9,6 +9,7 @@ namespace TradingJournal.Core.Logic.Helpers
     public class DashboardReport
     {
         public decimal TotalPortfolioValue { get; set; }
+        public decimal TotalTradingAccountBalance { get; set; }
         public decimal TodaysPnL { get; set; }
     }
 }
