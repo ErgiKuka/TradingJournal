@@ -133,8 +133,8 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             var lblLivePrices = new Label { Text = "Live Prices", Location = new Point(20, 20), AutoSize = true, Font = new Font("Segoe UI", 16, FontStyle.Bold), ForeColor = Color.White };
             targetPanel.Controls.Add(lblLivePrices);
 
-            var txtSearch = new TextBox { Name = "txtCryptoSearch", Location = new Point(20, lblLivePrices.Bottom + 15), Size = new Size(targetPanel.Width - 40, 35), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, Font = new Font("Segoe UI", 11), BackColor = Color.White, ForeColor = ThemeManager.CryptoCurrentColor, BorderStyle = BorderStyle.FixedSingle, Text = "Search cryptocurrencies..." };
-            txtSearch.Enter += (s, e) => { if (txtSearch.Text == "Search cryptocurrencies...") { txtSearch.Text = ""; txtSearch.ForeColor = ThemeManager.CryptoCurrentColor; } };
+            var txtSearch = new TextBox { Name = "txtCryptoSearch", Location = new Point(20, lblLivePrices.Bottom + 15), Size = new Size(targetPanel.Width - 40, 35), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, Font = new Font("Segoe UI", 11), BackColor = ThemeManager.CryptoTextBoxColor, ForeColor = ThemeManager.CryptoCurrentColor, BorderStyle = BorderStyle.FixedSingle, Text = "Search cryptocurrencies..." };
+            txtSearch.Enter += (s, e) => { if (txtSearch.Text == "Search cryptocurrencies...") { txtSearch.Text = ""; txtSearch.ForeColor = Color.LightGray; } };
             txtSearch.Leave += (s, e) => { if (string.IsNullOrWhiteSpace(txtSearch.Text)) { txtSearch.Text = "Search cryptocurrencies..."; txtSearch.ForeColor = Color.LightGray; } };
             txtSearch.TextChanged += TxtSearch_TextChanged;
             targetPanel.Controls.Add(txtSearch);
