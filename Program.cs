@@ -1,4 +1,6 @@
 using TradingJournal.Core.Data;
+using TradingJournal.Core.Logic.Helpers;
+using TradingJournal.Core.Logic.Manager;
 using TradingJournal.Pl.Startup;
 
 namespace TradingJournal
@@ -11,6 +13,8 @@ namespace TradingJournal
         [STAThread]
         static void Main()
         {
+            var settings = SettingsManager.Load();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -22,7 +26,7 @@ namespace TradingJournal
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
-
+            ThemeManager.SetTheme(settings.Theme);
 
             using (var db = new AppDbContext())
             {

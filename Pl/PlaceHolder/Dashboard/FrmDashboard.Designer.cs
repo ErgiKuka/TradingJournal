@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             pnlPortfolio = new Panel();
+            lblTradingBalanceValue = new Label();
+            label3 = new Label();
             lblTodaysPnl = new Label();
             lblPortfolioValue = new Label();
             label1 = new Label();
@@ -43,6 +45,8 @@
             // pnlPortfolio
             // 
             pnlPortfolio.BackColor = Color.FromArgb(27, 38, 59);
+            pnlPortfolio.Controls.Add(lblTradingBalanceValue);
+            pnlPortfolio.Controls.Add(label3);
             pnlPortfolio.Controls.Add(lblTodaysPnl);
             pnlPortfolio.Controls.Add(lblPortfolioValue);
             pnlPortfolio.Controls.Add(label1);
@@ -52,6 +56,30 @@
             pnlPortfolio.Size = new Size(922, 144);
             pnlPortfolio.TabIndex = 0;
             pnlPortfolio.Paint += panel1_Paint;
+            // 
+            // lblTradingBalanceValue
+            // 
+            lblTradingBalanceValue.AutoSize = true;
+            lblTradingBalanceValue.Font = new Font("Times New Roman", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblTradingBalanceValue.ForeColor = Color.FromArgb(156, 163, 175);
+            lblTradingBalanceValue.Location = new Point(255, 78);
+            lblTradingBalanceValue.Margin = new Padding(2, 0, 2, 0);
+            lblTradingBalanceValue.Name = "lblTradingBalanceValue";
+            lblTradingBalanceValue.Size = new Size(47, 36);
+            lblTradingBalanceValue.TabIndex = 8;
+            lblTradingBalanceValue.Text = "$0";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Times New Roman", 19.8000011F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label3.ForeColor = Color.FromArgb(156, 163, 175);
+            label3.Location = new Point(255, 30);
+            label3.Margin = new Padding(2, 0, 2, 0);
+            label3.Name = "label3";
+            label3.Size = new Size(207, 31);
+            label3.TabIndex = 7;
+            label3.Text = "Trading Balance";
             // 
             // lblTodaysPnl
             // 
@@ -70,7 +98,7 @@
             lblPortfolioValue.AutoSize = true;
             lblPortfolioValue.Font = new Font("Times New Roman", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblPortfolioValue.ForeColor = Color.FromArgb(156, 163, 175);
-            lblPortfolioValue.Location = new Point(30, 78);
+            lblPortfolioValue.Location = new Point(37, 78);
             lblPortfolioValue.Margin = new Padding(2, 0, 2, 0);
             lblPortfolioValue.Name = "lblPortfolioValue";
             lblPortfolioValue.Size = new Size(47, 36);
@@ -85,9 +113,9 @@
             label1.Location = new Point(30, 30);
             label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
-            label1.Size = new Size(119, 31);
+            label1.Size = new Size(210, 31);
             label1.TabIndex = 4;
-            label1.Text = "Portfolio";
+            label1.Text = "Account Balance";
             // 
             // pnlLivePrices
             // 
@@ -152,7 +180,7 @@
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.FromArgb(13, 27, 42);
-            ClientSize = new Size(1707, 1003);
+            ClientSize = new Size(1552, 880);
             Controls.Add(btnRefresh);
             Controls.Add(lblCurrentDate);
             Controls.Add(pnlLivePrices);
@@ -181,5 +209,7 @@
         private FontAwesome.Sharp.IconButton btnRefresh;
         private Panel pnlPortfolio_Max;
         private Panel pnlLivePrices_Max;
+        private Label lblTradingBalanceValue;
+        private Label label3;
     }
 }

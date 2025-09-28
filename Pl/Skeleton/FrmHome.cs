@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TradingJournal.Core.Logic;
+using TradingJournal.Core.Logic.Helpers;
 using TradingJournal.Pl.PlaceHolder.Dashboard;
 using TradingJournal.Pl.PlaceHolder.Journal;
 using TradingJournal.Pl.PlaceHolder.Settings;
@@ -20,9 +21,9 @@ namespace TradingJournal.Pl.Skeleton
     public partial class FrmHome : Form
     {
         private Button activeButton = null;
-        private Color activeColor = Color.FromArgb(30, 58, 95); // #1E3A5F
-        private Color normalColor = Color.FromArgb(27, 38, 59);
-        private Color hoverColor = Color.FromArgb(35, 52, 74);
+        private Color activeColor => ThemeManager.ActiveButtonColor;
+        private Color normalColor => ThemeManager.ButtonColor;
+        private Color hoverColor => ThemeManager.ButtonHoverColor;
 
         private Rectangle _restoreBounds;
         private bool _isCustomMaximized = false;
@@ -61,7 +62,30 @@ namespace TradingJournal.Pl.Skeleton
 
             // Set up event handlers for all buttons
             SetupButtonEvents();
+            ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
+            ApplyTheme();
         }
+        private void ApplyTheme()
+        {
+            this.BackColor = ThemeManager.BackgroundColor;
+            pnlTopBar.BackColor = ThemeManager.BackgroundColor;
+            pnlNavigation.BackColor = ThemeManager.BackgroundColor;
+            pnlControls.BackColor = ThemeManager.BackgroundColor;
+            panel1.BackColor = ThemeManager.BackgroundColor;
+
+            btnDashboard.BackColor = ThemeManager.ButtonColor;
+            btnDashboard.ForeColor = ThemeManager.TextColor;
+            btnJournal.BackColor = ThemeManager.ButtonColor;
+            btnJournal.ForeColor = ThemeManager.TextColor;
+            btnStatistics.BackColor = ThemeManager.ButtonColor;
+            btnStatistics.ForeColor = ThemeManager.TextColor;
+            btnSettings.BackColor = ThemeManager.ButtonColor;
+            btnSettings.ForeColor = ThemeManager.TextColor;
+
+            if (activeButton != null)
+                SetActiveButton(activeButton);
+        }
+
 
         private void BtnMaximize_Click(object sender, EventArgs e)
         {
@@ -213,6 +237,8 @@ namespace TradingJournal.Pl.Skeleton
 
             pnlControls.ResumeLayout();
             pnlControls.Visible = true;
+
+            ApplyTheme();
         }
 
         private void BtnMinimize_Click(object sender, EventArgs e)

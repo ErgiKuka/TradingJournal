@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TradingJournal.Core.Logic.Helpers;
 
 namespace TradingJournal.Pl.PlaceHolder.Statistics
 {
@@ -17,6 +18,59 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
         public FrmCalculator()
         {
             InitializeComponent();
+
+            ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            this.BackColor = ThemeManager.BackgroundColor;
+
+            pnlButtons.BackColor = ThemeManager.CalcPanelColor;
+            pnlSharedInputs.BackColor = ThemeManager.CalcPanelColor;
+            panel1.BackColor = ThemeManager.CalcPanelColor;
+            pnlPnlRr.BackColor = ThemeManager.CalcPanelColor;
+            pnlLiquidation.BackColor = ThemeManager.CalcPanelColor;
+            pnlTargetPrice.BackColor = ThemeManager.CalcPanelColor;
+
+            // Labels në panele
+            foreach (Control ctrl in new[] { pnlSharedInputs, panel1, pnlPnlRr, pnlLiquidation, pnlTargetPrice })
+            {
+                foreach (Control child in ctrl.Controls)
+                {
+                    if (child is Label lbl)
+                        lbl.ForeColor = ThemeManager.TextColor;
+                }
+            }
+
+            // --- TextBoxes ---
+            foreach (var tb in new[] { txtEntryPrice, txtMargin, txtLeverage, txtPnlExitPrice, txtPnlStopLoss,
+                               txtWalletBalance, txtTargetPnl, txtTargetRoi })
+            {
+                tb.BackColor = ThemeManager.CalcTextBoxColor;
+                tb.ForeColor = ThemeManager.TextColor;
+                tb.BorderStyle = BorderStyle.FixedSingle;
+            }
+
+            // --- RichTextBox (liq info) ---
+            rtbLiqInfo.BackColor = ThemeManager.TextBoxColor;
+            rtbLiqInfo.ForeColor = ThemeManager.TextColor;
+
+            // --- Buttons ---
+            foreach (var btn in new[] { btnCalculate, btnReset, btnCopyResults })
+            {
+                btn.BackColor = ThemeManager.ButtonColor;
+                btn.ForeColor = ThemeManager.ActionButtonTextColor;
+                btn.FlatAppearance.BorderSize = 0;
+            }
+            foreach (var cmb in new[] { cmbDirection, cmbMarginMode })
+            {
+                cmb.BackColor = ThemeManager.TextBoxColor;
+                cmb.ForeColor = ThemeManager.TextColor;
+                cmb.FlatStyle = FlatStyle.Flat;
+            }
+
         }
 
         private void btnCalculate_Click(object sender, EventArgs e)
@@ -185,6 +239,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             rbMode_CheckedChanged(null, null);
             cmbMarginMode_SelectedIndexChanged(null, null);
             UpdateCalculations();
+            ApplyTheme();
         }
 
         private void trackBarLeverage_Scroll(object sender, EventArgs e)

@@ -43,6 +43,31 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             InitializeResponsiveLayouts();
 
             _refreshTimer = new System.Windows.Forms.Timer { Interval = 60000 };
+
+            ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            this.BackColor = ThemeManager.BackgroundColor;
+
+            pnlPortfolio.BackColor = ThemeManager.PanelColor;
+            pnlLivePrices.BackColor = ThemeManager.PanelColor;
+            pnlPortfolio_Max.BackColor = ThemeManager.PanelColor;
+            pnlLivePrices_Max.BackColor = ThemeManager.PanelColor;
+
+            lblPortfolioValue.ForeColor = ThemeManager.TextColor;
+            lblTodaysPnl.ForeColor = ThemeManager.TextColor;
+            lblTradingBalanceValue.ForeColor = ThemeManager.TextColor;
+            lblCurrentDate.ForeColor = ThemeManager.TextColor;
+            btnRefresh.BackColor = ThemeManager.ButtonColor;
+
+            // Optionally loop over controls inside live prices panel
+            foreach (Control ctrl in pnlLivePrices.Controls)
+            {
+                if (ctrl is Label lbl) lbl.ForeColor = ThemeManager.TextColor;
+            }
         }
 
         private void InitializeResponsiveLayouts()
@@ -50,17 +75,16 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             // --- Register Portfolio Panel and its Children ---
             _layoutManager.RegisterControl(label1, pnlPortfolio, pnlPortfolio_Max, new Point(37, 37), new Size(169, 45));
             _layoutManager.RegisterControl(lblPortfolioValue, pnlPortfolio, pnlPortfolio_Max, new Point(37, 97), new Size(70, 53));
+
             _layoutManager.RegisterControl(lblTodaysPnl, pnlPortfolio, pnlPortfolio_Max, new Point(1371, 109), new Size(34, 39));
+
+            _layoutManager.RegisterControl(label3, pnlPortfolio, pnlPortfolio_Max, new Point(280, 37), new Size(200, 32));
+            _layoutManager.RegisterControl(lblTradingBalanceValue, pnlPortfolio, pnlPortfolio_Max, new Point(280, 97), new Size(70, 53));
 
             // --- Register Standalone Controls directly on the Form ---
             _layoutManager.RegisterControl(lblCurrentDate, this, this, new Point(1473, 23), new Size(75, 35));
             _layoutManager.RegisterControl(btnRefresh, this, this, new Point(1618, 20), new Size(41, 34));
 
-            // *** THE FINAL FIX: Register the panels themselves with their correct parents. ***
-            // This correctly informs the visibility logic.
-            // pnlPortfolio is a child of the Form, and its children move to pnlPortfolio_Max.
-            // pnlLivePrices is ALSO a child of the Form, and we will treat it as if its "children" (the UI we build) move to pnlLivePrices_Max.
-            // By registering the panels themselves, we ensure the manager knows which one to show in which state.
             _layoutManager.RegisterControl(pnlPortfolio, this, pnlPortfolio_Max, pnlPortfolio_Max.Location, pnlPortfolio_Max.Size);
             _layoutManager.RegisterControl(pnlLivePrices, this, pnlLivePrices_Max, pnlLivePrices_Max.Location, pnlLivePrices_Max.Size);
 
@@ -97,6 +121,8 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
 
             _refreshTimer.Tick += RefreshTimer_Tick;
             _refreshTimer.Start();
+
+            ApplyTheme();
         }
 
         private void BuildLivePricesUI(Panel targetPanel)
@@ -107,8 +133,8 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             var lblLivePrices = new Label { Text = "Live Prices", Location = new Point(20, 20), AutoSize = true, Font = new Font("Segoe UI", 16, FontStyle.Bold), ForeColor = Color.White };
             targetPanel.Controls.Add(lblLivePrices);
 
-            var txtSearch = new TextBox { Name = "txtCryptoSearch", Location = new Point(20, lblLivePrices.Bottom + 15), Size = new Size(targetPanel.Width - 40, 35), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, Font = new Font("Segoe UI", 11), BackColor = Color.FromArgb(30, 58, 95), ForeColor = Color.LightGray, BorderStyle = BorderStyle.FixedSingle, Text = "Search cryptocurrencies..." };
-            txtSearch.Enter += (s, e) => { if (txtSearch.Text == "Search cryptocurrencies...") { txtSearch.Text = ""; txtSearch.ForeColor = Color.White; } };
+            var txtSearch = new TextBox { Name = "txtCryptoSearch", Location = new Point(20, lblLivePrices.Bottom + 15), Size = new Size(targetPanel.Width - 40, 35), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, Font = new Font("Segoe UI", 11), BackColor = Color.White, ForeColor = ThemeManager.CryptoCurrentColor, BorderStyle = BorderStyle.FixedSingle, Text = "Search cryptocurrencies..." };
+            txtSearch.Enter += (s, e) => { if (txtSearch.Text == "Search cryptocurrencies...") { txtSearch.Text = ""; txtSearch.ForeColor = ThemeManager.CryptoCurrentColor; } };
             txtSearch.Leave += (s, e) => { if (string.IsNullOrWhiteSpace(txtSearch.Text)) { txtSearch.Text = "Search cryptocurrencies..."; txtSearch.ForeColor = Color.LightGray; } };
             txtSearch.TextChanged += TxtSearch_TextChanged;
             targetPanel.Controls.Add(txtSearch);
@@ -126,7 +152,7 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             try
             {
                 _pnlCryptoItems.Controls.Clear();
-                var loadingLabel = new Label { Text = "Loading cryptocurrency data...", Location = new Point(20, 20), AutoSize = true, ForeColor = Color.White, Font = new Font("Segoe UI", 12) };
+                var loadingLabel = new Label { Text = "Loading cryptocurrency data...", Location = new Point(20, 20), AutoSize = true, ForeColor = ThemeManager.CryptoCurrentColor, Font = new Font("Segoe UI", 12) };
                 _pnlCryptoItems.Controls.Add(loadingLabel);
 
                 _allCryptos = await _binanceService.GetTopCryptosAsync();
@@ -194,7 +220,7 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
 
         private Panel CreateCryptoPanel(CryptoData crypto, int yPosition)
         {
-            var panel = new Panel { Name = $"cryptoPanel_{crypto.Symbol}", Location = new Point(10, yPosition), Size = new Size(_pnlCryptoItems.Width - 20, 60), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, BackColor = Color.FromArgb(44, 62, 80), Margin = new Padding(5) };
+            var panel = new Panel { Name = $"cryptoPanel_{crypto.Symbol}", Location = new Point(10, yPosition), Size = new Size(_pnlCryptoItems.Width - 20, 60), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, BackColor = ThemeManager.BackgroundColor, Margin = new Padding(5) };
             RoundedFormHelper.RoundPanel(panel, 12);
 
             Control iconControl;
@@ -207,12 +233,12 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
                 iconControl = new Label { Text = crypto.Symbol.Replace("USDT", "").Substring(0, Math.Min(3, crypto.Symbol.Replace("USDT", "").Length)), Location = new Point(15, 15), Size = new Size(32, 32), Font = new Font("Segoe UI", 8, FontStyle.Bold), ForeColor = Color.White, BackColor = GetCryptoColor(crypto.Symbol), TextAlign = ContentAlignment.MiddleCenter };
             }
 
-            var nameLabel = new Label { Text = crypto.Name, Location = new Point(60, 8), AutoSize = true, Font = new Font("Segoe UI", 10, FontStyle.Bold), ForeColor = Color.White, BackColor = Color.Transparent };
-            var symbolLabel = new Label { Text = crypto.Symbol.Replace("USDT", "/USDT"), Location = new Point(60, 28), AutoSize = true, Font = new Font("Segoe UI", 8), ForeColor = Color.LightGray, BackColor = Color.Transparent };
-            var priceLabel = new Label { Text = crypto.FormattedPrice, Location = new Point(220, 12), Size = new Size(120, 22), Font = new Font("Segoe UI", 11, FontStyle.Bold), ForeColor = Color.White, BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleRight };
+            var nameLabel = new Label { Text = crypto.Name, Location = new Point(60, 8), AutoSize = true, Font = new Font("Segoe UI", 10, FontStyle.Bold), ForeColor = ThemeManager.CryptoCurrentColor, BackColor = Color.Transparent };
+            var symbolLabel = new Label { Text = crypto.Symbol.Replace("USDT", "/USDT"), Location = new Point(60, 28), AutoSize = true, Font = new Font("Segoe UI", 8), ForeColor = ThemeManager.CryptoCurrentColor, BackColor = Color.Transparent };
+            var priceLabel = new Label { Text = crypto.FormattedPrice, Location = new Point(220, 12), Size = new Size(120, 22), Font = new Font("Segoe UI", 11, FontStyle.Bold), ForeColor = ThemeManager.CryptoCurrentColor, BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleRight };
             var changeLabel = new Label { Text = $"{(crypto.PriceChangePercent >= 0 ? "+" : "")}{crypto.PriceChangePercent:F2}%", Location = new Point(350, 8), Size = new Size(80, 18), Font = new Font("Segoe UI", 9, FontStyle.Bold), ForeColor = crypto.PriceChangePercent >= 0 ? Color.FromArgb(46, 204, 113) : Color.FromArgb(231, 76, 60), BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleRight };
-            var highLowLabel = new Label { Text = $"H: {crypto.High24h:F4} L: {crypto.Low24h:F4}", Location = new Point(350, 28), Size = new Size(120, 15), Font = new Font("Segoe UI", 7), ForeColor = Color.LightGray, BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleRight };
-            var marketCapLabel = new Label { Text = $"Vol: {crypto.FormattedVolume}", Location = new Point(480, 12), Size = new Size(100, 22), Font = new Font("Segoe UI", 9), ForeColor = Color.LightGray, BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleRight };
+            var highLowLabel = new Label { Text = $"H: {crypto.High24h:F4} L: {crypto.Low24h:F4}", Location = new Point(350, 28), Size = new Size(120, 15), Font = new Font("Segoe UI", 7), ForeColor = ThemeManager.CryptoCurrentColor, BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleRight };
+            var marketCapLabel = new Label { Text = $"Vol: {crypto.FormattedVolume}", Location = new Point(480, 12), Size = new Size(100, 22), Font = new Font("Segoe UI", 9), ForeColor = ThemeManager.CryptoCurrentColor, BackColor = Color.Transparent, TextAlign = ContentAlignment.MiddleRight };
 
             panel.Controls.AddRange(new Control[] { iconControl, nameLabel, symbolLabel, priceLabel, changeLabel, highLowLabel, marketCapLabel });
             return panel;
@@ -252,7 +278,8 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             using (var db = new AppDbContext())
             {
                 var allTrades = db.Trades.ToList();
-                var dashboardManager = new DashboardManager();
+                var settings = SettingsManager.Load();
+                var dashboardManager = new DashboardManager(settings);
                 var report = dashboardManager.GenerateReport(allTrades);
                 UpdateUi(report);
             }
@@ -261,9 +288,23 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
         private void UpdateUi(DashboardReport report)
         {
             lblPortfolioValue.Text = report.TotalPortfolioValue.ToString("C");
-            if (report.TodaysPnL > 0) { lblTodaysPnl.Text = $"+{report.TodaysPnL:C}"; lblTodaysPnl.ForeColor = Color.FromArgb(46, 204, 113); }
-            else if (report.TodaysPnL < 0) { lblTodaysPnl.Text = report.TodaysPnL.ToString("C"); lblTodaysPnl.ForeColor = Color.FromArgb(231, 76, 60); }
-            else { lblTodaysPnl.Text = "$0.00"; lblTodaysPnl.ForeColor = Color.Gray; }
+            lblTradingBalanceValue.Text = report.TotalTradingAccountBalance.ToString("C");
+
+            if (report.TodaysPnL > 0)
+            {
+                lblTodaysPnl.Text = $"+{report.TodaysPnL:C}";
+                lblTodaysPnl.ForeColor = Color.FromArgb(46, 204, 113);
+            }
+            else if (report.TodaysPnL < 0)
+            {
+                lblTodaysPnl.Text = report.TodaysPnL.ToString("C");
+                lblTodaysPnl.ForeColor = Color.FromArgb(231, 76, 60);
+            }
+            else
+            {
+                lblTodaysPnl.Text = "$0.00";
+                lblTodaysPnl.ForeColor = Color.Gray;
+            }
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

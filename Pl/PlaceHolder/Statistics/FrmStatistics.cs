@@ -27,6 +27,59 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             _layoutManager = new ResponsiveLayoutManager(this);
             InitializeResponsiveLayouts();
             RoundAllPanels();
+            ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            // Form background
+            this.BackColor = ThemeManager.BackgroundColor;
+
+            // Panels
+            pnlTotalPnl.BackColor = ThemeManager.PanelColor;
+            pnlWinRate.BackColor = ThemeManager.PanelColor;
+            pnlProfitFactor.BackColor = ThemeManager.PanelColor;
+            pnlTotalTrades.BackColor = ThemeManager.PanelColor;
+            pnlAvgWinning.BackColor = ThemeManager.PanelColor;
+            pnlAvgLosing.BackColor = ThemeManager.PanelColor;
+            pnlChart.BackColor = ThemeManager.PanelColor;
+            pnlCalculator.BackColor = ThemeManager.PanelColor;
+
+            pnlTotalPnl_Max.BackColor = ThemeManager.PanelColor;
+            pnlWinRate_Max.BackColor = ThemeManager.PanelColor;
+            pnlProfitFactor_Max.BackColor = ThemeManager.PanelColor;
+            pnlTotalTrades_Max.BackColor = ThemeManager.PanelColor;
+            pnlAvgWinning_Max.BackColor = ThemeManager.PanelColor;
+            pnlAvgLosing_Max.BackColor = ThemeManager.PanelColor;
+            pnlChart_Max.BackColor = ThemeManager.PanelColor;
+            pnlCalculator_Max.BackColor = ThemeManager.PanelColor;
+
+            // Labels (neutral labels follow theme color)
+            lblSymbol.ForeColor = ThemeManager.TextColor;
+            label5.ForeColor = ThemeManager.TextColor;
+            label2.ForeColor = ThemeManager.TextColor;
+            label7.ForeColor = ThemeManager.TextColor;
+            label9.ForeColor = ThemeManager.TextColor;
+            label11.ForeColor = ThemeManager.TextColor;
+
+            // KPI values (reset base color, UpdateKpiLabels will recolor later)
+            lblTotalPnlValue.ForeColor = ThemeManager.TextColor;
+            lblWinRateValue.ForeColor = ThemeManager.TextColor;
+            lblProfitFactorValue.ForeColor = ThemeManager.TextColor;
+            lblTotalTradesValue.ForeColor = ThemeManager.TextColor;
+            lblAvgWinValue.ForeColor = ThemeManager.TextColor;
+            lblAvgLossValue.ForeColor = ThemeManager.TextColor;
+
+            // Radio buttons
+            rbDaily.ForeColor = ThemeManager.TextColor;
+            rbWeekly.ForeColor = ThemeManager.TextColor;
+            rbMonthly.ForeColor = ThemeManager.TextColor;
+            rbAllTime.ForeColor = ThemeManager.TextColor;
+
+            // Button
+            btnOpenCalculator.BackColor = ThemeManager.DarkButtonColor;
+            btnOpenCalculator.ForeColor = ThemeManager.TextColor;
         }
 
         #region Unchanged Layout and Setup Code
@@ -84,6 +137,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
         private void FrmStatistics_Load(object sender, EventArgs e)
         {
             LoadStatistics();
+            ApplyTheme();
         }
 
         private void LoadStatistics()
@@ -160,30 +214,34 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             formsPlotPnl.Plot.Clear();
 
             // styling
-            formsPlotPnl.Plot.FigureBackground.Color = ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(27, 38, 59));
-            formsPlotPnl.Plot.DataBackground.Color = ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(27, 38, 59));
+            formsPlotPnl.Plot.FigureBackground.Color = ScottPlot.Color.FromColor(ThemeManager.ChartFigureBackground);
+            formsPlotPnl.Plot.DataBackground.Color = ScottPlot.Color.FromColor(ThemeManager.ChartDataBackground);
+
+            // Axes
             var xAxis = formsPlotPnl.Plot.Axes.Bottom;
             var yAxis = formsPlotPnl.Plot.Axes.Left;
-            formsPlotPnl.Plot.Grid.MajorLineColor = ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(45, 51, 73));
+
+            formsPlotPnl.Plot.Grid.MajorLineColor = ScottPlot.Color.FromColor(ThemeManager.ChartGridColor);
+
             xAxis.Label.Text = "Date";
             yAxis.Label.Text = "Cumulative PnL";
-            xAxis.Label.ForeColor = ScottPlot.Colors.White;
-            yAxis.Label.ForeColor = ScottPlot.Colors.White;
-            xAxis.TickLabelStyle.ForeColor = ScottPlot.Colors.LightGray;
-            yAxis.TickLabelStyle.ForeColor = ScottPlot.Colors.LightGray;
 
+            xAxis.Label.ForeColor = ScottPlot.Color.FromColor(ThemeManager.ChartAxisLabelColor);
+            yAxis.Label.ForeColor = ScottPlot.Color.FromColor(ThemeManager.ChartAxisLabelColor);
+
+            xAxis.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(ThemeManager.ChartTickLabelColor);
+            yAxis.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(ThemeManager.ChartTickLabelColor);
+
+            // Keep your PnL line and markers logic as-is...
             if (report.PnlOverTime.Any())
             {
-                // Use DateTime values as X axis
                 double[] xs = report.PnlOverTime.Select(p => p.Date.ToOADate()).ToArray();
                 double[] ys = report.PnlOverTime.Select(p => (double)p.Value).ToArray();
 
-                // main cumulative line
                 var linePlot = formsPlotPnl.Plot.Add.Scatter(xs, ys);
                 linePlot.Color = ScottPlot.Colors.CornflowerBlue;
                 linePlot.LineWidth = 2;
 
-                // win/loss markers
                 for (int i = 0; i < report.IndividualPnLs.Count; i++)
                 {
                     double x = xs[i];
@@ -198,7 +256,6 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
                         : ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(231, 76, 60));
                 }
 
-                // format axis as DateTime
                 xAxis.TickGenerator = new ScottPlot.TickGenerators.DateTimeAutomatic();
             }
 

@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using TradingJournal.Core.Data;
 using TradingJournal.Core.Data.Entities;
 using TradingJournal.Core.Logic;
+using TradingJournal.Core.Logic.Helpers;
 using TradingJournal.Core.Logic.Manager;
 using TradingJournal.Core.Logic.Services;
 using TradingJournal.Core.Managers;
@@ -57,6 +58,77 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             RoundedFormHelper.RoundTextBox(txtExitPrice, 20);
             RoundedFormHelper.RoundTextBox(txtMargin, 20);
             RoundedFormHelper.RoundTextBox(txtProfitLoss, 20);
+
+            ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            // Form
+            this.BackColor = ThemeManager.BackgroundColor;
+
+            // Panels
+            pnlInformations.BackColor = ThemeManager.PanelColor;
+            pnlData.BackColor = ThemeManager.PanelColor;
+            pnlInformations_Max.BackColor = ThemeManager.PanelColor;
+            pnlData_Max.BackColor = ThemeManager.PanelColor;
+
+            // Labels
+            lblSymbol.ForeColor = ThemeManager.TextColor;
+            lblTradeType.ForeColor = ThemeManager.TextColor;
+            lblEntryPrice.ForeColor = ThemeManager.TextColor;
+            lblExitPrice.ForeColor = ThemeManager.TextColor;
+            lblStopLoss.ForeColor = ThemeManager.TextColor;
+            lblTakeProfit.ForeColor = ThemeManager.TextColor;
+            lblProfitLoss.ForeColor = ThemeManager.TextColor;
+            lblMargin.ForeColor = ThemeManager.TextColor;
+            chbAllTrades.ForeColor = ThemeManager.TextColor;
+
+            // Inputs (TextBoxes, ComboBoxes)
+            txtEntryPrice.BackColor = ThemeManager.TextBoxColor;
+            txtExitPrice.BackColor = ThemeManager.TextBoxColor;
+            txtStopLoss.BackColor = ThemeManager.TextBoxColor;
+            txtTakeProfit.BackColor = ThemeManager.TextBoxColor;
+            txtMargin.BackColor = ThemeManager.TextBoxColor;
+            txtProfitLoss.BackColor = ThemeManager.TextBoxColor;
+            txtScreenshotLink.BackColor = ThemeManager.TextBoxColor;
+
+            txtEntryPrice.ForeColor = ThemeManager.TextColor;
+            txtExitPrice.ForeColor = ThemeManager.TextColor;
+            txtStopLoss.ForeColor = ThemeManager.TextColor;
+            txtTakeProfit.ForeColor = ThemeManager.TextColor;
+            txtMargin.ForeColor = ThemeManager.TextColor;
+            txtProfitLoss.ForeColor = ThemeManager.TextColor;
+            txtScreenshotLink.ForeColor = ThemeManager.TextColor;
+
+            cbSymbol.BackColor = ThemeManager.PanelColor;
+            cbTradeType.BackColor = ThemeManager.PanelColor;
+            cbSymbol.ForeColor = ThemeManager.TextColor;
+            cbTradeType.ForeColor = ThemeManager.TextColor;
+
+            // Buttons
+            btnAddTrade.BackColor = ThemeManager.AddTradeButtonColor;
+            btnCancelUpdate.BackColor = ThemeManager.CancelUpdateButtonColor;
+            btnUploadScreenshot.BackColor = ThemeManager.UploadScreenshotButtonColor;
+            btnClearData.BackColor = ThemeManager.ClearDataButtonColor;
+            btnUpdateTrade.BackColor = ThemeManager.UpdateTradeButtonColor;
+            btnUploadScreenshot.BackColor = ThemeManager.UploadScreenshotButtonColor;
+
+            btnAddTrade.ForeColor = ThemeManager.ActionButtonTextColor;
+            btnCancelUpdate.ForeColor = ThemeManager.ActionButtonTextColor;
+            btnUploadScreenshot.ForeColor = ThemeManager.ActionButtonTextColor;
+            btnClearData.ForeColor = ThemeManager.ActionButtonTextColor;
+            btnUpdateTrade.ForeColor = ThemeManager.ActionButtonTextColor;
+            btnUploadScreenshot.ForeColor = ThemeManager.ActionButtonTextColor;
+
+
+            // DataGridView base style
+            dgvData.BackgroundColor = ThemeManager.PanelColor;
+            dgvData.DefaultCellStyle.BackColor = ThemeManager.PanelColor;
+            dgvData.DefaultCellStyle.ForeColor = ThemeManager.TextColor;
+            dgvData.DefaultCellStyle.SelectionBackColor = ThemeManager.BackgroundColor;
+            dgvData.DefaultCellStyle.SelectionForeColor = ThemeManager.TextColor;
         }
 
         private void InitializeResponsiveLayouts()
@@ -174,6 +246,8 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 LoadTrades(null); // Load all trades
             else
                 LoadTrades(dtpFilterDate.Value);
+
+            ApplyTheme();
         }
 
         private void btnAddTrade_Click(object sender, EventArgs e)
@@ -548,7 +622,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
         private void ApplyBaseGridStyling()
         {
             // --- Core Colors & Look (unchanging styles) ---
-            dgvData.BackgroundColor = Color.FromArgb(27, 38, 59);
+            dgvData.BackgroundColor = ThemeManager.DataGrid;
             dgvData.BorderStyle = BorderStyle.None;
             dgvData.GridColor = Color.FromArgb(45, 51, 73);
 
@@ -556,7 +630,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
             // --- Header Colors ---
             dgvData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dgvData.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(45, 51, 73);
+            dgvData.ColumnHeadersDefaultCellStyle.BackColor = ThemeManager.DataGrid;
             dgvData.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgvData.EnableHeadersVisualStyles = false;
 
@@ -568,13 +642,15 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             dgvData.DefaultCellStyle.SelectionForeColor = Color.White;
 
             // --- Alternating Row Style ---
-            dgvData.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(34, 40, 64);
+            dgvData.AlternatingRowsDefaultCellStyle.BackColor = ThemeManager.DataGrid;
 
             // --- Button Column Colors ---
-            dgvData.Columns["UpdateColumn"].DefaultCellStyle.BackColor = Color.FromArgb(24, 30, 54);
-            dgvData.Columns["DeleteColumn"].DefaultCellStyle.BackColor = Color.FromArgb(24, 30, 54);
-            dgvData.Columns["UpdateColumn"].DefaultCellStyle.SelectionBackColor = Color.FromArgb(45, 51, 73);
-            dgvData.Columns["DeleteColumn"].DefaultCellStyle.SelectionBackColor = Color.FromArgb(45, 51, 73);
+            dgvData.Columns["UpdateColumn"].DefaultCellStyle.BackColor = ThemeManager.UpdateColumnColor;
+            dgvData.Columns["UpdateColumn"].DefaultCellStyle.SelectionBackColor = ThemeManager.UpdateColumnSelectionColor;
+
+            dgvData.Columns["DeleteColumn"].DefaultCellStyle.BackColor = ThemeManager.DeleteColumnColor;
+            dgvData.Columns["DeleteColumn"].DefaultCellStyle.SelectionBackColor = ThemeManager.DeleteColumnSelectionColor;
+
         }
 
         private void dgvData_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)

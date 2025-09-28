@@ -41,18 +41,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\GifSpinner.gif" />
     <None Remove="Resources\LoadingSpinner.gif" />
     <None Remove="Resources\Logo.png" />
+    <None Remove="Resources\PacGif.gif" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="25_Journal_And_Pen_icon-icons.com_61466.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\GifSpinner.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\LoadingSpinner.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\PacGif.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
