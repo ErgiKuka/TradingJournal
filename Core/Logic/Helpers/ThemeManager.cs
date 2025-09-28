@@ -41,6 +41,8 @@ namespace TradingJournal.Core.Logic.Helpers
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(30, 58, 95) : Color.FromArgb(224, 219, 213);
         public static Color CalcTextBoxColor =>
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(13, 27, 42) : Color.FromArgb(224, 219, 213);
+        public static Color CryptoTextBoxColor =>
+            CurrentTheme == AppTheme.Dark ? Color.FromArgb(13, 27, 42) : Color.FromArgb(224, 219, 213);
         public static Color TextColor =>
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(156, 163, 175) : Color.FromArgb(42, 42, 42);
 
