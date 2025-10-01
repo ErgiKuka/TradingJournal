@@ -283,6 +283,7 @@
             dgvData.TabIndex = 0;
             dgvData.CellContentClick += dgvData_CellContentClick;
             dgvData.CellDoubleClick += dgvData_CellDoubleClick;
+            dgvData.CellFormatting += dgvData_CellFormatting;
             dgvData.CellPainting += dgvData_CellPainting;
             // 
             // pnlInformations

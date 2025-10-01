@@ -31,6 +31,7 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
             // Initialize the layout manager and define responsive behavior
             _layoutManager = new ResponsiveLayoutManager(this);
             InitializeResponsiveLayouts();
+            UpdateBalance();
 
             // Subscribe to theme changes and apply the current theme
             ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
@@ -44,19 +45,26 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
             // along with its location and size in the maximized state.
 
             _layoutManager.RegisterControl(label1, panel1, panel2,
-                new Point(32, 29), new Size(300, 25));
+                new Point(32, 129), new Size(300, 25));
 
             _layoutManager.RegisterControl(txtNewAccountBalance, panel1, panel2,
-                new Point(32, 76), new Size(400, 45));
+                new Point(32, 176), new Size(300, 45));
 
             _layoutManager.RegisterControl(btnChangeBalance, panel1, panel2,
-                new Point(450, 76), new Size(180, 38));
+                new Point(450, 176), new Size(180, 38));
 
             _layoutManager.RegisterControl(rbDarkMode, panel1, panel2,
-                new Point(32, 180), new Size(100, 35));
+                new Point(32, 280), new Size(100, 35));
 
             _layoutManager.RegisterControl(rbLightMode, panel1, panel2,
-                new Point(160, 180), new Size(100, 35));
+                new Point(160, 280), new Size(100, 35));
+            _layoutManager.RegisterControl(lblCurrentBalance, panel1, panel2,
+                new Point(45, 65), new Size(300, 35));
+            _layoutManager.RegisterControl(label2, panel1, panel2,
+                new Point(32, 30), new Size(300, 25));
+
+            _layoutManager.RegisterControl(btnReset, panel1, panel2,
+                new Point(450, 65), new Size(180, 38));
 
             // --- Register actions to apply styles for each state ---
             _layoutManager.RegisterStateAction(FormWindowStateExtended.Normal, ApplyNormalStyle);
@@ -90,12 +98,20 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
             SetWindowState(FormWindowStateExtended.Normal);
         }
 
+        public void UpdateBalance()
+        {
+            lblCurrentBalance.Text = _settings.AccountBalance.ToString("C");
+        }
+
         #region --- Styling and Themeing ---
 
         private void ApplyTheme()
         {
             // Form background
             this.BackColor = ThemeManager.BackgroundColor;
+            label1.ForeColor = ThemeManager.TextColor;
+            label2.ForeColor = ThemeManager.TextColor;
+            lblCurrentBalance.ForeColor = ThemeManager.TextColor;
 
             // Panels
             panel1.BackColor = ThemeManager.PanelColor;
@@ -115,6 +131,9 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
             // Button
             btnChangeBalance.BackColor = ThemeManager.DarkButtonColor;
             btnChangeBalance.ForeColor = ThemeManager.ActionButtonTextColor;
+
+            btnReset.BackColor = ThemeManager.DarkButtonColor;
+            btnReset.ForeColor = ThemeManager.ActionButtonTextColor;
         }
 
         private void ApplyNormalStyle()
@@ -156,6 +175,7 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+            UpdateBalance();
             txtNewAccountBalance.Clear();
         }
 
@@ -181,5 +201,27 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
         }
 
         #endregion
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(
+                "Are you sure you want to reset all settings to default values?",
+                "Confirm Reset",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+                {
+                _settings = new SettingsManager
+                {
+                    AccountBalance = 0,
+                    Theme = AppTheme.Dark
+                };
+                _settings.Save();
+                UpdateBalance();
+                txtNewAccountBalance.Clear();
+                MessageBox.Show("Settings have been reset to default values.", "Reset Complete",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
     }
 }
