@@ -23,6 +23,9 @@ namespace TradingJournal.Core.Logic.Helpers
         public static Color PanelColor =>
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(27, 38, 59) : Color.FromArgb(200, 194, 186);
 
+        public static Color DataPanelColor =>
+            CurrentTheme == AppTheme.Dark ? Color.FromArgb(13, 27, 42) : Color.FromArgb(200, 194, 186);
+
         public static Color CalcPanelColor =>
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(30, 58, 95) : Color.FromArgb(200, 194, 186);
 
@@ -36,6 +39,8 @@ namespace TradingJournal.Core.Logic.Helpers
 
         public static Color DataGrid =>
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(27, 38, 59) : Color.FromArgb(216, 211, 204);
+        public static Color DataGridHeader =>
+            CurrentTheme == AppTheme.Dark ? Color.FromArgb(13, 27, 42) : Color.FromArgb(216, 211, 204);
 
         public static Color TextBoxColor =>
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(30, 58, 95) : Color.FromArgb(224, 219, 213);
@@ -45,6 +50,9 @@ namespace TradingJournal.Core.Logic.Helpers
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(13, 27, 42) : Color.FromArgb(224, 219, 213);
         public static Color TextColor =>
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(156, 163, 175) : Color.FromArgb(42, 42, 42);
+
+        public static Color DataTextColor =>
+            CurrentTheme == AppTheme.Dark ? Color.White : Color.FromArgb(42, 42, 42);
 
         public static Color ButtonHoverColor =>
             CurrentTheme == AppTheme.Dark ? Color.FromArgb(45, 55, 72) : Color.FromArgb(169, 159, 148);

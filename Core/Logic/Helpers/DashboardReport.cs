@@ -11,5 +11,6 @@ namespace TradingJournal.Core.Logic.Helpers
         public decimal TotalPortfolioValue { get; set; }
         public decimal TotalTradingAccountBalance { get; set; }
         public decimal TodaysPnL { get; set; }
+
     }
 }

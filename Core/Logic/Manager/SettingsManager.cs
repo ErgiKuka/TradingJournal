@@ -15,6 +15,7 @@ namespace TradingJournal.Core.Logic.Manager
 
         public decimal AccountBalance { get; set; }
         public AppTheme Theme { get; set; } = AppTheme.Dark;
+        public decimal CurrentBalance { get; set; }
 
         public void Save()
         {

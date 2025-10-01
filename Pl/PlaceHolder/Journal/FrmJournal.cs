@@ -75,15 +75,15 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             pnlData_Max.BackColor = ThemeManager.PanelColor;
 
             // Labels
-            lblSymbol.ForeColor = ThemeManager.TextColor;
-            lblTradeType.ForeColor = ThemeManager.TextColor;
-            lblEntryPrice.ForeColor = ThemeManager.TextColor;
-            lblExitPrice.ForeColor = ThemeManager.TextColor;
-            lblStopLoss.ForeColor = ThemeManager.TextColor;
-            lblTakeProfit.ForeColor = ThemeManager.TextColor;
-            lblProfitLoss.ForeColor = ThemeManager.TextColor;
-            lblMargin.ForeColor = ThemeManager.TextColor;
-            chbAllTrades.ForeColor = ThemeManager.TextColor;
+            lblSymbol.ForeColor = ThemeManager.DataTextColor;
+            lblTradeType.ForeColor = ThemeManager.DataTextColor;
+            lblEntryPrice.ForeColor = ThemeManager.DataTextColor;
+            lblExitPrice.ForeColor = ThemeManager.DataTextColor;
+            lblStopLoss.ForeColor = ThemeManager.DataTextColor;
+            lblTakeProfit.ForeColor = ThemeManager.DataTextColor;
+            lblProfitLoss.ForeColor = ThemeManager.DataTextColor;
+            lblMargin.ForeColor = ThemeManager.DataTextColor;
+            chbAllTrades.ForeColor = ThemeManager.DataTextColor;
 
             // Inputs (TextBoxes, ComboBoxes)
             txtEntryPrice.BackColor = ThemeManager.TextBoxColor;
@@ -125,7 +125,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
             // DataGridView base style
             dgvData.BackgroundColor = ThemeManager.PanelColor;
-            dgvData.DefaultCellStyle.BackColor = ThemeManager.PanelColor;
+            dgvData.DefaultCellStyle.BackColor = ThemeManager.DataPanelColor;
             dgvData.DefaultCellStyle.ForeColor = ThemeManager.TextColor;
             dgvData.DefaultCellStyle.SelectionBackColor = ThemeManager.BackgroundColor;
             dgvData.DefaultCellStyle.SelectionForeColor = ThemeManager.TextColor;
@@ -172,31 +172,35 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
         private void ApplyNormalGridStyle()
         {
             // Header Style
-            dgvData.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            dgvData.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
             dgvData.ColumnHeadersHeight = 30; // Default height
 
             // Row and Cell Style
-            dgvData.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+            dgvData.DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Regular);
             dgvData.RowTemplate.Height = 25; // Default row height
 
             // Button Column Font
             dgvData.Columns["UpdateColumn"].DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
             dgvData.Columns["DeleteColumn"].DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+
+            chbAllTrades.Font = new Font("Times New Roman", 12, FontStyle.Regular);
         }
 
         private void ApplyMaximizedGridStyle()
         {
             // Header Style - Larger Font and Height
-            dgvData.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            dgvData.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 13, FontStyle.Bold);
             dgvData.ColumnHeadersHeight = 40;
 
             // Row and Cell Style - Larger Font and Height
-            dgvData.DefaultCellStyle.Font = new Font("Segoe UI", 10.5f, FontStyle.Regular);
+            dgvData.DefaultCellStyle.Font = new Font("Segoe UI", 13, FontStyle.Regular);
             dgvData.RowTemplate.Height = 35;
 
             // Button Column Font - Larger Font
             dgvData.Columns["UpdateColumn"].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
             dgvData.Columns["DeleteColumn"].DefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+            chbAllTrades.Font = new Font("Times New Roman", 16, FontStyle.Regular);
         }
 
         /// <summary>
@@ -630,8 +634,8 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
             // --- Header Colors ---
             dgvData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dgvData.ColumnHeadersDefaultCellStyle.BackColor = ThemeManager.DataGrid;
-            dgvData.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvData.ColumnHeadersDefaultCellStyle.BackColor = ThemeManager.DataGridHeader;
+            dgvData.ColumnHeadersDefaultCellStyle.ForeColor = ThemeManager.TextColor;
             dgvData.EnableHeadersVisualStyles = false;
 
             // --- Row & Cell Colors ---
@@ -738,6 +742,28 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             {
                 dtpFilterDate.Enabled = true;        // Enable calendar
                 LoadTrades(dtpFilterDate.Value);     // Show trades for selected day
+            }
+        }
+
+        private void dgvData_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dgvData.Columns[e.ColumnIndex].Name == "ProfitLoss" && e.Value != null)
+            {
+                if (decimal.TryParse(e.Value.ToString(), out decimal profitLoss))
+                {
+                    if (profitLoss > 0)
+                    {
+                        e.CellStyle.ForeColor = Color.Green;   // Win = green
+                    }
+                    else if (profitLoss < 0)
+                    {
+                        e.CellStyle.ForeColor = Color.Red;     // Loss = red
+                    }
+                    else
+                    {
+                        e.CellStyle.ForeColor = Color.Gray;    // Neutral = gray
+                    }
+                }
             }
         }
     }

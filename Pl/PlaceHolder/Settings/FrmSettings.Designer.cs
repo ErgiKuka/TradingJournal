@@ -30,11 +30,14 @@
         {
             label1 = new Label();
             panel1 = new Panel();
+            lblCurrentBalance = new Label();
+            label2 = new Label();
             rbLightMode = new RadioButton();
             rbDarkMode = new RadioButton();
             btnChangeBalance = new FontAwesome.Sharp.IconButton();
             txtNewAccountBalance = new TextBox();
             panel2 = new Panel();
+            btnReset = new FontAwesome.Sharp.IconButton();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -43,7 +46,7 @@
             label1.AutoSize = true;
             label1.Font = new Font("Times New Roman", 16.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.FromArgb(156, 163, 175);
-            label1.Location = new Point(32, 29);
+            label1.Location = new Point(34, 119);
             label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
             label1.Size = new Size(300, 25);
@@ -53,6 +56,9 @@
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(27, 38, 59);
+            panel1.Controls.Add(btnReset);
+            panel1.Controls.Add(lblCurrentBalance);
+            panel1.Controls.Add(label2);
             panel1.Controls.Add(rbLightMode);
             panel1.Controls.Add(rbDarkMode);
             panel1.Controls.Add(btnChangeBalance);
@@ -64,12 +70,36 @@
             panel1.Size = new Size(922, 610);
             panel1.TabIndex = 14;
             // 
+            // lblCurrentBalance
+            // 
+            lblCurrentBalance.AutoSize = true;
+            lblCurrentBalance.Font = new Font("Times New Roman", 16.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCurrentBalance.ForeColor = Color.FromArgb(156, 163, 175);
+            lblCurrentBalance.Location = new Point(48, 60);
+            lblCurrentBalance.Margin = new Padding(2, 0, 2, 0);
+            lblCurrentBalance.Name = "lblCurrentBalance";
+            lblCurrentBalance.Size = new Size(26, 25);
+            lblCurrentBalance.TabIndex = 15;
+            lblCurrentBalance.Text = "--";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Times New Roman", 16.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label2.ForeColor = Color.FromArgb(156, 163, 175);
+            label2.Location = new Point(34, 25);
+            label2.Margin = new Padding(2, 0, 2, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(204, 25);
+            label2.TabIndex = 14;
+            label2.Text = "Current Balance Input";
+            // 
             // rbLightMode
             // 
             rbLightMode.AutoSize = true;
             rbLightMode.Font = new Font("Times New Roman", 16.2F);
             rbLightMode.ForeColor = Color.FromArgb(156, 163, 175);
-            rbLightMode.Location = new Point(131, 186);
+            rbLightMode.Location = new Point(131, 230);
             rbLightMode.Margin = new Padding(3, 2, 3, 2);
             rbLightMode.Name = "rbLightMode";
             rbLightMode.Size = new Size(74, 29);
@@ -84,7 +114,7 @@
             rbDarkMode.AutoSize = true;
             rbDarkMode.Font = new Font("Times New Roman", 16.2F);
             rbDarkMode.ForeColor = Color.FromArgb(156, 163, 175);
-            rbDarkMode.Location = new Point(32, 186);
+            rbDarkMode.Location = new Point(32, 230);
             rbDarkMode.Margin = new Padding(3, 2, 3, 2);
             rbDarkMode.Name = "rbDarkMode";
             rbDarkMode.Size = new Size(74, 29);
@@ -103,7 +133,7 @@
             btnChangeBalance.IconChar = FontAwesome.Sharp.IconChar.None;
             btnChangeBalance.IconColor = Color.Black;
             btnChangeBalance.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnChangeBalance.Location = new Point(321, 73);
+            btnChangeBalance.Location = new Point(323, 163);
             btnChangeBalance.Margin = new Padding(2);
             btnChangeBalance.Name = "btnChangeBalance";
             btnChangeBalance.Size = new Size(137, 32);
@@ -117,7 +147,7 @@
             txtNewAccountBalance.BackColor = Color.FromArgb(30, 58, 95);
             txtNewAccountBalance.BorderStyle = BorderStyle.None;
             txtNewAccountBalance.Font = new Font("Times New Roman", 20.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            txtNewAccountBalance.Location = new Point(32, 76);
+            txtNewAccountBalance.Location = new Point(34, 166);
             txtNewAccountBalance.Name = "txtNewAccountBalance";
             txtNewAccountBalance.PlaceholderText = "Account Balance";
             txtNewAccountBalance.Size = new Size(242, 32);
@@ -132,6 +162,24 @@
             panel2.Size = new Size(1651, 946);
             panel2.TabIndex = 15;
             panel2.Visible = false;
+            // 
+            // btnReset
+            // 
+            btnReset.BackColor = Color.FromArgb(30, 58, 95);
+            btnReset.FlatAppearance.BorderSize = 0;
+            btnReset.FlatStyle = FlatStyle.Flat;
+            btnReset.Font = new Font("Times New Roman", 12F);
+            btnReset.IconChar = FontAwesome.Sharp.IconChar.None;
+            btnReset.IconColor = Color.Black;
+            btnReset.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnReset.Location = new Point(323, 53);
+            btnReset.Margin = new Padding(2);
+            btnReset.Name = "btnReset";
+            btnReset.Size = new Size(137, 32);
+            btnReset.TabIndex = 16;
+            btnReset.Text = "Reset Balance";
+            btnReset.UseVisualStyleBackColor = false;
+            btnReset.Click += btnReset_Click;
             // 
             // FrmSettings
             // 
@@ -160,5 +208,8 @@
         private RadioButton rbLightMode;
         private RadioButton rbDarkMode;
         private Panel panel2;
+        private Label lblCurrentBalance;
+        private Label label2;
+        private FontAwesome.Sharp.IconButton btnReset;
     }
 }
