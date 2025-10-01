@@ -130,7 +130,7 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             targetPanel.Controls.Clear();
             targetPanel.AutoScroll = true;
 
-            var lblLivePrices = new Label { Text = "Live Prices", Location = new Point(20, 20), AutoSize = true, Font = new Font("Segoe UI", 16, FontStyle.Bold), ForeColor = Color.White };
+            var lblLivePrices = new Label { Text = "Live Prices", Location = new Point(20, 20), AutoSize = true, Font = new Font("Segoe UI", 16, FontStyle.Bold), ForeColor = ThemeManager.TextColor };
             targetPanel.Controls.Add(lblLivePrices);
 
             var txtSearch = new TextBox { Name = "txtCryptoSearch", Location = new Point(20, lblLivePrices.Bottom + 15), Size = new Size(targetPanel.Width - 40, 35), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, Font = new Font("Segoe UI", 11), BackColor = ThemeManager.CryptoTextBoxColor, ForeColor = ThemeManager.CryptoCurrentColor, BorderStyle = BorderStyle.FixedSingle, Text = "Search cryptocurrencies..." };
