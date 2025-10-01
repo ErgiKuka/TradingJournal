@@ -38,6 +38,8 @@
             pnlNavigation = new Panel();
             btnSettings = new FontAwesome.Sharp.IconButton();
             panel4 = new Panel();
+            btnRiskManagement = new FontAwesome.Sharp.IconButton();
+            panel7 = new Panel();
             btnStatistics = new FontAwesome.Sharp.IconButton();
             panel3 = new Panel();
             btnJournal = new FontAwesome.Sharp.IconButton();
@@ -54,7 +56,7 @@
             // 
             panel1.Dock = DockStyle.Left;
             panel1.Location = new Point(0, 0);
-            panel1.Margin = new Padding(2, 2, 2, 2);
+            panel1.Margin = new Padding(2);
             panel1.Name = "panel1";
             panel1.Size = new Size(4, 720);
             panel1.TabIndex = 4;
@@ -64,7 +66,7 @@
             pnlTopBar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlTopBar.Controls.Add(panel6);
             pnlTopBar.Location = new Point(4, 0);
-            pnlTopBar.Margin = new Padding(2, 2, 2, 2);
+            pnlTopBar.Margin = new Padding(2);
             pnlTopBar.Name = "pnlTopBar";
             pnlTopBar.Size = new Size(1196, 30);
             pnlTopBar.TabIndex = 8;
@@ -76,7 +78,7 @@
             panel6.Controls.Add(BtnMinimize);
             panel6.Dock = DockStyle.Right;
             panel6.Location = new Point(1002, 0);
-            panel6.Margin = new Padding(2, 2, 2, 2);
+            panel6.Margin = new Padding(2);
             panel6.Name = "panel6";
             panel6.Size = new Size(194, 30);
             panel6.TabIndex = 12;
@@ -90,7 +92,7 @@
             btnMaximize.IconColor = Color.Black;
             btnMaximize.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnMaximize.Location = new Point(98, 4);
-            btnMaximize.Margin = new Padding(2, 2, 2, 2);
+            btnMaximize.Margin = new Padding(2);
             btnMaximize.Name = "btnMaximize";
             btnMaximize.Size = new Size(34, 22);
             btnMaximize.TabIndex = 11;
@@ -102,7 +104,7 @@
             BtnExit.BackColor = Color.Brown;
             BtnExit.FlatStyle = FlatStyle.Flat;
             BtnExit.Location = new Point(135, 4);
-            BtnExit.Margin = new Padding(2, 2, 2, 2);
+            BtnExit.Margin = new Padding(2);
             BtnExit.Name = "BtnExit";
             BtnExit.Size = new Size(34, 22);
             BtnExit.TabIndex = 12;
@@ -116,7 +118,7 @@
             BtnMinimize.BackColor = Color.DarkGray;
             BtnMinimize.FlatStyle = FlatStyle.Flat;
             BtnMinimize.Location = new Point(60, 4);
-            BtnMinimize.Margin = new Padding(2, 2, 2, 2);
+            BtnMinimize.Margin = new Padding(2);
             BtnMinimize.Name = "BtnMinimize";
             BtnMinimize.Size = new Size(34, 22);
             BtnMinimize.TabIndex = 9;
@@ -128,6 +130,8 @@
             // 
             pnlNavigation.Controls.Add(btnSettings);
             pnlNavigation.Controls.Add(panel4);
+            pnlNavigation.Controls.Add(btnRiskManagement);
+            pnlNavigation.Controls.Add(panel7);
             pnlNavigation.Controls.Add(btnStatistics);
             pnlNavigation.Controls.Add(panel3);
             pnlNavigation.Controls.Add(btnJournal);
@@ -135,7 +139,7 @@
             pnlNavigation.Controls.Add(btnDashboard);
             pnlNavigation.Controls.Add(panel5);
             pnlNavigation.Location = new Point(4, 30);
-            pnlNavigation.Margin = new Padding(2, 2, 2, 2);
+            pnlNavigation.Margin = new Padding(2);
             pnlNavigation.Name = "pnlNavigation";
             pnlNavigation.Size = new Size(213, 690);
             pnlNavigation.TabIndex = 9;
@@ -151,25 +155,51 @@
             btnSettings.IconChar = FontAwesome.Sharp.IconChar.None;
             btnSettings.IconColor = Color.Black;
             btnSettings.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnSettings.Location = new Point(0, 222);
+            btnSettings.Location = new Point(0, 276);
             btnSettings.Margin = new Padding(2, 24, 2, 2);
             btnSettings.Name = "btnSettings";
             btnSettings.Size = new Size(213, 46);
-            btnSettings.TabIndex = 7;
+            btnSettings.TabIndex = 11;
             btnSettings.Text = "   Settings";
             btnSettings.UseVisualStyleBackColor = false;
-            btnSettings.Click += btnSettings_Click;
-            btnSettings.MouseEnter += MouseEnterEffect;
-            btnSettings.MouseLeave += MouseLeaveEffect;
             // 
             // panel4
             // 
             panel4.Dock = DockStyle.Top;
-            panel4.Location = new Point(0, 214);
-            panel4.Margin = new Padding(2, 2, 2, 2);
+            panel4.Location = new Point(0, 268);
+            panel4.Margin = new Padding(2);
             panel4.Name = "panel4";
             panel4.Size = new Size(213, 8);
-            panel4.TabIndex = 6;
+            panel4.TabIndex = 10;
+            // 
+            // btnRiskManagement
+            // 
+            btnRiskManagement.BackColor = Color.FromArgb(27, 38, 59);
+            btnRiskManagement.Dock = DockStyle.Top;
+            btnRiskManagement.FlatAppearance.BorderSize = 0;
+            btnRiskManagement.FlatStyle = FlatStyle.Flat;
+            btnRiskManagement.Font = new Font("Times New Roman", 13.8F);
+            btnRiskManagement.ForeColor = Color.FromArgb(156, 163, 175);
+            btnRiskManagement.IconChar = FontAwesome.Sharp.IconChar.None;
+            btnRiskManagement.IconColor = Color.Black;
+            btnRiskManagement.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnRiskManagement.Location = new Point(0, 222);
+            btnRiskManagement.Margin = new Padding(2, 24, 2, 2);
+            btnRiskManagement.Name = "btnRiskManagement";
+            btnRiskManagement.Size = new Size(213, 46);
+            btnRiskManagement.TabIndex = 9;
+            btnRiskManagement.Text = "Risk Management";
+            btnRiskManagement.UseVisualStyleBackColor = false;
+            btnRiskManagement.Click += btnRiskManagement_Click;
+            // 
+            // panel7
+            // 
+            panel7.Dock = DockStyle.Top;
+            panel7.Location = new Point(0, 214);
+            panel7.Margin = new Padding(2);
+            panel7.Name = "panel7";
+            panel7.Size = new Size(213, 8);
+            panel7.TabIndex = 8;
             // 
             // btnStatistics
             // 
@@ -197,7 +227,7 @@
             // 
             panel3.Dock = DockStyle.Top;
             panel3.Location = new Point(0, 160);
-            panel3.Margin = new Padding(2, 2, 2, 2);
+            panel3.Margin = new Padding(2);
             panel3.Name = "panel3";
             panel3.Size = new Size(213, 8);
             panel3.TabIndex = 4;
@@ -228,7 +258,7 @@
             // 
             panel2.Dock = DockStyle.Top;
             panel2.Location = new Point(0, 106);
-            panel2.Margin = new Padding(2, 2, 2, 2);
+            panel2.Margin = new Padding(2);
             panel2.Name = "panel2";
             panel2.Size = new Size(213, 8);
             panel2.TabIndex = 2;
@@ -245,7 +275,7 @@
             btnDashboard.IconColor = Color.Black;
             btnDashboard.IconFont = FontAwesome.Sharp.IconFont.Auto;
             btnDashboard.Location = new Point(0, 60);
-            btnDashboard.Margin = new Padding(2, 2, 2, 2);
+            btnDashboard.Margin = new Padding(2);
             btnDashboard.Name = "btnDashboard";
             btnDashboard.Size = new Size(213, 46);
             btnDashboard.TabIndex = 1;
@@ -259,7 +289,7 @@
             // 
             panel5.Dock = DockStyle.Top;
             panel5.Location = new Point(0, 0);
-            panel5.Margin = new Padding(2, 2, 2, 2);
+            panel5.Margin = new Padding(2);
             panel5.Name = "panel5";
             panel5.Size = new Size(213, 60);
             panel5.TabIndex = 0;
@@ -270,7 +300,7 @@
             pnlControls.AutoScroll = true;
             pnlControls.BackColor = Color.FromArgb(13, 27, 42);
             pnlControls.Location = new Point(217, 30);
-            pnlControls.Margin = new Padding(2, 2, 2, 2);
+            pnlControls.Margin = new Padding(2);
             pnlControls.Name = "pnlControls";
             pnlControls.Size = new Size(983, 690);
             pnlControls.TabIndex = 10;
@@ -287,7 +317,7 @@
             Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(2, 2, 2, 2);
+            Margin = new Padding(2);
             Name = "FrmHome";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Trading Journal";
@@ -304,8 +334,6 @@
         private Button BtnMinimize;
         private Button BtnExit;
         private Panel pnlNavigation;
-        private FontAwesome.Sharp.IconButton btnSettings;
-        private Panel panel4;
         private FontAwesome.Sharp.IconButton btnStatistics;
         private Panel panel3;
         private FontAwesome.Sharp.IconButton btnJournal;
@@ -315,5 +343,9 @@
         private FontAwesome.Sharp.IconButton btnMaximize;
         private Panel panel6;
         private Panel pnlControls;
+        private FontAwesome.Sharp.IconButton btnSettings;
+        private Panel panel4;
+        private FontAwesome.Sharp.IconButton btnRiskManagement;
+        private Panel panel7;
     }
 }
