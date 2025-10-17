@@ -63,9 +63,9 @@ namespace TradingJournal.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap GifSpinner {
+        internal static System.Drawing.Bitmap InfiniteGif {
             get {
-                object obj = ResourceManager.GetObject("GifSpinner", resourceCulture);
+                object obj = ResourceManager.GetObject("InfiniteGif", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

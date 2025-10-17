@@ -53,12 +53,12 @@ namespace TradingJournal.Pl.Startup
 
         private async void FrmLoading_Load(object sender, EventArgs e)
         {
-            pictureBox1.Image = Properties.Resources.PacGif;
+            pictureBox1.Image = Properties.Resources.InfiniteGif;
 
             // --- Start of Update Code ---
             try
             {
-                string currentVersion = "1.7.1"; // This MUST match the version in your Inno Setup script
+                string currentVersion = "1.8"; // This MUST match the version in your Inno Setup script
                 string repoOwner = "ErgiKuka";
                 string repoName = "TradingJournal"; // Your main repository
 

@@ -39,10 +39,10 @@
             // pictureBox1
             // 
             pictureBox1.BackgroundImageLayout = ImageLayout.Center;
-            pictureBox1.Location = new Point(474, 347);
+            pictureBox1.Location = new Point(465, 363);
             pictureBox1.Margin = new Padding(2);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(159, 163);
+            pictureBox1.Size = new Size(179, 163);
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
@@ -62,7 +62,7 @@
             lblStatus.AutoSize = true;
             lblStatus.Font = new Font("Times New Roman", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblStatus.ForeColor = Color.FromArgb(156, 163, 175);
-            lblStatus.Location = new Point(483, 563);
+            lblStatus.Location = new Point(492, 563);
             lblStatus.Margin = new Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(200, 21);
