@@ -13,6 +13,7 @@ using TradingJournal.Core.Logic;
 using TradingJournal.Core.Logic.Helpers;
 using TradingJournal.Pl.PlaceHolder.Dashboard;
 using TradingJournal.Pl.PlaceHolder.Journal;
+using TradingJournal.Pl.PlaceHolder.Recovery_Planner;
 using TradingJournal.Pl.PlaceHolder.RiskManagement;
 using TradingJournal.Pl.PlaceHolder.Settings;
 using TradingJournal.Pl.PlaceHolder.Statistics;
@@ -61,6 +62,7 @@ namespace TradingJournal.Pl.Skeleton
             RoundedFormHelper.MakeButtonRounded(btnStatistics, 40);
             RoundedFormHelper.MakeButtonRounded(btnSettings, 40);
             RoundedFormHelper.MakeButtonRounded(btnRiskManagement, 40);
+            RoundedFormHelper.MakeButtonRounded(btnRecoveryPlanner, 40);
 
             // Set up event handlers for all buttons
             SetupButtonEvents();
@@ -85,6 +87,8 @@ namespace TradingJournal.Pl.Skeleton
             btnSettings.ForeColor = ThemeManager.TextColor;
             btnRiskManagement.BackColor = ThemeManager.ButtonColor;
             btnRiskManagement.ForeColor = ThemeManager.TextColor;
+            btnRecoveryPlanner.BackColor = ThemeManager.ButtonColor;
+            btnRecoveryPlanner.ForeColor = ThemeManager.TextColor;
 
             if (activeButton != null)
                 SetActiveButton(activeButton);
@@ -239,6 +243,11 @@ namespace TradingJournal.Pl.Skeleton
             btnRiskManagement.IconSize = 30;
             btnRiskManagement.TextImageRelation = TextImageRelation.ImageBeforeText;
 
+            btnRecoveryPlanner.IconChar = IconChar.Heartbeat;
+            btnRecoveryPlanner.IconColor = Color.White;
+            btnRecoveryPlanner.IconSize = 30;
+            btnRecoveryPlanner.TextImageRelation = TextImageRelation.ImageBeforeText;
+
             pnlControls.SuspendLayout();
             pnlControls.Visible = false;
             LoadPanels(new FrmDashboard());
@@ -312,6 +321,12 @@ namespace TradingJournal.Pl.Skeleton
         {
             LoadPanels(new FrmRiskManagement());
             SetActiveButton(btnRiskManagement);
+        }
+
+        private void btnRecoveryPlanner_Click(object sender, EventArgs e)
+        {
+            LoadPanels(new FrmRecoveryPlanner());
+            SetActiveButton(btnRecoveryPlanner);
         }
     }
 }
