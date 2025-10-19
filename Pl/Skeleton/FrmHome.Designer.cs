@@ -37,6 +37,8 @@
             BtnMinimize = new Button();
             pnlNavigation = new Panel();
             btnSettings = new FontAwesome.Sharp.IconButton();
+            panel8 = new Panel();
+            btnRecoveryPlanner = new FontAwesome.Sharp.IconButton();
             panel4 = new Panel();
             btnRiskManagement = new FontAwesome.Sharp.IconButton();
             panel7 = new Panel();
@@ -129,6 +131,8 @@
             // pnlNavigation
             // 
             pnlNavigation.Controls.Add(btnSettings);
+            pnlNavigation.Controls.Add(panel8);
+            pnlNavigation.Controls.Add(btnRecoveryPlanner);
             pnlNavigation.Controls.Add(panel4);
             pnlNavigation.Controls.Add(btnRiskManagement);
             pnlNavigation.Controls.Add(panel7);
@@ -155,13 +159,42 @@
             btnSettings.IconChar = FontAwesome.Sharp.IconChar.None;
             btnSettings.IconColor = Color.Black;
             btnSettings.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnSettings.Location = new Point(0, 276);
+            btnSettings.Location = new Point(0, 330);
             btnSettings.Margin = new Padding(2, 24, 2, 2);
             btnSettings.Name = "btnSettings";
             btnSettings.Size = new Size(213, 46);
-            btnSettings.TabIndex = 11;
+            btnSettings.TabIndex = 14;
             btnSettings.Text = "   Settings";
             btnSettings.UseVisualStyleBackColor = false;
+            // 
+            // panel8
+            // 
+            panel8.Dock = DockStyle.Top;
+            panel8.Location = new Point(0, 322);
+            panel8.Margin = new Padding(2);
+            panel8.Name = "panel8";
+            panel8.Size = new Size(213, 8);
+            panel8.TabIndex = 13;
+            // 
+            // btnRecoveryPlanner
+            // 
+            btnRecoveryPlanner.BackColor = Color.FromArgb(27, 38, 59);
+            btnRecoveryPlanner.Dock = DockStyle.Top;
+            btnRecoveryPlanner.FlatAppearance.BorderSize = 0;
+            btnRecoveryPlanner.FlatStyle = FlatStyle.Flat;
+            btnRecoveryPlanner.Font = new Font("Times New Roman", 13.8F);
+            btnRecoveryPlanner.ForeColor = Color.FromArgb(156, 163, 175);
+            btnRecoveryPlanner.IconChar = FontAwesome.Sharp.IconChar.None;
+            btnRecoveryPlanner.IconColor = Color.Black;
+            btnRecoveryPlanner.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnRecoveryPlanner.Location = new Point(0, 276);
+            btnRecoveryPlanner.Margin = new Padding(2, 24, 2, 2);
+            btnRecoveryPlanner.Name = "btnRecoveryPlanner";
+            btnRecoveryPlanner.Size = new Size(213, 46);
+            btnRecoveryPlanner.TabIndex = 12;
+            btnRecoveryPlanner.Text = "Recovery Planner";
+            btnRecoveryPlanner.UseVisualStyleBackColor = false;
+            btnRecoveryPlanner.Click += btnRecoveryPlanner_Click;
             // 
             // panel4
             // 
@@ -343,9 +376,11 @@
         private FontAwesome.Sharp.IconButton btnMaximize;
         private Panel panel6;
         private Panel pnlControls;
-        private FontAwesome.Sharp.IconButton btnSettings;
         private Panel panel4;
         private FontAwesome.Sharp.IconButton btnRiskManagement;
         private Panel panel7;
+        private FontAwesome.Sharp.IconButton btnSettings;
+        private Panel panel8;
+        private FontAwesome.Sharp.IconButton btnRecoveryPlanner;
     }
 }
