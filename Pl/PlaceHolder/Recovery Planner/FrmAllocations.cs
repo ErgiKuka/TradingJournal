@@ -38,8 +38,12 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             TryRoundUi();
 
             // theme + UI
+            ThemeManager.ThemeChanged += async (s, e) =>
+            {
+                ApplyTheme();
+                await RefreshKpisAsync();   // re-evaluate & recolor KPIs using current values
+            };
             ApplyTheme();
-            ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
 
             // grid
             SetupGrid();
@@ -351,6 +355,40 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             progress = Math.Max(0, Math.Min(100, progress));
             prgKpiProgress.Value = progress;
             lblKpiProgressPct.Text = $"{progress}%";
+
+            decimal unreal = currentValue - invested;
+
+            // Current price: accent (readable on both themes)
+            lblKpiCurrentPrice.ForeColor = ThemeManager.AccentColor;
+
+            // Current value: green if up vs invested, red if down, neutral if flat
+            lblKpiCurrentValue.ForeColor =
+                unreal > 0m ? ThemeManager.PositiveColor :
+                unreal < 0m ? ThemeManager.NegativeColor :
+                ThemeManager.DataTextColor;
+
+            // Invested & Avg Cost stay neutral for readability
+            lblKpiInvested.ForeColor = ThemeManager.DataTextColor;
+            lblKpiAvgCost.ForeColor = ThemeManager.DataTextColor;
+
+            // Quantity neutral (it’s not a “good/bad” metric)
+            lblKpiQuantity.ForeColor = ThemeManager.DataTextColor;
+
+            // Recovered is always “good”
+            lblKpiRecovered.ForeColor = ThemeManager.PositiveColor;
+
+            // Needed: amber if still needed, green if done
+            lblKpiNeeded.ForeColor = needed > 0m ? ThemeManager.WarningColor : ThemeManager.PositiveColor;
+
+            // Progress %: gradient by thresholds
+            if (progress >= 100)
+                lblKpiProgressPct.ForeColor = ThemeManager.PositiveColor;
+            else if (progress >= 60)
+                lblKpiProgressPct.ForeColor = ThemeManager.AccentColor;
+            else if (progress >= 20)
+                lblKpiProgressPct.ForeColor = ThemeManager.WarningColor;
+            else
+                lblKpiProgressPct.ForeColor = ThemeManager.NegativeColor;
 
             // Auto-close the case when recovered enough
             if (needed <= 0m && _case.Status == RecoveryCaseStatus.Active)

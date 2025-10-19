@@ -20,6 +20,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
     {
         private readonly ResponsiveLayoutManager _layoutManager;
         private FrmCalculator? _calculatorFormInstance;
+        private enum ChartResolution { Intraday, Daily }
 
         public FrmStatistics()
         {
@@ -145,31 +146,25 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             List<Trade> trades;
             using (var db = new AppDbContext())
             {
-                DateTime today = DateTime.Now.Date;
-                DateTime tomorrow = today.AddDays(1);
+                var (start, end, res) = GetRequestedRange();
 
-                IQueryable<Trade> query = db.Trades.AsQueryable();
+                IQueryable<Trade> q = db.Trades;
 
                 if (rbDaily.Checked)
                 {
-                    query = query.Where(t => t.Date >= today && t.Date < tomorrow);
+                    var day = start!.Value.Date;
+                    var next = day.AddDays(1);
+                    q = q.Where(t => t.Date >= day && t.Date < next);
                 }
-                else if (rbWeekly.Checked)
+                else if (rbWeekly.Checked || rbMonthly.Checked)
                 {
-                    DateTime oneWeekAgo = today.AddDays(-7);
-                    query = query.Where(t => t.Date >= oneWeekAgo && t.Date < tomorrow);
+                    var s = start!.Value.Date;
+                    var e = end!.Value.Date.AddDays(1);
+                    q = q.Where(t => t.Date >= s && t.Date < e);
                 }
-                else if (rbMonthly.Checked)
-                {
-                    DateTime oneMonthAgo = today.AddDays(-30);
-                    query = query.Where(t => t.Date >= oneMonthAgo && t.Date < tomorrow);
-                }
-                else if (rbAllTime.Checked)
-                {
-                    // no filter = all trades
-                }
+                // All-time -> no additional filter
 
-                trades = query.ToList();
+                trades = q.OrderBy(t => t.Date).ToList();
             }
 
             btnOpenCalculator.IconChar = IconChar.Calculator;
@@ -181,7 +176,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             var report = statsManager.GenerateReport(trades);
 
             UpdateKpiLabels(report);
-            UpdatePnlChart(report);
+            UpdatePnlChart(trades);   // pass raw trades; we’ll aggregate inside
         }
 
         private void UpdateKpiLabels(TradingPerformanceReport report)
@@ -209,59 +204,145 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             lblAvgLossValue.ForeColor = negativeColor;
         }
 
-        private void UpdatePnlChart(TradingPerformanceReport report)
+        private void UpdatePnlChart(List<Trade> trades)
         {
             formsPlotPnl.Plot.Clear();
 
-            // styling
+            // Theme
             formsPlotPnl.Plot.FigureBackground.Color = ScottPlot.Color.FromColor(ThemeManager.ChartFigureBackground);
             formsPlotPnl.Plot.DataBackground.Color = ScottPlot.Color.FromColor(ThemeManager.ChartDataBackground);
+            formsPlotPnl.Plot.Grid.MajorLineColor = ScottPlot.Color.FromColor(ThemeManager.ChartGridColor);
 
-            // Axes
             var xAxis = formsPlotPnl.Plot.Axes.Bottom;
             var yAxis = formsPlotPnl.Plot.Axes.Left;
 
-            formsPlotPnl.Plot.Grid.MajorLineColor = ScottPlot.Color.FromColor(ThemeManager.ChartGridColor);
-
             xAxis.Label.Text = "Date";
             yAxis.Label.Text = "Cumulative PnL";
-
             xAxis.Label.ForeColor = ScottPlot.Color.FromColor(ThemeManager.ChartAxisLabelColor);
             yAxis.Label.ForeColor = ScottPlot.Color.FromColor(ThemeManager.ChartAxisLabelColor);
-
             xAxis.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(ThemeManager.ChartTickLabelColor);
             yAxis.TickLabelStyle.ForeColor = ScottPlot.Color.FromColor(ThemeManager.ChartTickLabelColor);
 
-            // Keep your PnL line and markers logic as-is...
-            if (report.PnlOverTime.Any())
+            // Decide resolution and range
+            var (start, end, res) = GetRequestedRange();
+
+            // Build series
+            var (xs, ys, dailyPnL, dates) = BuildSeries(trades, res, start, end);
+
+            if (xs.Length == 0)
             {
-                double[] xs = report.PnlOverTime.Select(p => p.Date.ToOADate()).ToArray();
-                double[] ys = report.PnlOverTime.Select(p => (double)p.Value).ToArray();
-
-                var linePlot = formsPlotPnl.Plot.Add.Scatter(xs, ys);
-                linePlot.Color = ScottPlot.Colors.CornflowerBlue;
-                linePlot.LineWidth = 2;
-
-                for (int i = 0; i < report.IndividualPnLs.Count; i++)
-                {
-                    double x = xs[i];
-                    double y = ys[i];
-                    bool isWin = report.IndividualPnLs[i] >= 0;
-
-                    var marker = formsPlotPnl.Plot.Add.Marker(x, y);
-                    marker.Shape = ScottPlot.MarkerShape.FilledCircle;
-                    marker.Size = 10;
-                    marker.Color = isWin
-                        ? ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(46, 204, 113))
-                        : ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(231, 76, 60));
-                }
-
-                xAxis.TickGenerator = new ScottPlot.TickGenerators.DateTimeAutomatic();
+                formsPlotPnl.Refresh();
+                return;
             }
+
+            // Cumulative line
+            var line = formsPlotPnl.Plot.Add.Scatter(xs, ys);
+            line.Color = ScottPlot.Colors.CornflowerBlue;
+            line.LineWidth = 2;
+
+            // Dots:
+            // - Intraday: one per trade (use per-point profit)
+            // - Daily   : one per day (use dailyPnL)
+            for (int i = 0; i < xs.Length; i++)
+            {
+                bool isWin = dailyPnL[i] >= 0;
+                var marker = formsPlotPnl.Plot.Add.Marker(xs[i], ys[i]);
+                marker.Shape = ScottPlot.MarkerShape.FilledCircle;
+                marker.Size = res == ChartResolution.Intraday ? 8 : 10;
+                marker.Color = isWin
+                    ? ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(46, 204, 113))
+                    : ScottPlot.Color.FromColor(System.Drawing.Color.FromArgb(231, 76, 60));
+            }
+
+            // Better date ticks:
+            var autoTicks = new ScottPlot.TickGenerators.DateTimeAutomatic();
+
+            // If your ScottPlot version exposes MinTickSpacing, you can enforce daily ticks like this:
+            // autoTicks.MinTickSpacing = TimeSpan.FromDays(1);
+
+            xAxis.TickGenerator = autoTicks;
 
             formsPlotPnl.Plot.Axes.AutoScale();
             formsPlotPnl.Refresh();
         }
+
+        private (double[] xs, double[] ys, List<double> dailyPnL, List<DateTime> dates)
+            BuildSeries(List<Trade> trades, ChartResolution res, DateTime? rangeStart = null, DateTime? rangeEnd = null)
+        {
+            // Defensive sort by time
+            trades = trades.OrderBy(t => t.Date).ToList();
+
+            if (res == ChartResolution.Intraday)
+            {
+                // One point per trade (today), cumulative along the day
+                var xs = new List<double>();
+                var ys = new List<double>();
+                var perPointPnL = new List<double>();
+                var dates = new List<DateTime>();
+
+                double cum = 0;
+                foreach (var t in trades)
+                {
+                    cum += (double)t.ProfitLoss;
+                    xs.Add(t.Date.ToOADate());
+                    ys.Add(cum);
+                    perPointPnL.Add((double)t.ProfitLoss);
+                    dates.Add(t.Date);
+                }
+
+                return (xs.ToArray(), ys.ToArray(), perPointPnL, dates);
+            }
+            else
+            {
+                // One point per DAY (aggregate all trades that calendar day)
+                // 1) sum by day
+                var byDay = trades
+                    .GroupBy(t => t.Date.Date)
+                    .ToDictionary(g => g.Key, g => (double)g.Sum(x => x.ProfitLoss));
+
+                // 2) build a continuous day range (fill missing days with 0)
+                DateTime start = rangeStart?.Date ?? (byDay.Count > 0 ? byDay.Keys.Min() : DateTime.Today);
+                DateTime end = rangeEnd?.Date ?? (byDay.Count > 0 ? byDay.Keys.Max() : DateTime.Today);
+
+                var days = new List<DateTime>();
+                for (var d = start; d <= end; d = d.AddDays(1))
+                    days.Add(d);
+
+                // 3) create daily and cumulative arrays
+                var dailyPnL = days.Select(d => byDay.TryGetValue(d, out var v) ? v : 0.0).ToList();
+
+                var xs = days.Select(d => d.ToOADate()).ToArray();
+
+                var ys = new double[dailyPnL.Count];
+                double cum = 0;
+                for (int i = 0; i < dailyPnL.Count; i++)
+                {
+                    cum += dailyPnL[i];
+                    ys[i] = cum;
+                }
+
+                return (xs, ys, dailyPnL, days);
+            }
+        }
+
+        // Quick helper to compute the date filter based on radio buttons
+        private (DateTime? start, DateTime? end, ChartResolution res) GetRequestedRange()
+        {
+            var today = DateTime.Today;
+
+            if (rbDaily.Checked)
+                return (today, today, ChartResolution.Intraday);
+
+            if (rbWeekly.Checked)
+                return (today.AddDays(-6), today, ChartResolution.Daily);      // 7 dots
+
+            if (rbMonthly.Checked)
+                return (today.AddDays(-29), today, ChartResolution.Daily);     // 30 dots
+
+            // All time => daily points from first trade to last trade
+            return (null, null, ChartResolution.Daily);
+        }
+
 
         private void rbDaily_CheckedChanged(object sender, EventArgs e)
         {

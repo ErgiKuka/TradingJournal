@@ -44,7 +44,16 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
 
             _refreshTimer = new System.Windows.Forms.Timer { Interval = 60000 };
 
-            ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
+            ThemeManager.ThemeChanged += (s, e) =>
+            {
+                ApplyTheme();
+                // re-apply dynamic color without changing the text
+                decimal today;
+                if (decimal.TryParse(lblTodaysPnl.Text.Replace("+", "").Replace("$", ""),
+                                     System.Globalization.NumberStyles.Currency,
+                                     null, out today))
+                    ApplyTodaysPnlColor(today * (lblTodaysPnl.Text.Contains("(") ? -1 : 1));
+            };
             ApplyTheme();
         }
 
@@ -58,7 +67,7 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             pnlLivePrices_Max.BackColor = ThemeManager.PanelColor;
 
             lblPortfolioValue.ForeColor = ThemeManager.TextColor;
-            lblTodaysPnl.ForeColor = ThemeManager.TextColor;
+            //lblTodaysPnl.ForeColor = ThemeManager.TextColor;
             lblTradingBalanceValue.ForeColor = ThemeManager.TextColor;
             lblCurrentDate.ForeColor = ThemeManager.TextColor;
             btnRefresh.BackColor = ThemeManager.ButtonColor;
@@ -285,26 +294,24 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             }
         }
 
+
+        private void ApplyTodaysPnlColor(decimal value)
+        {
+            if (value > 0) lblTodaysPnl.ForeColor = ThemeManager.PositiveColor;
+            else if (value < 0) lblTodaysPnl.ForeColor = ThemeManager.NegativeColor;
+            else lblTodaysPnl.ForeColor = ThemeManager.TextColor;
+        }
+
         private void UpdateUi(DashboardReport report)
         {
             lblPortfolioValue.Text = report.TotalPortfolioValue.ToString("C");
             lblTradingBalanceValue.Text = report.TotalTradingAccountBalance.ToString("C");
 
-            if (report.TodaysPnL > 0)
-            {
-                lblTodaysPnl.Text = $"+{report.TodaysPnL:C}";
-                lblTodaysPnl.ForeColor = Color.FromArgb(46, 204, 113);
-            }
-            else if (report.TodaysPnL < 0)
-            {
-                lblTodaysPnl.Text = report.TodaysPnL.ToString("C");
-                lblTodaysPnl.ForeColor = Color.FromArgb(231, 76, 60);
-            }
-            else
-            {
-                lblTodaysPnl.Text = "$0.00";
-                lblTodaysPnl.ForeColor = Color.Gray;
-            }
+            lblTodaysPnl.Text = report.TodaysPnL > 0
+                ? $"+{report.TodaysPnL:C}"
+                : report.TodaysPnL.ToString("C");
+
+            ApplyTodaysPnlColor(report.TodaysPnL);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
