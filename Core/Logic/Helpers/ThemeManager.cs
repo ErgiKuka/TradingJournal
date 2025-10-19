@@ -113,6 +113,14 @@ namespace TradingJournal.Core.Logic.Helpers
 
         public static Color ChartTickLabelColor =>
             CurrentTheme == AppTheme.Dark ? Color.LightGray : Color.FromArgb(64, 64, 64);
+        public static Color PositiveColor => Color.FromArgb(46, 204, 113); // green
+        public static Color NegativeColor => Color.FromArgb(231, 76, 60);  // red
+        public static Color WarningColor =>
+            CurrentTheme == AppTheme.Dark ? Color.FromArgb(255, 193, 7)    // amber
+                                          : Color.FromArgb(204, 142, 0);
+
+        public static Color AccentColor =>
+            CurrentTheme == AppTheme.Dark ? Color.FromArgb(56, 189, 248) : Color.FromArgb(2, 132, 199); // cyan-ish
 
 
         public static void SetTheme(AppTheme theme)

@@ -67,7 +67,11 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             btnRcWriteOff.Click += btnRcWriteOff_Click;
 
             // theme
-            ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
+            ThemeManager.ThemeChanged += async (s, e) =>
+            {
+                ApplyTheme();
+                await UpdateTopLiveAsync(); // recolors KPIs with new theme
+            };
             ApplyTheme();
 
             // timer for live price
@@ -87,6 +91,8 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             ApplyNormalGridFonts(); // start in normal mode
 
             UpdateFormTitle();
+
+            _ = UpdateTopLiveAsync();
         }
 
         private void TryRoundUi()
@@ -467,13 +473,28 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
 
                     decimal neededNow = Math.Max(0m, investedVal - currentValue);
                     lblRcNeeded.Text = neededNow.ToString("0.00");
+
+                    lblRcUnrealized.Text = unreal.ToString("0.00");
+                    lblRcUnrealized.ForeColor = unreal >= 0
+                        ? ThemeManager.PositiveColor
+                        : ThemeManager.NegativeColor;
+
+                    // needed to break even
+                    lblRcNeeded.Text = neededNow.ToString("0.00");
+                    lblRcNeeded.ForeColor = neededNow > 0
+                        ? ThemeManager.WarningColor     // needs recovery => amber
+                        : ThemeManager.PositiveColor;   // already at/above breakeven => green
+
                 }
                 else
                 {
                     lblRcCurrentValue.Text = "-";
                     lblRcUnrealized.Text = "-";
+
+                    // show the loss and color it red; needed == loss (what must be recovered)
                     var loss = invested ?? 0m;
                     lblRcNeeded.Text = loss.ToString("0.00");
+                    lblRcNeeded.ForeColor = loss > 0 ? ThemeManager.WarningColor : ThemeManager.PositiveColor;
                 }
             }
             catch
