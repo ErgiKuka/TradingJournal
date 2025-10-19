@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System.Linq;
 
 namespace TradingJournal.Core.Logic.Services
 {
@@ -24,93 +24,79 @@ namespace TradingJournal.Core.Logic.Services
 
         private string FormatPrice(decimal price)
         {
-            if (price >= 1000M) // Added M
-                return $"${price:N0}";
-            else if (price >= 1M) // Added M
-                return $"${price:F2}";
-            else if (price >= 0.01M) // Added M
-                return $"${price:F4}";
-            else if (price >= 0.0001M) // Added M
-                return $"${price:F6}";
-            else
-                return $"${price:F8}";
+            if (price >= 1000M) return $"${price:N0}";
+            else if (price >= 1M) return $"${price:F2}";
+            else if (price >= 0.01M) return $"${price:F4}";
+            else if (price >= 0.0001M) return $"${price:F6}";
+            else return $"${price:F8}";
         }
 
         private string FormatVolume(decimal volume)
         {
-            if (volume >= 1000000000M) // Added M
-                return $"${volume / 1000000000M:F1}B"; // Added M
-            else if (volume >= 1000000M) // Added M
-                return $"${volume / 1000000M:F0}M"; // Added M
-            else if (volume >= 1000M) // Added M
-                return $"${volume / 1000M:F0}K"; // Added M
-            else
-                return $"${volume:F2}";
+            if (volume >= 1_000_000_000M) return $"${volume / 1_000_000_000M:F1}B";
+            else if (volume >= 1_000_000M) return $"${volume / 1_000_000M:F0}M";
+            else if (volume >= 1_000M) return $"${volume / 1_000M:F0}K";
+            else return $"${volume:F2}";
         }
     }
 
     public class BinanceApiService
     {
         private static readonly HttpClient httpClient = new HttpClient();
-        private const string BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/24hr";
+        private const string TICKER_24H = "https://api.binance.com/api/v3/ticker/24hr";
+        private const string TICKER_PRICE = "https://api.binance.com/api/v3/ticker/price";
 
-        // Top cryptocurrencies by market cap (more comprehensive list )
-        private static readonly Dictionary<string, string> CryptoNames = new Dictionary<string, string>
+        // (kept) names map used by your dashboard
+        private static readonly Dictionary<string, string> CryptoNames = new()
         {
-            {"BTCUSDT", "Bitcoin"},
-            {"ETHUSDT", "Ethereum"},
-            {"BNBUSDT", "BNB"},
-            {"SOLUSDT", "Solana"},
-            {"XRPUSDT", "XRP"},
-            {"ADAUSDT", "Cardano"},
-            {"DOGEUSDT", "Dogecoin"},
-            {"AVAXUSDT", "Avalanche"},
-            {"SHIBUSDT", "Shiba Inu"},
-            {"DOTUSDT", "Polkadot"},
-            {"MATICUSDT", "Polygon"},
-            {"LTCUSDT", "Litecoin"},
-            {"UNIUSDT", "Uniswap"},
-            {"LINKUSDT", "Chainlink"},
-            {"ATOMUSDT", "Cosmos"},
-            {"VETUSDT", "VeChain"},
-            {"FILUSDT", "Filecoin"},
-            {"TRXUSDT", "TRON"},
-            {"ETCUSDT", "Ethereum Classic"},
-            {"XLMUSDT", "Stellar"},
-            {"NEARUSDT", "NEAR Protocol"},
-            {"ALGOUSDT", "Algorand"},
-            {"HBARUSDT", "Hedera"},
-            {"ICPUSDT", "Internet Computer"},
-            {"APTUSDT", "Aptos"},
-            {"SUIUSDT", "Sui"},
-            {"ARBUSDT", "Arbitrum"},
-            {"OPUSDT", "Optimism"},
-            {"INJUSDT", "Injective"},
-            {"PEPEUSDT", "Pepe"},
-            {"WIFUSDT", "dogwifhat"},
-            {"BONKUSDT", "Bonk"},
-            {"FLOKIUSDT", "Floki"},
-            {"RNDRUSDT", "Render Token"},
-            {"FETUSDT", "Fetch.ai"},
-            {"GRTUSDT", "The Graph"},
-            {"SANDUSDT", "The Sandbox"},
-            {"MANAUSDT", "Decentraland"},
-            {"CHZUSDT", "Chiliz"},
-            {"ENJUSDT", "Enjin Coin"}
+            {"BTCUSDT","Bitcoin"},{"ETHUSDT","Ethereum"},{"BNBUSDT","BNB"},{"SOLUSDT","Solana"},
+            {"XRPUSDT","XRP"},{"ADAUSDT","Cardano"},{"DOGEUSDT","Dogecoin"},{"AVAXUSDT","Avalanche"},
+            {"SHIBUSDT","Shiba Inu"},{"DOTUSDT","Polkadot"},{"MATICUSDT","Polygon"},{"LTCUSDT","Litecoin"},
+            {"UNIUSDT","Uniswap"},{"LINKUSDT","Chainlink"},{"ATOMUSDT","Cosmos"},{"VETUSDT","VeChain"},
+            {"FILUSDT","Filecoin"},{"TRXUSDT","TRON"},{"ETCUSDT","Ethereum Classic"},{"XLMUSDT","Stellar"},
+            {"NEARUSDT","NEAR Protocol"},{"ALGOUSDT","Algorand"},{"HBARUSDT","Hedera"},
+            {"ICPUSDT","Internet Computer"},{"APTUSDT","Aptos"},{"SUIUSDT","Sui"},{"ARBUSDT","Arbitrum"},
+            {"OPUSDT","Optimism"},{"INJUSDT","Injective"},{"PEPEUSDT","Pepe"},{"WIFUSDT","dogwifhat"},
+            {"BONKUSDT","Bonk"},{"FLOKIUSDT","Floki"},{"RNDRUSDT","Render Token"},{"FETUSDT","Fetch.ai"},
+            {"GRTUSDT","The Graph"},{"SANDUSDT","The Sandbox"},{"MANAUSDT","Decentraland"},
+            {"CHZUSDT","Chiliz"},{"ENJUSDT","Enjin Coin"}
         };
+
+        // ---------- NEW: simple last price for one symbol ----------
+        public async Task<decimal> GetLastPriceAsync(string symbol)
+        {
+            // /api/v3/ticker/price?symbol=BTCUSDT
+            var url = $"{TICKER_PRICE}?symbol={symbol}";
+            var json = await httpClient.GetStringAsync(url);
+            var obj = JsonConvert.DeserializeObject<PriceDto>(json);
+            if (obj?.price == null) return 0m;
+            return decimal.TryParse(obj.price, out var d) ? d : 0m;
+        }
+
+        // ---------- NEW: last prices for many symbols ----------
+        public async Task<Dictionary<string, decimal>> GetLastPricesAsync(IEnumerable<string> symbols)
+        {
+            // /api/v3/ticker/price returns ALL; we filter in-memory
+            var json = await httpClient.GetStringAsync(TICKER_PRICE);
+            var arr = JsonConvert.DeserializeObject<List<PriceDto>>(json) ?? new();
+            var set = new HashSet<string>(symbols ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+            return arr
+                .Where(x => x.symbol != null && set.Contains(x.symbol))
+                .Select(x => new { x.symbol, Price = decimal.TryParse(x.price, out var d) ? d : 0m })
+                .ToDictionary(x => x.symbol, x => x.Price, StringComparer.OrdinalIgnoreCase);
+        }
 
         public async Task<List<CryptoData>> GetTopCryptosAsync()
         {
             try
             {
-                var response = await httpClient.GetStringAsync(BINANCE_API_URL);
-                var binanceData = JsonConvert.DeserializeObject<List<BinanceTicker>>(response);
-
+                var response = await httpClient.GetStringAsync(TICKER_24H);
+                var binanceData = JsonConvert.DeserializeObject<List<BinanceTicker>>(response) ?? new();
                 var cryptoList = new List<CryptoData>();
 
                 foreach (var ticker in binanceData)
                 {
-                    if (CryptoNames.ContainsKey(ticker.symbol))
+                    if (ticker?.symbol != null && CryptoNames.ContainsKey(ticker.symbol))
                     {
                         var price = decimal.Parse(ticker.lastPrice);
                         var volume = decimal.Parse(ticker.volume);
@@ -123,15 +109,13 @@ namespace TradingJournal.Core.Logic.Services
                             Price = price,
                             PriceChangePercent = decimal.Parse(ticker.priceChangePercent),
                             Volume = volume,
-                            MarketCap = quoteVolume, // Using quote volume as market cap proxy
+                            MarketCap = quoteVolume, // proxy
                             High24h = decimal.Parse(ticker.highPrice),
                             Low24h = decimal.Parse(ticker.lowPrice),
                             IconUrl = GetCryptoIconUrl(ticker.symbol)
                         });
                     }
                 }
-
-                // Sort by quote volume (market cap proxy) descending
                 return cryptoList.OrderByDescending(c => c.MarketCap).ToList();
             }
             catch (Exception ex)
@@ -140,16 +124,15 @@ namespace TradingJournal.Core.Logic.Services
             }
         }
 
+        public List<string> GetAllSymbols() => new List<string>(CryptoNames.Keys);
+
         private string GetCryptoIconUrl(string symbol)
         {
-            var baseSymbol = symbol.Replace("USDT", "").ToLower();
+            var baseSymbol = symbol.Replace("USDT", "").ToLowerInvariant();
             return $"https://cryptoicons.org/api/icon/{baseSymbol}/200";
         }
 
-        public List<string> GetAllSymbols()
-        {
-            return new List<string>(CryptoNames.Keys);
-        }
+        private sealed class PriceDto { public string symbol { get; set; } public string price { get; set; } }
     }
 
     public class BinanceTicker

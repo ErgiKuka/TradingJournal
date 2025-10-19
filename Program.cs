@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TradingJournal.Core.Data;
 using TradingJournal.Core.Logic.Helpers;
 using TradingJournal.Core.Logic.Manager;
@@ -30,7 +31,7 @@ namespace TradingJournal
 
             using (var db = new AppDbContext())
             {
-                db.Database.EnsureCreated();
+                db.Database.Migrate();
             }
 
 

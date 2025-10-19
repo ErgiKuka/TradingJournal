@@ -9,6 +9,8 @@ namespace TradingJournal.Core.Data
         private readonly string _databasePath;
 
         public DbSet<Trade> Trades { get; set; }
+        public DbSet<RecoveryCase> RecoveryCases { get; set; } = default!;
+        public DbSet<RecoveryAllocation> RecoveryAllocations { get; set; } = default!;
 
         // Default constructor for design-time tools (like migrations)
         public AppDbContext()
@@ -35,6 +37,8 @@ namespace TradingJournal.Core.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             Trade.ConfigureForDb(modelBuilder.Entity<Trade>());
+            RecoveryCase.ConfigureForDb(modelBuilder.Entity<RecoveryCase>());
+            RecoveryAllocation.ConfigureForDb(modelBuilder.Entity<RecoveryAllocation>());
         }
     }
 }
