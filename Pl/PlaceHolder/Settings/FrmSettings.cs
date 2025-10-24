@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TradingJournal.Core.Data;
 using TradingJournal.Core.Logic;
 using TradingJournal.Core.Logic.Helpers;
 using TradingJournal.Core.Logic.Manager;
+using TradingJournal.Core.Logic.Services;
 
 namespace TradingJournal.Pl.PlaceHolder.Settings
 {
@@ -18,11 +20,14 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
     {
         private readonly ResponsiveLayoutManager _layoutManager;
         private SettingsManager _settings;
+        private readonly DatabaseBackupService _bkp;
+        private static readonly TimeSpan UNDO_TTL = TimeSpan.FromHours(24);
 
         public FrmSettings()
         {
             InitializeComponent();
             _settings = SettingsManager.Load();
+            _bkp = new DatabaseBackupService(msg => Console.WriteLine(msg));
 
             // Round the corners of the panels
             RoundedFormHelper.RoundPanel(panel1, 20);
@@ -65,6 +70,14 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
 
             _layoutManager.RegisterControl(btnReset, panel1, panel2,
                 new Point(450, 65), new Size(180, 38));
+            _layoutManager.RegisterControl(btnBackupNow, panel1, panel2,
+                new Point(750, 65), new Size(180, 38));
+            _layoutManager.RegisterControl(btnRestoreLatest, panel1, panel2,
+                new Point(750, 165), new Size(230, 38));
+            _layoutManager.RegisterControl(btnRestoreFrom, panel1, panel2,
+                new Point(750, 265), new Size(180, 38));
+            _layoutManager.RegisterControl(btnUndoLastRestore, panel1, panel2,
+                new Point(1050, 165), new Size(200, 38));
 
             // --- Register actions to apply styles for each state ---
             _layoutManager.RegisterStateAction(FormWindowStateExtended.Normal, ApplyNormalStyle);
@@ -134,6 +147,15 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
 
             btnReset.BackColor = ThemeManager.DarkButtonColor;
             btnReset.ForeColor = ThemeManager.ActionButtonTextColor;
+            btnBackupNow.BackColor = ThemeManager.DarkButtonColor;
+            btnBackupNow.ForeColor = ThemeManager.ActionButtonTextColor;
+            btnRestoreLatest.BackColor = ThemeManager.DarkButtonColor;
+            btnRestoreLatest.ForeColor = ThemeManager.ActionButtonTextColor;
+            btnRestoreFrom.BackColor = ThemeManager.DarkButtonColor;
+            btnRestoreFrom.ForeColor = ThemeManager.ActionButtonTextColor;
+            btnUndoLastRestore.BackColor = ThemeManager.DarkButtonColor;
+            btnUndoLastRestore.ForeColor = ThemeManager.ActionButtonTextColor;
+
         }
 
         private void ApplyNormalStyle()
@@ -210,7 +232,7 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
-                {
+            {
                 _settings = new SettingsManager
                 {
                     AccountBalance = 0,
@@ -221,6 +243,146 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
                 txtNewAccountBalance.Clear();
                 MessageBox.Show("Settings have been reset to default values.", "Reset Complete",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void btnBackupNow_Click(object sender, EventArgs e)
+        {
+            using var db = new AppDbContext();
+            if (_bkp.BackupNow(db, out var path))
+                MessageBox.Show($"Backup created:\n{path}", "Backup", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else
+                MessageBox.Show("Backup failed.", "Backup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void btnRestoreLatest_Click(object sender, EventArgs e)
+        {
+            using var db = new AppDbContext();
+
+            // 1st confirmation
+            var latest = _bkp.GetBackups().FirstOrDefault();
+            var msg = latest == null
+                ? "No backups found."
+                : $"Latest backup:\n{latest.Name}\nCreated: {latest.CreationTime}\n\n" +
+                  "Restoring will overwrite current data.\n\nContinue?";
+            if (latest == null)
+            {
+                MessageBox.Show(msg, "Restore", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (MessageBox.Show(msg, "Confirm Restore", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            // 2nd confirmation
+            if (MessageBox.Show("Final confirmation: Are you absolutely sure you want to restore?\n" +
+                                "This will restart the app. An undo snapshot will be created.",
+                                "Confirm Restore", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            if (_bkp.RestoreFromFileWithUndo(db, latest.FullName, $"Latest: {latest.Name}"))
+            {
+                MessageBox.Show("Restored. The app will now restart.\nYou can use 'Undo Last Restore' if needed.",
+                                "Restore", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Application.Restart();
+            }
+            else
+            {
+                MessageBox.Show("Restore failed.", "Restore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnRestoreFrom_Click(object sender, EventArgs e)
+        {
+            using var db = new AppDbContext();
+
+            using var ofd = new OpenFileDialog
+            {
+                InitialDirectory = _bkp.BackupRoot,
+                Filter = "TradingJournal backups (*.sqlite.bak)|*.sqlite.bak|All files (*.*)|*.*",
+                Title = "Choose a backup to restore"
+            };
+            if (ofd.ShowDialog(this) != DialogResult.OK) return;
+
+            // 1st confirmation
+            if (MessageBox.Show($"Restore from:\n{ofd.FileName}\n\nThis will overwrite current data. Continue?",
+                                "Confirm Restore", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            // 2nd confirmation
+            if (MessageBox.Show("Final confirmation: Are you absolutely sure?\n" +
+                                "This will restart the app. An undo snapshot will be created.",
+                                "Confirm Restore", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            if (_bkp.RestoreFromFileWithUndo(db, ofd.FileName, $"Chosen: {Path.GetFileName(ofd.FileName)}"))
+            {
+                MessageBox.Show("Restored. The app will now restart.\nYou can use 'Undo Last Restore' if needed.",
+                                "Restore", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Application.Restart();
+            }
+            else
+            {
+                MessageBox.Show("Restore failed.", "Restore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnUndoLastRestore_Click(object sender, EventArgs e)
+        {
+            // Show what we’re undoing (path, age, source), enforce TTL, double confirm
+            if (!_bkp.TryGetUndoInfo(out var info))
+            {
+                MessageBox.Show("No undo snapshot is available.\n" +
+                                "Undo is only created right before a restore.",
+                                "Undo Restore", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var age = DateTime.UtcNow - info.CreatedUtc;
+            var expiresIn = UNDO_TTL - age;
+            var expired = age > UNDO_TTL;
+
+            var details =
+                $"Undo snapshot:\n" +
+                $"- File: {info.UndoPath}\n" +
+                $"- Created (UTC): {info.CreatedUtc:yyyy-MM-dd HH:mm:ss}\n" +
+                $"- From restore: {info.SourceLabel}\n" +
+                $"- Age: {age:g}\n" +
+                (expired
+                    ? "- Status: EXPIRED (older than 24 hours)\n"
+                    : $"- Expires in: {expiresIn:g}\n");
+
+            if (expired)
+            {
+                var ans = MessageBox.Show(details + "\nThis undo has expired. Clear it now?",
+                                          "Undo Restore (Expired)", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (ans == DialogResult.Yes)
+                {
+                    _bkp.ClearUndo(deleteUndoFile: false);
+                    MessageBox.Show("Expired undo marker cleared.", "Undo Restore", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                return;
+            }
+
+            // 1st confirm
+            if (MessageBox.Show(details + "\nUndo the most recent restore? This will overwrite current data.",
+                                "Confirm Undo Restore", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            // 2nd confirm
+            if (MessageBox.Show("Final confirmation: Proceed with UNDO?\nThe app will restart afterwards.",
+                                "Confirm Undo Restore", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            using var db = new AppDbContext();
+            if (_bkp.UndoLastRestore(db))
+            {
+                MessageBox.Show("Undo complete. The app will restart.", "Undo Restore",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Application.Restart();
+            }
+            else
+            {
+                MessageBox.Show("Undo failed.", "Undo Restore", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

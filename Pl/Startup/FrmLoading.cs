@@ -58,7 +58,7 @@ namespace TradingJournal.Pl.Startup
             // --- Start of Update Code ---
             try
             {
-                string currentVersion = "1.8"; // This MUST match the version in your Inno Setup script
+                string currentVersion = "1.9.6"; // This MUST match the version in your Inno Setup script
                 string repoOwner = "ErgiKuka";
                 string repoName = "TradingJournal"; // Your main repository
 

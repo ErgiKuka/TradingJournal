@@ -57,8 +57,6 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             btnRcCancelUpdate.Click += (s, e) => ExitUpdateMode();
             btnRcClear.Click += (s, e) => ClearForm();
 
-            dgvRecoveryCases.CellContentClick += dgvRecoveryCases_CellContentClick;
-            dgvRecoveryCases.CellDoubleClick += dgvRecoveryCases_CellDoubleClick;
             dgvRecoveryCases.CellPainting += dgvRecoveryCases_CellPainting;
             dgvRecoveryCases.CellFormatting += Dgv_CellFormatting;
 
