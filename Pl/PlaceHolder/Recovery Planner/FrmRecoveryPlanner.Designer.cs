@@ -80,10 +80,10 @@
             pnlCases.Controls.Add(btnRcPauseResumeCase);
             pnlCases.Controls.Add(cbRcStatusFilter);
             pnlCases.Controls.Add(lblRcHint);
-            pnlCases.Location = new Point(11, 288);
-            pnlCases.Margin = new Padding(2);
+            pnlCases.Location = new Point(13, 384);
+            pnlCases.Margin = new Padding(2, 3, 2, 3);
             pnlCases.Name = "pnlCases";
-            pnlCases.Size = new Size(934, 382);
+            pnlCases.Size = new Size(1067, 509);
             pnlCases.TabIndex = 20;
             // 
             // dgvRecoveryCases
@@ -93,10 +93,12 @@
             dgvRecoveryCases.AllowUserToResizeColumns = false;
             dgvRecoveryCases.AllowUserToResizeRows = false;
             dgvRecoveryCases.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvRecoveryCases.Location = new Point(16, 42);
+            dgvRecoveryCases.Location = new Point(18, 56);
+            dgvRecoveryCases.Margin = new Padding(3, 4, 3, 4);
             dgvRecoveryCases.Name = "dgvRecoveryCases";
             dgvRecoveryCases.ReadOnly = true;
-            dgvRecoveryCases.Size = new Size(901, 325);
+            dgvRecoveryCases.RowHeadersWidth = 51;
+            dgvRecoveryCases.Size = new Size(1030, 433);
             dgvRecoveryCases.TabIndex = 28;
             dgvRecoveryCases.CellContentClick += dgvRecoveryCases_CellContentClick;
             dgvRecoveryCases.CellDoubleClick += dgvRecoveryCases_CellDoubleClick;
@@ -111,10 +113,10 @@
             btnRcWriteOff.IconChar = FontAwesome.Sharp.IconChar.None;
             btnRcWriteOff.IconColor = Color.Black;
             btnRcWriteOff.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnRcWriteOff.Location = new Point(782, 6);
-            btnRcWriteOff.Margin = new Padding(2);
+            btnRcWriteOff.Location = new Point(894, 8);
+            btnRcWriteOff.Margin = new Padding(2, 3, 2, 3);
             btnRcWriteOff.Name = "btnRcWriteOff";
-            btnRcWriteOff.Size = new Size(135, 31);
+            btnRcWriteOff.Size = new Size(154, 41);
             btnRcWriteOff.TabIndex = 27;
             btnRcWriteOff.Text = "Write-off";
             btnRcWriteOff.UseVisualStyleBackColor = false;
@@ -129,10 +131,10 @@
             btnRcCloseCase.IconChar = FontAwesome.Sharp.IconChar.None;
             btnRcCloseCase.IconColor = Color.Black;
             btnRcCloseCase.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnRcCloseCase.Location = new Point(627, 6);
-            btnRcCloseCase.Margin = new Padding(2);
+            btnRcCloseCase.Location = new Point(717, 8);
+            btnRcCloseCase.Margin = new Padding(2, 3, 2, 3);
             btnRcCloseCase.Name = "btnRcCloseCase";
-            btnRcCloseCase.Size = new Size(135, 31);
+            btnRcCloseCase.Size = new Size(154, 41);
             btnRcCloseCase.TabIndex = 26;
             btnRcCloseCase.Text = "Close Case";
             btnRcCloseCase.UseVisualStyleBackColor = false;
@@ -147,10 +149,10 @@
             btnRcPauseResumeCase.IconChar = FontAwesome.Sharp.IconChar.None;
             btnRcPauseResumeCase.IconColor = Color.Black;
             btnRcPauseResumeCase.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnRcPauseResumeCase.Location = new Point(472, 5);
-            btnRcPauseResumeCase.Margin = new Padding(2);
+            btnRcPauseResumeCase.Location = new Point(539, 7);
+            btnRcPauseResumeCase.Margin = new Padding(2, 3, 2, 3);
             btnRcPauseResumeCase.Name = "btnRcPauseResumeCase";
-            btnRcPauseResumeCase.Size = new Size(135, 31);
+            btnRcPauseResumeCase.Size = new Size(154, 41);
             btnRcPauseResumeCase.TabIndex = 25;
             btnRcPauseResumeCase.Text = "Pause / Resume";
             btnRcPauseResumeCase.UseVisualStyleBackColor = false;
@@ -162,10 +164,10 @@
             cbRcStatusFilter.FlatStyle = FlatStyle.Flat;
             cbRcStatusFilter.Font = new Font("Times New Roman", 13.8F);
             cbRcStatusFilter.FormattingEnabled = true;
-            cbRcStatusFilter.Location = new Point(293, 8);
-            cbRcStatusFilter.Margin = new Padding(2);
+            cbRcStatusFilter.Location = new Point(335, 11);
+            cbRcStatusFilter.Margin = new Padding(2, 3, 2, 3);
             cbRcStatusFilter.Name = "cbRcStatusFilter";
-            cbRcStatusFilter.Size = new Size(163, 28);
+            cbRcStatusFilter.Size = new Size(186, 34);
             cbRcStatusFilter.TabIndex = 18;
             cbRcStatusFilter.Text = "  ";
             cbRcStatusFilter.SelectedIndexChanged += cbRcStatusFilter_SelectedIndexChanged;
@@ -175,10 +177,10 @@
             lblRcHint.AutoSize = true;
             lblRcHint.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcHint.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcHint.Location = new Point(14, 12);
+            lblRcHint.Location = new Point(16, 16);
             lblRcHint.Margin = new Padding(2, 0, 2, 0);
             lblRcHint.Name = "lblRcHint";
-            lblRcHint.Size = new Size(266, 19);
+            lblRcHint.Size = new Size(351, 22);
             lblRcHint.TabIndex = 17;
             lblRcHint.Text = "Double-click a case to open its Allocations";
             // 
@@ -210,10 +212,10 @@
             pnlCaseEditor.Controls.Add(cbRcSymbol);
             pnlCaseEditor.Controls.Add(txtRcQuantity);
             pnlCaseEditor.Controls.Add(lblRcQuantity);
-            pnlCaseEditor.Location = new Point(11, 11);
-            pnlCaseEditor.Margin = new Padding(2);
+            pnlCaseEditor.Location = new Point(13, 15);
+            pnlCaseEditor.Margin = new Padding(2, 3, 2, 3);
             pnlCaseEditor.Name = "pnlCaseEditor";
-            pnlCaseEditor.Size = new Size(934, 264);
+            pnlCaseEditor.Size = new Size(1067, 352);
             pnlCaseEditor.TabIndex = 19;
             pnlCaseEditor.Paint += pnlCaseEditor_Paint;
             // 
@@ -226,10 +228,10 @@
             btnRcClear.IconChar = FontAwesome.Sharp.IconChar.None;
             btnRcClear.IconColor = Color.Black;
             btnRcClear.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnRcClear.Location = new Point(472, 146);
-            btnRcClear.Margin = new Padding(2);
+            btnRcClear.Location = new Point(539, 195);
+            btnRcClear.Margin = new Padding(2, 3, 2, 3);
             btnRcClear.Name = "btnRcClear";
-            btnRcClear.Size = new Size(152, 30);
+            btnRcClear.Size = new Size(174, 40);
             btnRcClear.TabIndex = 27;
             btnRcClear.Text = "Clear Fields";
             btnRcClear.UseVisualStyleBackColor = false;
@@ -243,10 +245,10 @@
             btnRcCancelUpdate.IconChar = FontAwesome.Sharp.IconChar.None;
             btnRcCancelUpdate.IconColor = Color.Black;
             btnRcCancelUpdate.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnRcCancelUpdate.Location = new Point(568, 122);
-            btnRcCancelUpdate.Margin = new Padding(2);
+            btnRcCancelUpdate.Location = new Point(649, 163);
+            btnRcCancelUpdate.Margin = new Padding(2, 3, 2, 3);
             btnRcCancelUpdate.Name = "btnRcCancelUpdate";
-            btnRcCancelUpdate.Size = new Size(105, 39);
+            btnRcCancelUpdate.Size = new Size(120, 52);
             btnRcCancelUpdate.TabIndex = 26;
             btnRcCancelUpdate.Text = "Cancel";
             btnRcCancelUpdate.UseVisualStyleBackColor = false;
@@ -261,10 +263,10 @@
             btnRcUpdateCase.IconChar = FontAwesome.Sharp.IconChar.None;
             btnRcUpdateCase.IconColor = Color.Black;
             btnRcUpdateCase.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnRcUpdateCase.Location = new Point(439, 122);
-            btnRcUpdateCase.Margin = new Padding(2);
+            btnRcUpdateCase.Location = new Point(502, 163);
+            btnRcUpdateCase.Margin = new Padding(2, 3, 2, 3);
             btnRcUpdateCase.Name = "btnRcUpdateCase";
-            btnRcUpdateCase.Size = new Size(105, 39);
+            btnRcUpdateCase.Size = new Size(120, 52);
             btnRcUpdateCase.TabIndex = 25;
             btnRcUpdateCase.Text = "Update Case";
             btnRcUpdateCase.UseVisualStyleBackColor = false;
@@ -279,10 +281,10 @@
             btnRcAddCase.IconChar = FontAwesome.Sharp.IconChar.None;
             btnRcAddCase.IconColor = Color.Black;
             btnRcAddCase.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnRcAddCase.Location = new Point(462, 95);
-            btnRcAddCase.Margin = new Padding(2);
+            btnRcAddCase.Location = new Point(528, 127);
+            btnRcAddCase.Margin = new Padding(2, 3, 2, 3);
             btnRcAddCase.Name = "btnRcAddCase";
-            btnRcAddCase.Size = new Size(175, 39);
+            btnRcAddCase.Size = new Size(200, 52);
             btnRcAddCase.TabIndex = 24;
             btnRcAddCase.Text = "Add Case";
             btnRcAddCase.UseVisualStyleBackColor = false;
@@ -292,10 +294,10 @@
             lblRcNeeded.AutoSize = true;
             lblRcNeeded.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcNeeded.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcNeeded.Location = new Point(426, 230);
+            lblRcNeeded.Location = new Point(487, 307);
             lblRcNeeded.Margin = new Padding(2, 0, 2, 0);
             lblRcNeeded.Name = "lblRcNeeded";
-            lblRcNeeded.Size = new Size(21, 19);
+            lblRcNeeded.Size = new Size(24, 22);
             lblRcNeeded.TabIndex = 23;
             lblRcNeeded.Text = "--";
             // 
@@ -304,10 +306,10 @@
             lblRcNeededCaption.AutoSize = true;
             lblRcNeededCaption.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcNeededCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcNeededCaption.Location = new Point(426, 199);
+            lblRcNeededCaption.Location = new Point(487, 265);
             lblRcNeededCaption.Margin = new Padding(2, 0, 2, 0);
             lblRcNeededCaption.Name = "lblRcNeededCaption";
-            lblRcNeededCaption.Size = new Size(149, 19);
+            lblRcNeededCaption.Size = new Size(188, 22);
             lblRcNeededCaption.TabIndex = 22;
             lblRcNeededCaption.Text = "Needed to Break Even";
             // 
@@ -316,10 +318,10 @@
             lblRcUnrealized.AutoSize = true;
             lblRcUnrealized.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcUnrealized.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcUnrealized.Location = new Point(293, 230);
+            lblRcUnrealized.Location = new Point(335, 307);
             lblRcUnrealized.Margin = new Padding(2, 0, 2, 0);
             lblRcUnrealized.Name = "lblRcUnrealized";
-            lblRcUnrealized.Size = new Size(21, 19);
+            lblRcUnrealized.Size = new Size(24, 22);
             lblRcUnrealized.TabIndex = 21;
             lblRcUnrealized.Text = "--";
             // 
@@ -328,10 +330,10 @@
             lblRcUnrealizedCaption.AutoSize = true;
             lblRcUnrealizedCaption.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcUnrealizedCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcUnrealizedCaption.Location = new Point(293, 199);
+            lblRcUnrealizedCaption.Location = new Point(335, 265);
             lblRcUnrealizedCaption.Margin = new Padding(2, 0, 2, 0);
             lblRcUnrealizedCaption.Name = "lblRcUnrealizedCaption";
-            lblRcUnrealizedCaption.Size = new Size(99, 19);
+            lblRcUnrealizedCaption.Size = new Size(129, 22);
             lblRcUnrealizedCaption.TabIndex = 20;
             lblRcUnrealizedCaption.Text = "Unrealized P/L";
             // 
@@ -340,10 +342,10 @@
             lblRcCurrentValue.AutoSize = true;
             lblRcCurrentValue.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcCurrentValue.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcCurrentValue.Location = new Point(156, 230);
+            lblRcCurrentValue.Location = new Point(178, 307);
             lblRcCurrentValue.Margin = new Padding(2, 0, 2, 0);
             lblRcCurrentValue.Name = "lblRcCurrentValue";
-            lblRcCurrentValue.Size = new Size(21, 19);
+            lblRcCurrentValue.Size = new Size(24, 22);
             lblRcCurrentValue.TabIndex = 19;
             lblRcCurrentValue.Text = "--";
             // 
@@ -352,10 +354,10 @@
             lblRcCurrentValueCaption.AutoSize = true;
             lblRcCurrentValueCaption.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcCurrentValueCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcCurrentValueCaption.Location = new Point(156, 199);
+            lblRcCurrentValueCaption.Location = new Point(178, 265);
             lblRcCurrentValueCaption.Margin = new Padding(2, 0, 2, 0);
             lblRcCurrentValueCaption.Name = "lblRcCurrentValueCaption";
-            lblRcCurrentValueCaption.Size = new Size(92, 19);
+            lblRcCurrentValueCaption.Size = new Size(118, 22);
             lblRcCurrentValueCaption.TabIndex = 18;
             lblRcCurrentValueCaption.Text = "Current Value";
             // 
@@ -364,10 +366,10 @@
             lblRcCurrentPrice.AutoSize = true;
             lblRcCurrentPrice.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcCurrentPrice.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcCurrentPrice.Location = new Point(19, 230);
+            lblRcCurrentPrice.Location = new Point(22, 307);
             lblRcCurrentPrice.Margin = new Padding(2, 0, 2, 0);
             lblRcCurrentPrice.Name = "lblRcCurrentPrice";
-            lblRcCurrentPrice.Size = new Size(21, 19);
+            lblRcCurrentPrice.Size = new Size(24, 22);
             lblRcCurrentPrice.TabIndex = 17;
             lblRcCurrentPrice.Text = "--";
             // 
@@ -376,10 +378,10 @@
             lblRcCurrentPriceCaption.AutoSize = true;
             lblRcCurrentPriceCaption.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcCurrentPriceCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcCurrentPriceCaption.Location = new Point(19, 199);
+            lblRcCurrentPriceCaption.Location = new Point(22, 265);
             lblRcCurrentPriceCaption.Margin = new Padding(2, 0, 2, 0);
             lblRcCurrentPriceCaption.Name = "lblRcCurrentPriceCaption";
-            lblRcCurrentPriceCaption.Size = new Size(90, 19);
+            lblRcCurrentPriceCaption.Size = new Size(116, 22);
             lblRcCurrentPriceCaption.TabIndex = 16;
             lblRcCurrentPriceCaption.Text = "Current Price";
             // 
@@ -388,10 +390,10 @@
             txtRcInvestedUSDT.BackColor = Color.FromArgb(30, 58, 95);
             txtRcInvestedUSDT.BorderStyle = BorderStyle.None;
             txtRcInvestedUSDT.Font = new Font("Times New Roman", 13.8F);
-            txtRcInvestedUSDT.Location = new Point(196, 139);
-            txtRcInvestedUSDT.Margin = new Padding(2);
+            txtRcInvestedUSDT.Location = new Point(224, 185);
+            txtRcInvestedUSDT.Margin = new Padding(2, 3, 2, 3);
             txtRcInvestedUSDT.Name = "txtRcInvestedUSDT";
-            txtRcInvestedUSDT.Size = new Size(162, 22);
+            txtRcInvestedUSDT.Size = new Size(185, 27);
             txtRcInvestedUSDT.TabIndex = 13;
             txtRcInvestedUSDT.Text = "   ";
             // 
@@ -400,10 +402,10 @@
             lblRcInvested.AutoSize = true;
             lblRcInvested.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcInvested.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcInvested.Location = new Point(196, 115);
+            lblRcInvested.Location = new Point(224, 153);
             lblRcInvested.Margin = new Padding(2, 0, 2, 0);
             lblRcInvested.Name = "lblRcInvested";
-            lblRcInvested.Size = new Size(114, 19);
+            lblRcInvested.Size = new Size(145, 22);
             lblRcInvested.TabIndex = 12;
             lblRcInvested.Text = "Invested (USDT)";
             // 
@@ -412,9 +414,11 @@
             grpRcAmountMode.Controls.Add(rbRcModeQuantity);
             grpRcAmountMode.Controls.Add(rbRcModeInvested);
             grpRcAmountMode.ForeColor = Color.FromArgb(156, 163, 175);
-            grpRcAmountMode.Location = new Point(14, 94);
+            grpRcAmountMode.Location = new Point(16, 125);
+            grpRcAmountMode.Margin = new Padding(3, 4, 3, 4);
             grpRcAmountMode.Name = "grpRcAmountMode";
-            grpRcAmountMode.Size = new Size(163, 85);
+            grpRcAmountMode.Padding = new Padding(3, 4, 3, 4);
+            grpRcAmountMode.Size = new Size(186, 113);
             grpRcAmountMode.TabIndex = 11;
             grpRcAmountMode.TabStop = false;
             grpRcAmountMode.Text = "Amount Entered";
@@ -422,9 +426,10 @@
             // rbRcModeQuantity
             // 
             rbRcModeQuantity.AutoSize = true;
-            rbRcModeQuantity.Location = new Point(15, 47);
+            rbRcModeQuantity.Location = new Point(17, 63);
+            rbRcModeQuantity.Margin = new Padding(3, 4, 3, 4);
             rbRcModeQuantity.Name = "rbRcModeQuantity";
-            rbRcModeQuantity.Size = new Size(106, 19);
+            rbRcModeQuantity.Size = new Size(131, 24);
             rbRcModeQuantity.TabIndex = 1;
             rbRcModeQuantity.Text = "Quantity (Base)";
             rbRcModeQuantity.UseVisualStyleBackColor = true;
@@ -433,9 +438,10 @@
             // 
             rbRcModeInvested.AutoSize = true;
             rbRcModeInvested.Checked = true;
-            rbRcModeInvested.Location = new Point(15, 22);
+            rbRcModeInvested.Location = new Point(17, 29);
+            rbRcModeInvested.Margin = new Padding(3, 4, 3, 4);
             rbRcModeInvested.Name = "rbRcModeInvested";
-            rbRcModeInvested.Size = new Size(108, 19);
+            rbRcModeInvested.Size = new Size(135, 24);
             rbRcModeInvested.TabIndex = 0;
             rbRcModeInvested.TabStop = true;
             rbRcModeInvested.Text = "Invested (USDT)";
@@ -446,10 +452,10 @@
             txtRcEntryPrice.BackColor = Color.FromArgb(30, 58, 95);
             txtRcEntryPrice.BorderStyle = BorderStyle.None;
             txtRcEntryPrice.Font = new Font("Times New Roman", 13.8F);
-            txtRcEntryPrice.Location = new Point(496, 41);
-            txtRcEntryPrice.Margin = new Padding(2);
+            txtRcEntryPrice.Location = new Point(567, 55);
+            txtRcEntryPrice.Margin = new Padding(2, 3, 2, 3);
             txtRcEntryPrice.Name = "txtRcEntryPrice";
-            txtRcEntryPrice.Size = new Size(162, 22);
+            txtRcEntryPrice.Size = new Size(185, 27);
             txtRcEntryPrice.TabIndex = 10;
             txtRcEntryPrice.Text = "   ";
             // 
@@ -458,10 +464,10 @@
             lblRcEntryPrice.AutoSize = true;
             lblRcEntryPrice.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcEntryPrice.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcEntryPrice.Location = new Point(496, 17);
+            lblRcEntryPrice.Location = new Point(567, 23);
             lblRcEntryPrice.Margin = new Padding(2, 0, 2, 0);
             lblRcEntryPrice.Name = "lblRcEntryPrice";
-            lblRcEntryPrice.Size = new Size(76, 19);
+            lblRcEntryPrice.Size = new Size(99, 22);
             lblRcEntryPrice.TabIndex = 9;
             lblRcEntryPrice.Text = "Entry Price";
             // 
@@ -470,10 +476,10 @@
             lblRcEntryDate.AutoSize = true;
             lblRcEntryDate.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcEntryDate.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcEntryDate.Location = new Point(375, 15);
+            lblRcEntryDate.Location = new Point(429, 20);
             lblRcEntryDate.Margin = new Padding(2, 0, 2, 0);
             lblRcEntryDate.Name = "lblRcEntryDate";
-            lblRcEntryDate.Size = new Size(74, 19);
+            lblRcEntryDate.Size = new Size(94, 22);
             lblRcEntryDate.TabIndex = 7;
             lblRcEntryDate.Text = "Entry Date";
             // 
@@ -481,9 +487,10 @@
             // 
             dateTimePicker1.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             dateTimePicker1.Format = DateTimePickerFormat.Short;
-            dateTimePicker1.Location = new Point(375, 37);
+            dateTimePicker1.Location = new Point(429, 49);
+            dateTimePicker1.Margin = new Padding(3, 4, 3, 4);
             dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(107, 26);
+            dateTimePicker1.Size = new Size(122, 30);
             dateTimePicker1.TabIndex = 6;
             // 
             // lblRcCaseType
@@ -491,10 +498,10 @@
             lblRcCaseType.AutoSize = true;
             lblRcCaseType.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcCaseType.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcCaseType.Location = new Point(196, 15);
+            lblRcCaseType.Location = new Point(224, 20);
             lblRcCaseType.Margin = new Padding(2, 0, 2, 0);
             lblRcCaseType.Name = "lblRcCaseType";
-            lblRcCaseType.Size = new Size(74, 19);
+            lblRcCaseType.Size = new Size(93, 22);
             lblRcCaseType.TabIndex = 5;
             lblRcCaseType.Text = "Case Type";
             // 
@@ -504,10 +511,10 @@
             cbRcCaseType.FlatStyle = FlatStyle.Flat;
             cbRcCaseType.Font = new Font("Times New Roman", 13.8F);
             cbRcCaseType.FormattingEnabled = true;
-            cbRcCaseType.Location = new Point(196, 37);
-            cbRcCaseType.Margin = new Padding(2);
+            cbRcCaseType.Location = new Point(224, 49);
+            cbRcCaseType.Margin = new Padding(2, 3, 2, 3);
             cbRcCaseType.Name = "cbRcCaseType";
-            cbRcCaseType.Size = new Size(163, 28);
+            cbRcCaseType.Size = new Size(186, 34);
             cbRcCaseType.TabIndex = 4;
             cbRcCaseType.Text = "  ";
             // 
@@ -516,10 +523,10 @@
             lblRcSymbol.AutoSize = true;
             lblRcSymbol.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcSymbol.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcSymbol.Location = new Point(14, 15);
+            lblRcSymbol.Location = new Point(16, 20);
             lblRcSymbol.Margin = new Padding(2, 0, 2, 0);
             lblRcSymbol.Name = "lblRcSymbol";
-            lblRcSymbol.Size = new Size(55, 19);
+            lblRcSymbol.Size = new Size(70, 22);
             lblRcSymbol.TabIndex = 3;
             lblRcSymbol.Text = "Symbol";
             // 
@@ -529,10 +536,10 @@
             cbRcSymbol.FlatStyle = FlatStyle.Flat;
             cbRcSymbol.Font = new Font("Times New Roman", 13.8F);
             cbRcSymbol.FormattingEnabled = true;
-            cbRcSymbol.Location = new Point(14, 37);
-            cbRcSymbol.Margin = new Padding(2);
+            cbRcSymbol.Location = new Point(16, 49);
+            cbRcSymbol.Margin = new Padding(2, 3, 2, 3);
             cbRcSymbol.Name = "cbRcSymbol";
-            cbRcSymbol.Size = new Size(163, 28);
+            cbRcSymbol.Size = new Size(186, 34);
             cbRcSymbol.TabIndex = 2;
             cbRcSymbol.Text = "  ";
             // 
@@ -541,10 +548,10 @@
             txtRcQuantity.BackColor = Color.FromArgb(30, 58, 95);
             txtRcQuantity.BorderStyle = BorderStyle.None;
             txtRcQuantity.Font = new Font("Times New Roman", 13.8F);
-            txtRcQuantity.Location = new Point(196, 139);
-            txtRcQuantity.Margin = new Padding(2);
+            txtRcQuantity.Location = new Point(224, 185);
+            txtRcQuantity.Margin = new Padding(2, 3, 2, 3);
             txtRcQuantity.Name = "txtRcQuantity";
-            txtRcQuantity.Size = new Size(162, 22);
+            txtRcQuantity.Size = new Size(185, 27);
             txtRcQuantity.TabIndex = 15;
             txtRcQuantity.Text = "   ";
             txtRcQuantity.Visible = false;
@@ -554,10 +561,10 @@
             lblRcQuantity.AutoSize = true;
             lblRcQuantity.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRcQuantity.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRcQuantity.Location = new Point(196, 115);
+            lblRcQuantity.Location = new Point(224, 153);
             lblRcQuantity.Margin = new Padding(2, 0, 2, 0);
             lblRcQuantity.Name = "lblRcQuantity";
-            lblRcQuantity.Size = new Size(60, 19);
+            lblRcQuantity.Size = new Size(76, 22);
             lblRcQuantity.TabIndex = 14;
             lblRcQuantity.Text = "Quantity";
             lblRcQuantity.Visible = false;
@@ -565,34 +572,35 @@
             // pnlCaseEditor_Max
             // 
             pnlCaseEditor_Max.BackColor = Color.FromArgb(27, 38, 59);
-            pnlCaseEditor_Max.Location = new Point(11, 11);
-            pnlCaseEditor_Max.Margin = new Padding(2);
+            pnlCaseEditor_Max.Location = new Point(13, 15);
+            pnlCaseEditor_Max.Margin = new Padding(2, 3, 2, 3);
             pnlCaseEditor_Max.Name = "pnlCaseEditor_Max";
-            pnlCaseEditor_Max.Size = new Size(1663, 382);
+            pnlCaseEditor_Max.Size = new Size(1901, 509);
             pnlCaseEditor_Max.TabIndex = 21;
             pnlCaseEditor_Max.Visible = false;
             // 
             // pnlCases_Max
             // 
             pnlCases_Max.BackColor = Color.FromArgb(27, 38, 59);
-            pnlCases_Max.Location = new Point(11, 444);
-            pnlCases_Max.Margin = new Padding(2);
+            pnlCases_Max.Location = new Point(13, 592);
+            pnlCases_Max.Margin = new Padding(2, 3, 2, 3);
             pnlCases_Max.Name = "pnlCases_Max";
-            pnlCases_Max.Size = new Size(1663, 527);
+            pnlCases_Max.Size = new Size(1901, 703);
             pnlCases_Max.TabIndex = 22;
             pnlCases_Max.Visible = false;
             // 
             // FrmRecoveryPlanner
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 27, 42);
-            ClientSize = new Size(1707, 1003);
+            ClientSize = new Size(1942, 1102);
             Controls.Add(pnlCases);
             Controls.Add(pnlCaseEditor);
             Controls.Add(pnlCaseEditor_Max);
             Controls.Add(pnlCases_Max);
             FormBorderStyle = FormBorderStyle.None;
+            Margin = new Padding(3, 4, 3, 4);
             Name = "FrmRecoveryPlanner";
             Text = "FrmRecoveryPlanner";
             pnlCases.ResumeLayout(false);
