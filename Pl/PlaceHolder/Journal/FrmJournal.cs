@@ -84,6 +84,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             lblProfitLoss.ForeColor = ThemeManager.DataTextColor;
             lblMargin.ForeColor = ThemeManager.DataTextColor;
             chbAllTrades.ForeColor = ThemeManager.DataTextColor;
+            lblDate.ForeColor = ThemeManager.DataTextColor;
 
             // Inputs (TextBoxes, ComboBoxes)
             txtEntryPrice.BackColor = ThemeManager.TextBoxColor;
@@ -144,8 +145,8 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             _layoutManager.RegisterControl(txtEntryPrice, pnlInformations, pnlInformations_Max, new Point(79, 165), new Size(203, 50));
             _layoutManager.RegisterControl(lblExitPrice, pnlInformations, pnlInformations_Max, new Point(456, 132), new Size(101, 26));
             _layoutManager.RegisterControl(txtExitPrice, pnlInformations, pnlInformations_Max, new Point(456, 165), new Size(203, 50));
-            _layoutManager.RegisterControl(lblStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 236), new Size(104, 26));
-            _layoutManager.RegisterControl(txtStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 272), new Size(203, 50));
+            _layoutManager.RegisterControl(lblStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 210), new Size(104, 26));
+            _layoutManager.RegisterControl(txtStopLoss, pnlInformations, pnlInformations_Max, new Point(79, 238), new Size(203, 50));
             _layoutManager.RegisterControl(lblTakeProfit, pnlInformations, pnlInformations_Max, new Point(456, 236), new Size(115, 26));
             _layoutManager.RegisterControl(txtTakeProfit, pnlInformations, pnlInformations_Max, new Point(456, 272), new Size(203, 50));
             _layoutManager.RegisterControl(lblProfitLoss, pnlInformations, pnlInformations_Max, new Point(877, 32), new Size(126, 26));
@@ -159,6 +160,8 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             _layoutManager.RegisterControl(btnClearData, pnlInformations, pnlInformations_Max, new Point(885, 300), new Size(155, 40));
             _layoutManager.RegisterControl(btnUpdateTrade, pnlInformations, pnlInformations_Max, new Point(835, 270), new Size(111, 40));
             _layoutManager.RegisterControl(btnCancelUpdate, pnlInformations, pnlInformations_Max, new Point(996, 270), new Size(111, 40));
+            _layoutManager.RegisterControl(lblDate, pnlInformations, pnlInformations_Max, new Point(79, 275), new Size(55, 26)); 
+            _layoutManager.RegisterControl(dtpDate, pnlInformations, pnlInformations_Max, new Point(79, 295), new Size(203, 39));
 
             // --- Register Controls in the BOTTOM panel (pnlData) ---
             _layoutManager.RegisterControl(dgvData, pnlData, pnlData_Max, new Point(20, 58), new Size(1605, 453));
@@ -253,7 +256,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
             ApplyTheme();
         }
-
+        
         private void btnAddTrade_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(cbSymbol.Text) || cbTradeType.SelectedItem == null)
@@ -276,6 +279,9 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             decimal.TryParse(txtTakeProfit.Text, out takeProfit);
             decimal.TryParse(txtMargin.Text, out margin);
             decimal.TryParse(txtProfitLoss.Text, out profitLoss);
+            DateTime date = dtpDate.Value;
+
+
 
 
             var manager = new TradeManager();
@@ -293,6 +299,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                     takeProfit,
                     margin,
                     profitLoss,
+                    date,
                     screenshotFilePath: screenshotPath // Pass the file path
                 );
 
@@ -324,6 +331,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             //txtScreenshotLink.Text = "   ";
             pbScreenshot.Image = null;
             txtScreenshotLink.PlaceholderText = "Upload link . . .";
+            dtpDate.Value = DateTime.Now;
         }
 
         private void LoadTrades(DateTime? filterDate = null)
@@ -540,6 +548,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                     tradeToUpdate = db.Trades.Find(tradeId);
                 }
 
+                // Inside dgvData_CellContentClick -> UpdateColumn branch: after populating other fields add dtpDate assignment
                 if (tradeToUpdate != null)
                 {
                     // 2. Populate the form fields
@@ -551,6 +560,9 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                     txtProfitLoss.Text = tradeToUpdate.ProfitLoss.ToString();
                     cbSymbol.Text = tradeToUpdate.Symbol;
                     cbTradeType.SelectedItem = tradeToUpdate.TradeType;
+
+                    // <<-- Populate the form's date picker with the trade's date
+                    dtpDate.Value = tradeToUpdate.Date;
 
                     // 3. Switch the form to "Update Mode"
                     EnterUpdateMode(tradeId);
@@ -569,18 +581,22 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 return;
             }
             decimal entryPrice, exitPrice = 0, stopLoss = 0, takeProfit = 0, margin = 0, profitLoss = 0;
+
             if (!decimal.TryParse(txtEntryPrice.Text, out entryPrice))
             {
                 MessageBox.Show("Please enter a valid Entry Price.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             decimal.TryParse(txtExitPrice.Text, out exitPrice);
             decimal.TryParse(txtStopLoss.Text, out stopLoss);
             decimal.TryParse(txtTakeProfit.Text, out takeProfit);
             decimal.TryParse(txtMargin.Text, out margin);
             decimal.TryParse(txtProfitLoss.Text, out profitLoss);
             string screenshotPath = txtScreenshotLink.Text;
-            // --- End of parsing logic ---
+
+            // <<-- Use the form's trade-date picker (dtpDate), not the filter picker
+            DateTime date = dtpDate.Value;
 
             try
             {
@@ -596,6 +612,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                     takeProfit,
                     margin,
                     profitLoss,
+                    date,
                     screenshotFilePath: screenshotPath
                 );
 

@@ -11,6 +11,7 @@ namespace TradingJournal.Core.Managers
                      decimal entryPrice, decimal exitPrice,
                      decimal stopLoss, decimal takeProfit,
                      decimal margin, decimal profitLoss,
+                     DateTime date,
                      string screenshotLink = null,
                      string screenshotFilePath = null)
         {
@@ -52,7 +53,7 @@ namespace TradingJournal.Core.Managers
                 ProfitLoss = profitLoss,
                 ScreenshotLink = screenshotLink,
                 ScreenshotImage = imageBytes,
-                Date = DateTime.Now
+                Date = date
             };
 
             using (var db = new AppDbContext())
@@ -66,6 +67,7 @@ namespace TradingJournal.Core.Managers
                      decimal entryPrice, decimal exitPrice,
                      decimal stopLoss, decimal takeProfit,
                      decimal margin, decimal profitLoss,
+                     DateTime date,
                      string screenshotFilePath = null) // Allow updating screenshots too
         {
             using (var db = new AppDbContext())
@@ -109,6 +111,7 @@ namespace TradingJournal.Core.Managers
                 tradeToUpdate.TakeProfit = takeProfit;
                 tradeToUpdate.Margin = margin;
                 tradeToUpdate.ProfitLoss = profitLoss; // Assign the newly calculated or user-provided PnL
+                tradeToUpdate.Date = date;
 
                 // Optional: Handle screenshot updates
                 if (!string.IsNullOrEmpty(screenshotFilePath) && File.Exists(screenshotFilePath))
