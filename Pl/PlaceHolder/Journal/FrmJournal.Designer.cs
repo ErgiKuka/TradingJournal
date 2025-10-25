@@ -45,6 +45,8 @@
             dtpFilterDate = new DateTimePicker();
             dgvData = new DataGridView();
             pnlInformations = new Panel();
+            lblDate = new Label();
+            dtpDate = new DateTimePicker();
             btnUploadScreenshot = new FontAwesome.Sharp.IconButton();
             lblTakeProfit = new Label();
             lblStopLoss = new Label();
@@ -253,18 +255,18 @@
             dtpFilterDate.CalendarTitleBackColor = Color.FromArgb(45, 51, 73);
             dtpFilterDate.CalendarTitleForeColor = Color.White;
             dtpFilterDate.CalendarTrailingForeColor = Color.Gray;
-            dtpFilterDate.CustomFormat = "dd/MM/yyyy";
+            dtpFilterDate.CustomFormat = "";
             dtpFilterDate.DropDownAlign = LeftRightAlignment.Right;
             dtpFilterDate.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            dtpFilterDate.Format = DateTimePickerFormat.Custom;
+            dtpFilterDate.Format = DateTimePickerFormat.Short;
             dtpFilterDate.Location = new Point(769, 10);
             dtpFilterDate.Margin = new Padding(2);
-            dtpFilterDate.MinDate = new DateTime(2025, 9, 6, 0, 0, 0, 0);
+            dtpFilterDate.MinDate = new DateTime(2025, 1, 1, 0, 0, 0, 0);
             dtpFilterDate.Name = "dtpFilterDate";
             dtpFilterDate.RightToLeft = RightToLeft.No;
             dtpFilterDate.Size = new Size(120, 26);
             dtpFilterDate.TabIndex = 14;
-            dtpFilterDate.Value = new DateTime(2025, 9, 6, 16, 53, 29, 0);
+            dtpFilterDate.Value = new DateTime(2025, 10, 25, 0, 0, 0, 0);
             dtpFilterDate.ValueChanged += dtpFilterDate_ValueChanged;
             // 
             // dgvData
@@ -289,6 +291,8 @@
             // pnlInformations
             // 
             pnlInformations.BackColor = Color.FromArgb(27, 38, 59);
+            pnlInformations.Controls.Add(lblDate);
+            pnlInformations.Controls.Add(dtpDate);
             pnlInformations.Controls.Add(btnClearData);
             pnlInformations.Controls.Add(btnCancelUpdate);
             pnlInformations.Controls.Add(btnUpdateTrade);
@@ -318,6 +322,28 @@
             pnlInformations.Size = new Size(934, 264);
             pnlInformations.TabIndex = 10;
             // 
+            // lblDate
+            // 
+            lblDate.AutoSize = true;
+            lblDate.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblDate.ForeColor = Color.FromArgb(156, 163, 175);
+            lblDate.Location = new Point(34, 206);
+            lblDate.Margin = new Padding(2, 0, 2, 0);
+            lblDate.Name = "lblDate";
+            lblDate.Size = new Size(38, 19);
+            lblDate.TabIndex = 21;
+            lblDate.Text = "Date";
+            // 
+            // dtpDate
+            // 
+            dtpDate.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dtpDate.Format = DateTimePickerFormat.Short;
+            dtpDate.Location = new Point(34, 226);
+            dtpDate.Margin = new Padding(2, 2, 2, 2);
+            dtpDate.Name = "dtpDate";
+            dtpDate.Size = new Size(122, 26);
+            dtpDate.TabIndex = 20;
+            // 
             // btnUploadScreenshot
             // 
             btnUploadScreenshot.AllowDrop = true;
@@ -344,7 +370,7 @@
             lblTakeProfit.AutoSize = true;
             lblTakeProfit.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblTakeProfit.ForeColor = Color.FromArgb(156, 163, 175);
-            lblTakeProfit.Location = new Point(228, 179);
+            lblTakeProfit.Location = new Point(229, 143);
             lblTakeProfit.Margin = new Padding(2, 0, 2, 0);
             lblTakeProfit.Name = "lblTakeProfit";
             lblTakeProfit.Size = new Size(76, 19);
@@ -356,7 +382,7 @@
             lblStopLoss.AutoSize = true;
             lblStopLoss.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblStopLoss.ForeColor = Color.FromArgb(156, 163, 175);
-            lblStopLoss.Location = new Point(34, 179);
+            lblStopLoss.Location = new Point(34, 143);
             lblStopLoss.Margin = new Padding(2, 0, 2, 0);
             lblStopLoss.Name = "lblStopLoss";
             lblStopLoss.Size = new Size(71, 19);
@@ -368,7 +394,7 @@
             lblExitPrice.AutoSize = true;
             lblExitPrice.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblExitPrice.ForeColor = Color.FromArgb(156, 163, 175);
-            lblExitPrice.Location = new Point(228, 96);
+            lblExitPrice.Location = new Point(228, 82);
             lblExitPrice.Margin = new Padding(2, 0, 2, 0);
             lblExitPrice.Name = "lblExitPrice";
             lblExitPrice.Size = new Size(67, 19);
@@ -380,7 +406,7 @@
             lblEntryPrice.AutoSize = true;
             lblEntryPrice.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblEntryPrice.ForeColor = Color.FromArgb(156, 163, 175);
-            lblEntryPrice.Location = new Point(34, 96);
+            lblEntryPrice.Location = new Point(34, 82);
             lblEntryPrice.Margin = new Padding(2, 0, 2, 0);
             lblEntryPrice.Name = "lblEntryPrice";
             lblEntryPrice.Size = new Size(76, 19);
@@ -392,7 +418,7 @@
             lblTradeType.AutoSize = true;
             lblTradeType.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblTradeType.ForeColor = Color.FromArgb(156, 163, 175);
-            lblTradeType.Location = new Point(228, 20);
+            lblTradeType.Location = new Point(228, 15);
             lblTradeType.Margin = new Padding(2, 0, 2, 0);
             lblTradeType.Name = "lblTradeType";
             lblTradeType.Size = new Size(78, 19);
@@ -404,7 +430,7 @@
             txtTakeProfit.BackColor = Color.FromArgb(30, 58, 95);
             txtTakeProfit.BorderStyle = BorderStyle.None;
             txtTakeProfit.Font = new Font("Times New Roman", 13.8F);
-            txtTakeProfit.Location = new Point(227, 208);
+            txtTakeProfit.Location = new Point(228, 172);
             txtTakeProfit.Margin = new Padding(2);
             txtTakeProfit.Name = "txtTakeProfit";
             txtTakeProfit.Size = new Size(162, 22);
@@ -416,7 +442,7 @@
             txtStopLoss.BackColor = Color.FromArgb(30, 58, 95);
             txtStopLoss.BorderStyle = BorderStyle.None;
             txtStopLoss.Font = new Font("Times New Roman", 13.8F);
-            txtStopLoss.Location = new Point(34, 208);
+            txtStopLoss.Location = new Point(34, 172);
             txtStopLoss.Margin = new Padding(2);
             txtStopLoss.Name = "txtStopLoss";
             txtStopLoss.Size = new Size(162, 22);
@@ -428,7 +454,7 @@
             txtExitPrice.BackColor = Color.FromArgb(30, 58, 95);
             txtExitPrice.BorderStyle = BorderStyle.None;
             txtExitPrice.Font = new Font("Times New Roman", 13.8F);
-            txtExitPrice.Location = new Point(228, 122);
+            txtExitPrice.Location = new Point(228, 107);
             txtExitPrice.Margin = new Padding(2);
             txtExitPrice.Name = "txtExitPrice";
             txtExitPrice.Size = new Size(162, 22);
@@ -440,7 +466,7 @@
             txtEntryPrice.BackColor = Color.FromArgb(30, 58, 95);
             txtEntryPrice.BorderStyle = BorderStyle.None;
             txtEntryPrice.Font = new Font("Times New Roman", 13.8F);
-            txtEntryPrice.Location = new Point(34, 122);
+            txtEntryPrice.Location = new Point(34, 107);
             txtEntryPrice.Margin = new Padding(2);
             txtEntryPrice.Name = "txtEntryPrice";
             txtEntryPrice.Size = new Size(162, 22);
@@ -455,7 +481,7 @@
             cbTradeType.Font = new Font("Times New Roman", 13.8F);
             cbTradeType.FormattingEnabled = true;
             cbTradeType.Items.AddRange(new object[] { "Long", "Short" });
-            cbTradeType.Location = new Point(228, 42);
+            cbTradeType.Location = new Point(228, 37);
             cbTradeType.Margin = new Padding(2);
             cbTradeType.Name = "cbTradeType";
             cbTradeType.Size = new Size(162, 28);
@@ -466,7 +492,7 @@
             lblSymbol.AutoSize = true;
             lblSymbol.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblSymbol.ForeColor = Color.FromArgb(156, 163, 175);
-            lblSymbol.Location = new Point(34, 20);
+            lblSymbol.Location = new Point(34, 15);
             lblSymbol.Margin = new Padding(2, 0, 2, 0);
             lblSymbol.Name = "lblSymbol";
             lblSymbol.Size = new Size(55, 19);
@@ -479,7 +505,7 @@
             cbSymbol.FlatStyle = FlatStyle.Flat;
             cbSymbol.Font = new Font("Times New Roman", 13.8F);
             cbSymbol.FormattingEnabled = true;
-            cbSymbol.Location = new Point(34, 42);
+            cbSymbol.Location = new Point(34, 37);
             cbSymbol.Margin = new Padding(2);
             cbSymbol.Name = "cbSymbol";
             cbSymbol.Size = new Size(163, 28);
@@ -511,7 +537,7 @@
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.FromArgb(13, 27, 42);
-            ClientSize = new Size(1707, 1003);
+            ClientSize = new Size(1552, 880);
             Controls.Add(pnlData);
             Controls.Add(pnlInformations);
             Controls.Add(pnlData_Max);
@@ -563,5 +589,7 @@
         private ComboBox cbSymbol;
         private Panel pnlData_Max;
         private Panel pnlInformations_Max;
+        private Label lblDate;
+        private DateTimePicker dtpDate;
     }
 }

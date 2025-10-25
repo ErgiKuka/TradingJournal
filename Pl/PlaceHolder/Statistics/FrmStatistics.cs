@@ -1,6 +1,4 @@
-﻿// TradingJournal.Pl.PlaceHolder.Statistics/FrmStatistics.cs
-
-using FontAwesome.Sharp;
+﻿using FontAwesome.Sharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -325,7 +323,13 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             }
         }
 
-        // Quick helper to compute the date filter based on radio buttons
+        // Calendar-aligned helpers (place here in the same file)
+        private static DateTime StartOfWeek(DateTime dt, DayOfWeek firstDayOfWeek = DayOfWeek.Monday)
+        {
+            int diff = (7 + (dt.DayOfWeek - firstDayOfWeek)) % 7;
+            return dt.Date.AddDays(-diff);
+        }
+
         private (DateTime? start, DateTime? end, ChartResolution res) GetRequestedRange()
         {
             var today = DateTime.Today;
@@ -334,12 +338,20 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
                 return (today, today, ChartResolution.Intraday);
 
             if (rbWeekly.Checked)
-                return (today.AddDays(-6), today, ChartResolution.Daily);      // 7 dots
+            {
+                DateTime weekStart = StartOfWeek(today, DayOfWeek.Monday);
+                DateTime weekEnd = weekStart.AddDays(6); // Monday .. Sunday
+                return (weekStart, weekEnd, ChartResolution.Daily);
+            }
 
             if (rbMonthly.Checked)
-                return (today.AddDays(-29), today, ChartResolution.Daily);     // 30 dots
+            {
+                DateTime monthStart = new DateTime(today.Year, today.Month, 1);
+                DateTime monthEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+                return (monthStart, monthEnd, ChartResolution.Daily);
+            }
 
-            // All time => daily points from first trade to last trade
+            // All time: let BuildSeries derive bounds from data
             return (null, null, ChartResolution.Daily);
         }
 

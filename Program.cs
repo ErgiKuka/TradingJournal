@@ -16,16 +16,16 @@ namespace TradingJournal
     {
         //Per me bo publish filein edhe athere me e perdor tek inno setupi
 
-//dotnet clean.\TradingJournal.csproj
-//dotnet publish.\TradingJournal.csproj -c Release -r win-x64 `
-//-p:PublishSingleFile=true `
-//-p:SelfContained=true `
+//        dotnet clean.\TradingJournal.csproj
+//        dotnet publish.\TradingJournal.csproj -c Release -r win-x64 `
+//-p:PublishSingleFile= true `
+//-p:SelfContained= true `
 //-p:IncludeNativeLibrariesForSelfExtract= true
 
 
 
 
-                        [STAThread]
+                                [STAThread]
         static void Main()
         {
             // ------- simple file logger --------

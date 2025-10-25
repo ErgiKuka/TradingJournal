@@ -86,7 +86,10 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
                 return;
             }
 
-            bool isLong = (cmbDirection.SelectedItem.ToString() == "Long");
+            // guard against null SelectedItem
+            string directionText = cmbDirection.SelectedItem?.ToString() ?? cmbDirection.Text ?? string.Empty;
+            bool isLong = directionText.Equals("Long", StringComparison.OrdinalIgnoreCase);
+
             int leverage = trackBarLeverage.Value;
 
             if (entryPrice == 0) return;
@@ -101,23 +104,28 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
                     MessageBox.Show("Please enter a valid Exit Price", "Input Error");
                     return;
                 }
-                if (!decimal.TryParse(txtPnlStopLoss.Text, out decimal stopLoss))
-                {
-                    MessageBox.Show("Please enter a valid Stop-Loss.", "Input Error");
-                    return;
-                }
+
+                // stop-loss is optional now
+                bool hasStopLoss = decimal.TryParse(txtPnlStopLoss.Text, out decimal stopLoss);
 
                 // Binance PnL formula
                 decimal pnl = (exitPrice - entryPrice) * quantity * (isLong ? 1 : -1);
 
-                // Binance Risk formula
-                decimal risk = (stopLoss - entryPrice) * quantity * (isLong ? 1 : -1);
+                decimal? risk = null;
+                decimal? rr = null;
 
-                decimal rr = (risk != 0) ? pnl / Math.Abs(risk) : 0;
+                if (hasStopLoss)
+                {
+                    // Binance Risk formula
+                    decimal calculatedRisk = (stopLoss - entryPrice) * quantity * (isLong ? 1 : -1);
+                    risk = calculatedRisk;
+                    rr = (Math.Abs(calculatedRisk) > 0) ? pnl / Math.Abs(calculatedRisk) : (decimal?)null;
+                }
 
                 decimal maxLoss = 0;
 
-                if (cmbMarginMode.SelectedItem.ToString() == "Isolated")
+                string marginMode = cmbMarginMode.SelectedItem?.ToString() ?? cmbMarginMode.Text ?? string.Empty;
+                if (marginMode.Equals("Isolated", StringComparison.OrdinalIgnoreCase))
                 {
                     maxLoss = margin; // isolated → you only lose your margin
                 }
@@ -125,7 +133,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
                 {
                     if (!decimal.TryParse(txtWalletBalance.Text, out decimal walletBalance))
                     {
-                        MessageBox.Show("Please enter a valid Wallet Balance for Cross Margin calculation.3", "Input Error");
+                        MessageBox.Show("Please enter a valid Wallet Balance for Cross Margin calculation.", "Input Error");
                         return;
                     }
 
@@ -139,7 +147,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
                 lblMaxLoss.Text = maxLoss.ToString("C");
                 lblMaxLoss.ForeColor = Color.FromArgb(231, 76, 60);
 
-                UpdatePnlLabels(pnl, risk, pnl, rr);
+                UpdatePnlLabels(pnl, risk, hasStopLoss ? pnl : (decimal?)null, rr);
             }
 
             // --- Mode: Liquidation Price ---
@@ -147,11 +155,12 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             {
                 // Binance maintenance margin (example: 0.005 = 0.5% default)
                 decimal maintenanceMarginRate = 0.005m;
-                decimal takerFeeRate = 0.0004m; // Binance futures taker fee ~0.04%
 
                 decimal liquidationPrice = 0;
 
-                if (cmbMarginMode.SelectedItem.ToString() == "Isolated")
+                string marginMode = cmbMarginMode.SelectedItem?.ToString() ?? cmbMarginMode.Text ?? string.Empty;
+
+                if (marginMode.Equals("Isolated", StringComparison.OrdinalIgnoreCase))
                 {
                     if (isLong)
                         liquidationPrice = entryPrice * (1 - (1m / leverage) + maintenanceMarginRate);
@@ -166,12 +175,12 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
                         return;
                     }
 
-                    decimal maintenanceMargin = positionSize * maintenanceMarginRate;
+                    decimal positionMaintenanceMargin = positionSize * maintenanceMarginRate;
 
                     if (isLong)
-                        liquidationPrice = (entryPrice * quantity - (walletBalance + margin - maintenanceMargin)) / quantity;
+                        liquidationPrice = (entryPrice * quantity - (walletBalance + margin - positionMaintenanceMargin)) / quantity;
                     else
-                        liquidationPrice = (entryPrice * quantity + (walletBalance + margin - maintenanceMargin)) / quantity;
+                        liquidationPrice = (entryPrice * quantity + (walletBalance + margin - positionMaintenanceMargin)) / quantity;
                 }
 
                 lblLiqPriceValue.Text = liquidationPrice.ToString("C");
@@ -204,7 +213,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             }
         }
 
-        private void rbMode_CheckedChanged(object sender, EventArgs e)
+        private void rbMode_CheckedChanged(object? sender, EventArgs e)
         {
             pnlPnlRr.Visible = rbModePnl.Checked;
             pnlLiquidation.Visible = rbModeLiquidation.Checked;
@@ -236,13 +245,13 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             cmbMarginMode.SelectedIndexChanged += cmbMarginMode_SelectedIndexChanged;
 
             // Set initial UI state
-            rbMode_CheckedChanged(null, null);
-            cmbMarginMode_SelectedIndexChanged(null, null);
+            rbMode_CheckedChanged(this, EventArgs.Empty);
+            cmbMarginMode_SelectedIndexChanged(this, EventArgs.Empty);
             UpdateCalculations();
             ApplyTheme();
         }
 
-        private void trackBarLeverage_Scroll(object sender, EventArgs e)
+        private void trackBarLeverage_Scroll(object? sender, EventArgs e)
         {
             if (_isUpdating) return;
             _isUpdating = true;
@@ -273,9 +282,9 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
         }
         private void ClearModeSpecificInputs()
         {
-            // Clear PnL panel
+            // Clear PnL panel (make stop-loss optional: do not clear wallet balance)
             txtPnlExitPrice.Text = "";
-            txtPnlStopLoss.Text = "";
+            // leave txtPnlStopLoss.Text as-is so user doesn't have to re-enter when switching modes
             label8.Text = "--";
             lblMaxLoss.Text = "--";
             lblRiskValue.Text = "--";
@@ -283,7 +292,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             lblRrValue.Text = "--";
 
             // Clear Liquidation panel
-            txtWalletBalance.Text = "";
+            // Do not clear txtWalletBalance here to preserve user input when switching between panels
             lblLiqPriceValue.Text = "--";
 
             // Clear Target Price panel
@@ -337,25 +346,52 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             MessageBox.Show("Calculation results copied to clipboard!", "Copied!", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void UpdatePnlLabels(decimal pnl, decimal risk, decimal reward, decimal rrRatio)
+        // Updated to accept nullable risk/reward/rr and display "--" when not provided
+        private void UpdatePnlLabels(decimal pnl, decimal? risk, decimal? reward, decimal? rrRatio)
         {
             Color positiveColor = Color.FromArgb(46, 204, 113);
             Color negativeColor = Color.FromArgb(231, 76, 60);
+            Color neutralColor = Color.Gray;
 
             label8.Text = pnl.ToString("C");
             label8.ForeColor = pnl >= 0 ? positiveColor : negativeColor;
 
-            lblRiskValue.Text = risk.ToString("C");
-            lblRiskValue.ForeColor = risk <= 0 ? negativeColor : positiveColor;
+            if (risk.HasValue)
+            {
+                lblRiskValue.Text = risk.Value.ToString("C");
+                // risk is typically negative for loss; color accordingly (loss = negative)
+                lblRiskValue.ForeColor = risk.Value <= 0 ? negativeColor : positiveColor;
+            }
+            else
+            {
+                lblRiskValue.Text = "--";
+                lblRiskValue.ForeColor = neutralColor;
+            }
 
-            lblRewardValue.Text = reward.ToString("C");
-            lblRewardValue.ForeColor = reward >= 0 ? positiveColor : negativeColor;
+            if (reward.HasValue)
+            {
+                lblRewardValue.Text = reward.Value.ToString("C");
+                lblRewardValue.ForeColor = reward.Value >= 0 ? positiveColor : negativeColor;
+            }
+            else
+            {
+                lblRewardValue.Text = "--";
+                lblRewardValue.ForeColor = neutralColor;
+            }
 
-            lblRrValue.Text = rrRatio.ToString("F2");
-            lblRrValue.ForeColor = rrRatio >= 1 ? positiveColor : negativeColor;
+            if (rrRatio.HasValue)
+            {
+                lblRrValue.Text = rrRatio.Value.ToString("F2");
+                lblRrValue.ForeColor = rrRatio.Value >= 1 ? positiveColor : negativeColor;
+            }
+            else
+            {
+                lblRrValue.Text = "--";
+                lblRrValue.ForeColor = neutralColor;
+            }
         }
 
-        private void txtLeverage_TextChanged(object sender, EventArgs e)
+        private void txtLeverage_TextChanged(object? sender, EventArgs e)
         {
             if (_isUpdating) return;
             if (int.TryParse(txtLeverage.Text, out int leverage) && leverage >= trackBarLeverage.Minimum && leverage <= trackBarLeverage.Maximum)
@@ -367,12 +403,12 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             }
         }
 
-        private void txtInput_TextChanged(object sender, EventArgs e)
+        private void txtInput_TextChanged(object? sender, EventArgs e)
         {
             UpdateCalculations();
         }
 
-        private void txtLeverage_KeyDown(object sender, KeyEventArgs e)
+        private void txtLeverage_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -382,7 +418,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
         }
 
 
-        private void txtTargetPnl_TextChanged(object sender, EventArgs e)
+        private void txtTargetPnl_TextChanged(object? sender, EventArgs e)
         {
             if (_isUpdating || string.IsNullOrWhiteSpace(txtTargetPnl.Text)) return;
             _isUpdating = true;
@@ -390,7 +426,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             _isUpdating = false;
         }
 
-        private void txtTargetRoi_TextChanged(object sender, EventArgs e)
+        private void txtTargetRoi_TextChanged(object? sender, EventArgs e)
         {
             if (_isUpdating || string.IsNullOrWhiteSpace(txtTargetRoi.Text)) return;
             _isUpdating = true;
@@ -398,9 +434,9 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             _isUpdating = false;
         }
 
-        private void cmbMarginMode_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmbMarginMode_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            bool isCrossMode = (cmbMarginMode.SelectedItem.ToString() == "Cross");
+            bool isCrossMode = (cmbMarginMode.SelectedItem?.ToString() ?? cmbMarginMode.Text ?? string.Empty) == "Cross";
             lblWalletBalance.Visible = isCrossMode;
             txtWalletBalance.Visible = isCrossMode;
 
