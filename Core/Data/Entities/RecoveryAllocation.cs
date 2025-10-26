@@ -1,7 +1,7 @@
-﻿// RecoveryAllocation.cs  (prepared for the next form; used now only to sum recovered)
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TradingJournal.Core.Data.Entities
 {
@@ -13,15 +13,10 @@ namespace TradingJournal.Core.Data.Entities
 
         public DateTime TradeDate { get; set; } = DateTime.UtcNow;
 
-        // Optional trade fields (handy later):
-        public decimal? EntryPrice { get; set; }
-        public decimal? ExitPrice { get; set; }
-        public decimal? MarginUSDT { get; set; }
-        public decimal? Quantity { get; set; }
-        public decimal? TradePnL { get; set; }
-
-        // The actual amount we applied to this case’s recovery
-        public decimal AllocatedUSDT { get; set; }
+        // DCA BUY ONLY: Entry price + either InvestedUSDT or Quantity
+        public decimal EntryPrice { get; set; }              // required per UI
+        public decimal? InvestedUSDT { get; set; }           // mapped to old DB column MarginUSDT
+        public decimal? Quantity { get; set; }               // single Quantity column (no duplicates)
 
         public string? Notes { get; set; }
         public DateTime AllocatedAt { get; set; } = DateTime.UtcNow;
@@ -30,12 +25,16 @@ namespace TradingJournal.Core.Data.Entities
         {
             e.ToTable("RecoveryAllocations");
             e.HasKey(x => x.Id);
-            e.Property(x => x.EntryPrice).HasColumnType("decimal(18,8)");
-            e.Property(x => x.ExitPrice).HasColumnType("decimal(18,8)");
-            e.Property(x => x.MarginUSDT).HasColumnType("decimal(18,2)");
+
+            e.Property(x => x.EntryPrice).HasColumnType("decimal(18,8)").IsRequired();
+
+            // Keep the existing DB column name (NO new column created)
+            e.Property(x => x.InvestedUSDT)
+             .HasColumnName("MarginUSDT")
+             .HasColumnType("decimal(18,2)");
+
             e.Property(x => x.Quantity).HasColumnType("decimal(18,8)");
-            e.Property(x => x.TradePnL).HasColumnType("decimal(18,2)");
-            e.Property(x => x.AllocatedUSDT).HasColumnType("decimal(18,2)").IsRequired();
+            e.Property(x => x.Notes).HasMaxLength(1000);
 
             e.HasOne(x => x.RecoveryCase)
              .WithMany(c => c.Allocations)

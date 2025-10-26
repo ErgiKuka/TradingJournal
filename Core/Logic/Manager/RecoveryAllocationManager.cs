@@ -13,62 +13,85 @@ namespace TradingJournal.Core.Managers
         public int Id { get; set; }
         public DateTime TradeDate { get; set; }
         public decimal EntryPrice { get; set; }
-        public decimal? ExitPrice { get; set; }
-        public decimal? MarginUSDT { get; set; }   // entered as margin
-        public decimal? Quantity { get; set; }     // entered as quantity
-        public decimal AllocatedUSDT { get; set; } // always non-null in the UI layer
+        public decimal? InvestedUSDT { get; set; }  // user enters either this...
+        public decimal? Quantity { get; set; }      // ...or this
+
+        // Convenience for grid (running stats)
+        public decimal ComputedQuantity { get; set; }   // Quantity or Invested/Entry
+        public decimal RunningTotalQty { get; set; }
+        public decimal RunningTotalInvested { get; set; }
+        public decimal RunningAvgEntry { get; set; }
     }
 
     public class RecoveryAllocationManager
     {
-        // List allocations for a case
+        // List allocations for a case (sorted desc), with running stats
         public async Task<List<AllocationRow>> GetRowsAsync(int caseId)
         {
             using var db = new AppDbContext();
 
-            return await db.RecoveryAllocations
+            var allocs = await db.RecoveryAllocations
                 .Where(a => a.RecoveryCaseId == caseId)
                 .OrderByDescending(a => a.TradeDate)
-                .Select(a => new AllocationRow
+                .Select(a => new
+                {
+                    a.Id,
+                    a.TradeDate,
+                    a.EntryPrice,
+                    a.InvestedUSDT,
+                    a.Quantity
+                })
+                .ToListAsync();
+
+            // Running stats need ascending chronological order then flip back
+            var asc = allocs.OrderBy(a => a.TradeDate).ToList();
+
+            decimal runningQty = 0m;
+            decimal runningInvested = 0m;
+            var withStatsAsc = new List<AllocationRow>(asc.Count);
+
+            foreach (var a in asc)
+            {
+                var qty = a.Quantity ?? ((a.InvestedUSDT.HasValue && a.EntryPrice > 0m) ? a.InvestedUSDT.Value / a.EntryPrice : 0m);
+                var inv = a.InvestedUSDT ?? (qty * a.EntryPrice);
+
+                runningQty += qty;
+                runningInvested += inv;
+
+                var avg = runningQty > 0m ? runningInvested / runningQty : 0m;
+
+                withStatsAsc.Add(new AllocationRow
                 {
                     Id = a.Id,
                     TradeDate = a.TradeDate,
-                    EntryPrice = (decimal)a.EntryPrice,
-                    ExitPrice = a.ExitPrice,
-                    MarginUSDT = a.MarginUSDT,
+                    EntryPrice = a.EntryPrice,
+                    InvestedUSDT = a.InvestedUSDT,
                     Quantity = a.Quantity,
-                    // Works whether a.AllocatedUSDT is decimal or decimal?
-                    AllocatedUSDT = EF.Property<decimal?>(a, nameof(a.AllocatedUSDT)) ?? 0m
-                })
-                .ToListAsync();
-        }
+                    ComputedQuantity = qty,
+                    RunningTotalQty = runningQty,
+                    RunningTotalInvested = runningInvested,
+                    RunningAvgEntry = avg
+                });
+            }
 
-        // Sum allocated (for KPIs) – safe for nullable or non-nullable columns
-        public static async Task<decimal> GetRecoveredSoFarAsync(AppDbContext db, int caseId)
-        {
-            var sum = await db.RecoveryAllocations
-                  .Where(a => a.RecoveryCaseId == caseId)
-                  // ✅ Same trick here to keep translation clean
-                  .SumAsync(a => EF.Property<decimal?>(a, nameof(a.AllocatedUSDT)));
-
-            return sum ?? 0m;
+            return withStatsAsc.OrderByDescending(x => x.TradeDate).ToList();
         }
 
         public int Add(int caseId, DateTime tradeDate, decimal entryPrice,
-                       decimal? exitPrice, decimal? marginUsdt, decimal? quantity,
-                       decimal allocatedUsdt)
+                       decimal? investedUsdt, decimal? quantity)
         {
+            if (entryPrice <= 0m) throw new ArgumentException("EntryPrice must be > 0", nameof(entryPrice));
+            if (!investedUsdt.HasValue && !quantity.HasValue)
+                throw new ArgumentException("Provide InvestedUSDT or Quantity.");
+
             using var db = new AppDbContext();
             var a = new RecoveryAllocation
             {
                 RecoveryCaseId = caseId,
                 TradeDate = tradeDate,
                 EntryPrice = entryPrice,
-                ExitPrice = exitPrice,
-                MarginUSDT = marginUsdt,
-                Quantity = quantity,
-                // If the entity property is decimal? or decimal, both are fine here
-                AllocatedUSDT = allocatedUsdt
+                InvestedUSDT = investedUsdt,
+                Quantity = quantity
             };
             db.RecoveryAllocations.Add(a);
             db.SaveChanges();
@@ -76,19 +99,20 @@ namespace TradingJournal.Core.Managers
         }
 
         public void Update(int id, DateTime tradeDate, decimal entryPrice,
-                           decimal? exitPrice, decimal? marginUsdt, decimal? quantity,
-                           decimal allocatedUsdt)
+                           decimal? investedUsdt, decimal? quantity)
         {
+            if (entryPrice <= 0m) throw new ArgumentException("EntryPrice must be > 0", nameof(entryPrice));
+            if (!investedUsdt.HasValue && !quantity.HasValue)
+                throw new ArgumentException("Provide InvestedUSDT or Quantity.");
+
             using var db = new AppDbContext();
             var a = db.RecoveryAllocations.Find(id);
             if (a == null) return;
 
             a.TradeDate = tradeDate;
             a.EntryPrice = entryPrice;
-            a.ExitPrice = exitPrice;
-            a.MarginUSDT = marginUsdt;
+            a.InvestedUSDT = investedUsdt;
             a.Quantity = quantity;
-            a.AllocatedUSDT = allocatedUsdt;
 
             db.SaveChanges();
         }
@@ -103,7 +127,7 @@ namespace TradingJournal.Core.Managers
             db.SaveChanges();
         }
 
-        // Helper to load a case (for KPIs)
+        // Helper to load a case
         public async Task<RecoveryCase?> GetCaseAsync(int caseId)
         {
             using var db = new AppDbContext();

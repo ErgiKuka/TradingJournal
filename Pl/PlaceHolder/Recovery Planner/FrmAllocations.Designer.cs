@@ -30,13 +30,9 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmAllocations));
             pnlAlcEditor = new Panel();
-            txtAlcProfit = new TextBox();
-            lblAlcProfit = new Label();
             grpAlcAmountMode = new GroupBox();
             rbAlcModeQuantity = new RadioButton();
             rbAlcModeMargin = new RadioButton();
-            txtAlcExitPrice = new TextBox();
-            lblAlcExitPrice = new Label();
             btnAlcClear = new FontAwesome.Sharp.IconButton();
             btnAlcCancelUpdate = new FontAwesome.Sharp.IconButton();
             btnAlcUpdate = new FontAwesome.Sharp.IconButton();
@@ -45,10 +41,10 @@
             lblAlcEntryPrice = new Label();
             lblAlcTradeDate = new Label();
             dtpAlcTradeDate = new DateTimePicker();
-            txtAlcMargin = new TextBox();
-            lblAlcMargin = new Label();
             txtAlcQuantity = new TextBox();
             lblAlcQuantity = new Label();
+            txtAlcMargin = new TextBox();
+            lblAlcMargin = new Label();
             pnlAlcGrid = new Panel();
             dataGridView1 = new DataGridView();
             lblAlcListCaption = new Label();
@@ -84,11 +80,7 @@
             // pnlAlcEditor
             // 
             pnlAlcEditor.BackColor = Color.FromArgb(27, 38, 59);
-            pnlAlcEditor.Controls.Add(txtAlcProfit);
-            pnlAlcEditor.Controls.Add(lblAlcProfit);
             pnlAlcEditor.Controls.Add(grpAlcAmountMode);
-            pnlAlcEditor.Controls.Add(txtAlcExitPrice);
-            pnlAlcEditor.Controls.Add(lblAlcExitPrice);
             pnlAlcEditor.Controls.Add(btnAlcClear);
             pnlAlcEditor.Controls.Add(btnAlcCancelUpdate);
             pnlAlcEditor.Controls.Add(btnAlcUpdate);
@@ -97,39 +89,15 @@
             pnlAlcEditor.Controls.Add(lblAlcEntryPrice);
             pnlAlcEditor.Controls.Add(lblAlcTradeDate);
             pnlAlcEditor.Controls.Add(dtpAlcTradeDate);
-            pnlAlcEditor.Controls.Add(txtAlcMargin);
-            pnlAlcEditor.Controls.Add(lblAlcMargin);
             pnlAlcEditor.Controls.Add(txtAlcQuantity);
             pnlAlcEditor.Controls.Add(lblAlcQuantity);
+            pnlAlcEditor.Controls.Add(txtAlcMargin);
+            pnlAlcEditor.Controls.Add(lblAlcMargin);
             pnlAlcEditor.Location = new Point(11, 11);
             pnlAlcEditor.Margin = new Padding(2);
             pnlAlcEditor.Name = "pnlAlcEditor";
             pnlAlcEditor.Size = new Size(1263, 230);
             pnlAlcEditor.TabIndex = 20;
-            // 
-            // txtAlcProfit
-            // 
-            txtAlcProfit.BackColor = Color.FromArgb(30, 58, 95);
-            txtAlcProfit.BorderStyle = BorderStyle.None;
-            txtAlcProfit.Font = new Font("Times New Roman", 18F);
-            txtAlcProfit.Location = new Point(496, 155);
-            txtAlcProfit.Margin = new Padding(2);
-            txtAlcProfit.Name = "txtAlcProfit";
-            txtAlcProfit.Size = new Size(162, 28);
-            txtAlcProfit.TabIndex = 36;
-            txtAlcProfit.Text = "   ";
-            // 
-            // lblAlcProfit
-            // 
-            lblAlcProfit.AutoSize = true;
-            lblAlcProfit.Font = new Font("Times New Roman", 14.25F);
-            lblAlcProfit.ForeColor = Color.FromArgb(156, 163, 175);
-            lblAlcProfit.Location = new Point(494, 126);
-            lblAlcProfit.Margin = new Padding(2, 0, 2, 0);
-            lblAlcProfit.Name = "lblAlcProfit";
-            lblAlcProfit.Size = new Size(118, 21);
-            lblAlcProfit.TabIndex = 35;
-            lblAlcProfit.Text = "Profit (USDT)";
             // 
             // grpAlcAmountMode
             // 
@@ -160,35 +128,11 @@
             rbAlcModeMargin.Checked = true;
             rbAlcModeMargin.Location = new Point(15, 22);
             rbAlcModeMargin.Name = "rbAlcModeMargin";
-            rbAlcModeMargin.Size = new Size(124, 23);
+            rbAlcModeMargin.Size = new Size(132, 23);
             rbAlcModeMargin.TabIndex = 0;
             rbAlcModeMargin.TabStop = true;
-            rbAlcModeMargin.Text = "Margin (USDT)";
+            rbAlcModeMargin.Text = "Invested (USDT)";
             rbAlcModeMargin.UseVisualStyleBackColor = true;
-            // 
-            // txtAlcExitPrice
-            // 
-            txtAlcExitPrice.BackColor = Color.FromArgb(30, 58, 95);
-            txtAlcExitPrice.BorderStyle = BorderStyle.None;
-            txtAlcExitPrice.Font = new Font("Times New Roman", 18F);
-            txtAlcExitPrice.Location = new Point(496, 58);
-            txtAlcExitPrice.Margin = new Padding(2);
-            txtAlcExitPrice.Name = "txtAlcExitPrice";
-            txtAlcExitPrice.Size = new Size(162, 28);
-            txtAlcExitPrice.TabIndex = 29;
-            txtAlcExitPrice.Text = "   ";
-            // 
-            // lblAlcExitPrice
-            // 
-            lblAlcExitPrice.AutoSize = true;
-            lblAlcExitPrice.Font = new Font("Times New Roman", 14.25F);
-            lblAlcExitPrice.ForeColor = Color.FromArgb(156, 163, 175);
-            lblAlcExitPrice.Location = new Point(494, 29);
-            lblAlcExitPrice.Margin = new Padding(2, 0, 2, 0);
-            lblAlcExitPrice.Name = "lblAlcExitPrice";
-            lblAlcExitPrice.Size = new Size(82, 21);
-            lblAlcExitPrice.TabIndex = 28;
-            lblAlcExitPrice.Text = "Exit Price";
             // 
             // btnAlcClear
             // 
@@ -199,7 +143,7 @@
             btnAlcClear.IconChar = FontAwesome.Sharp.IconChar.None;
             btnAlcClear.IconColor = Color.Black;
             btnAlcClear.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnAlcClear.Location = new Point(739, 131);
+            btnAlcClear.Location = new Point(563, 126);
             btnAlcClear.Margin = new Padding(2);
             btnAlcClear.Name = "btnAlcClear";
             btnAlcClear.Size = new Size(152, 30);
@@ -216,7 +160,7 @@
             btnAlcCancelUpdate.IconChar = FontAwesome.Sharp.IconChar.None;
             btnAlcCancelUpdate.IconColor = Color.Black;
             btnAlcCancelUpdate.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnAlcCancelUpdate.Location = new Point(835, 107);
+            btnAlcCancelUpdate.Location = new Point(659, 102);
             btnAlcCancelUpdate.Margin = new Padding(2);
             btnAlcCancelUpdate.Name = "btnAlcCancelUpdate";
             btnAlcCancelUpdate.Size = new Size(105, 39);
@@ -234,7 +178,7 @@
             btnAlcUpdate.IconChar = FontAwesome.Sharp.IconChar.None;
             btnAlcUpdate.IconColor = Color.Black;
             btnAlcUpdate.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnAlcUpdate.Location = new Point(679, 107);
+            btnAlcUpdate.Location = new Point(503, 102);
             btnAlcUpdate.Margin = new Padding(2);
             btnAlcUpdate.Name = "btnAlcUpdate";
             btnAlcUpdate.Size = new Size(132, 39);
@@ -252,7 +196,7 @@
             btnAlcAdd.IconChar = FontAwesome.Sharp.IconChar.None;
             btnAlcAdd.IconColor = Color.Black;
             btnAlcAdd.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            btnAlcAdd.Location = new Point(729, 80);
+            btnAlcAdd.Location = new Point(553, 75);
             btnAlcAdd.Margin = new Padding(2);
             btnAlcAdd.Name = "btnAlcAdd";
             btnAlcAdd.Size = new Size(175, 39);
@@ -307,30 +251,6 @@
             dtpAlcTradeDate.Size = new Size(128, 29);
             dtpAlcTradeDate.TabIndex = 6;
             // 
-            // txtAlcMargin
-            // 
-            txtAlcMargin.BackColor = Color.FromArgb(30, 58, 95);
-            txtAlcMargin.BorderStyle = BorderStyle.None;
-            txtAlcMargin.Font = new Font("Times New Roman", 18F);
-            txtAlcMargin.Location = new Point(252, 155);
-            txtAlcMargin.Margin = new Padding(2);
-            txtAlcMargin.Name = "txtAlcMargin";
-            txtAlcMargin.Size = new Size(162, 28);
-            txtAlcMargin.TabIndex = 32;
-            txtAlcMargin.Text = "   ";
-            // 
-            // lblAlcMargin
-            // 
-            lblAlcMargin.AutoSize = true;
-            lblAlcMargin.Font = new Font("Times New Roman", 14.25F);
-            lblAlcMargin.ForeColor = Color.FromArgb(156, 163, 175);
-            lblAlcMargin.Location = new Point(250, 126);
-            lblAlcMargin.Margin = new Padding(2, 0, 2, 0);
-            lblAlcMargin.Name = "lblAlcMargin";
-            lblAlcMargin.Size = new Size(128, 21);
-            lblAlcMargin.TabIndex = 31;
-            lblAlcMargin.Text = "Margin (USDT)";
-            // 
             // txtAlcQuantity
             // 
             txtAlcQuantity.BackColor = Color.FromArgb(30, 58, 95);
@@ -356,6 +276,30 @@
             lblAlcQuantity.TabIndex = 33;
             lblAlcQuantity.Text = "Quantity";
             lblAlcQuantity.Visible = false;
+            // 
+            // txtAlcMargin
+            // 
+            txtAlcMargin.BackColor = Color.FromArgb(30, 58, 95);
+            txtAlcMargin.BorderStyle = BorderStyle.None;
+            txtAlcMargin.Font = new Font("Times New Roman", 18F);
+            txtAlcMargin.Location = new Point(252, 155);
+            txtAlcMargin.Margin = new Padding(2);
+            txtAlcMargin.Name = "txtAlcMargin";
+            txtAlcMargin.Size = new Size(162, 28);
+            txtAlcMargin.TabIndex = 32;
+            txtAlcMargin.Text = "   ";
+            // 
+            // lblAlcMargin
+            // 
+            lblAlcMargin.AutoSize = true;
+            lblAlcMargin.Font = new Font("Times New Roman", 14.25F);
+            lblAlcMargin.ForeColor = Color.FromArgb(156, 163, 175);
+            lblAlcMargin.Location = new Point(250, 126);
+            lblAlcMargin.Margin = new Padding(2, 0, 2, 0);
+            lblAlcMargin.Name = "lblAlcMargin";
+            lblAlcMargin.Size = new Size(128, 21);
+            lblAlcMargin.TabIndex = 31;
+            lblAlcMargin.Text = "Margin (USDT)";
             // 
             // pnlAlcGrid
             // 
@@ -425,7 +369,7 @@
             // 
             // prgKpiProgress
             // 
-            prgKpiProgress.Location = new Point(25, 147);
+            prgKpiProgress.Location = new Point(43, 148);
             prgKpiProgress.Name = "prgKpiProgress";
             prgKpiProgress.Size = new Size(175, 23);
             prgKpiProgress.Style = ProgressBarStyle.Marquee;
@@ -436,7 +380,7 @@
             lblKpiProgressPct.AutoSize = true;
             lblKpiProgressPct.Font = new Font("Times New Roman", 14.25F);
             lblKpiProgressPct.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiProgressPct.Location = new Point(205, 149);
+            lblKpiProgressPct.Location = new Point(223, 150);
             lblKpiProgressPct.Margin = new Padding(2, 0, 2, 0);
             lblKpiProgressPct.Name = "lblKpiProgressPct";
             lblKpiProgressPct.Size = new Size(22, 21);
@@ -448,7 +392,7 @@
             lblKpiProgressCaption.AutoSize = true;
             lblKpiProgressCaption.Font = new Font("Times New Roman", 15.75F);
             lblKpiProgressCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiProgressCaption.Location = new Point(25, 118);
+            lblKpiProgressCaption.Location = new Point(43, 119);
             lblKpiProgressCaption.Margin = new Padding(2, 0, 2, 0);
             lblKpiProgressCaption.Name = "lblKpiProgressCaption";
             lblKpiProgressCaption.Size = new Size(88, 23);
@@ -460,7 +404,7 @@
             lblKpiNeeded.AutoSize = true;
             lblKpiNeeded.Font = new Font("Times New Roman", 15.75F);
             lblKpiNeeded.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiNeeded.Location = new Point(1036, 67);
+            lblKpiNeeded.Location = new Point(1086, 67);
             lblKpiNeeded.Margin = new Padding(2, 0, 2, 0);
             lblKpiNeeded.Name = "lblKpiNeeded";
             lblKpiNeeded.Size = new Size(24, 23);
@@ -472,19 +416,19 @@
             lblKpiNeededCaption.AutoSize = true;
             lblKpiNeededCaption.Font = new Font("Times New Roman", 15.75F);
             lblKpiNeededCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiNeededCaption.Location = new Point(1036, 36);
+            lblKpiNeededCaption.Location = new Point(1086, 36);
             lblKpiNeededCaption.Margin = new Padding(2, 0, 2, 0);
             lblKpiNeededCaption.Name = "lblKpiNeededCaption";
-            lblKpiNeededCaption.Size = new Size(201, 23);
+            lblKpiNeededCaption.Size = new Size(134, 23);
             lblKpiNeededCaption.TabIndex = 40;
-            lblKpiNeededCaption.Text = "Needed to Break Even:";
+            lblKpiNeededCaption.Text = "Current Profit:";
             // 
             // lblKpiRecovered
             // 
             lblKpiRecovered.AutoSize = true;
             lblKpiRecovered.Font = new Font("Times New Roman", 15.75F);
             lblKpiRecovered.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiRecovered.Location = new Point(909, 67);
+            lblKpiRecovered.Location = new Point(917, 67);
             lblKpiRecovered.Margin = new Padding(2, 0, 2, 0);
             lblKpiRecovered.Name = "lblKpiRecovered";
             lblKpiRecovered.Size = new Size(24, 23);
@@ -496,19 +440,19 @@
             lblKpiRecoveredCaption.AutoSize = true;
             lblKpiRecoveredCaption.Font = new Font("Times New Roman", 15.75F);
             lblKpiRecoveredCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiRecoveredCaption.Location = new Point(906, 36);
+            lblKpiRecoveredCaption.Location = new Point(914, 36);
             lblKpiRecoveredCaption.Margin = new Padding(2, 0, 2, 0);
             lblKpiRecoveredCaption.Name = "lblKpiRecoveredCaption";
-            lblKpiRecoveredCaption.Size = new Size(104, 23);
+            lblKpiRecoveredCaption.Size = new Size(158, 23);
             lblKpiRecoveredCaption.TabIndex = 38;
-            lblKpiRecoveredCaption.Text = "Recovered:";
+            lblKpiRecoveredCaption.Text = "Break-even Price:";
             // 
             // lblKpiCurrentValue
             // 
             lblKpiCurrentValue.AutoSize = true;
             lblKpiCurrentValue.Font = new Font("Times New Roman", 15.75F);
             lblKpiCurrentValue.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiCurrentValue.Location = new Point(756, 67);
+            lblKpiCurrentValue.Location = new Point(759, 67);
             lblKpiCurrentValue.Margin = new Padding(2, 0, 2, 0);
             lblKpiCurrentValue.Name = "lblKpiCurrentValue";
             lblKpiCurrentValue.Size = new Size(24, 23);
@@ -520,7 +464,7 @@
             lblKpiCurrentValueCaption.AutoSize = true;
             lblKpiCurrentValueCaption.Font = new Font("Times New Roman", 15.75F);
             lblKpiCurrentValueCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiCurrentValueCaption.Location = new Point(756, 36);
+            lblKpiCurrentValueCaption.Location = new Point(759, 36);
             lblKpiCurrentValueCaption.Margin = new Padding(2, 0, 2, 0);
             lblKpiCurrentValueCaption.Name = "lblKpiCurrentValueCaption";
             lblKpiCurrentValueCaption.Size = new Size(133, 23);
@@ -532,7 +476,7 @@
             lblKpiInvested.AutoSize = true;
             lblKpiInvested.Font = new Font("Times New Roman", 15.75F);
             lblKpiInvested.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiInvested.Location = new Point(644, 67);
+            lblKpiInvested.Location = new Point(659, 67);
             lblKpiInvested.Margin = new Padding(2, 0, 2, 0);
             lblKpiInvested.Name = "lblKpiInvested";
             lblKpiInvested.Size = new Size(24, 23);
@@ -544,7 +488,7 @@
             lblKpiInvestedCaption.AutoSize = true;
             lblKpiInvestedCaption.Font = new Font("Times New Roman", 15.75F);
             lblKpiInvestedCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiInvestedCaption.Location = new Point(644, 36);
+            lblKpiInvestedCaption.Location = new Point(659, 36);
             lblKpiInvestedCaption.Margin = new Padding(2, 0, 2, 0);
             lblKpiInvestedCaption.Name = "lblKpiInvestedCaption";
             lblKpiInvestedCaption.Size = new Size(84, 23);
@@ -556,7 +500,7 @@
             lblKpiCurrentPrice.AutoSize = true;
             lblKpiCurrentPrice.Font = new Font("Times New Roman", 15.75F);
             lblKpiCurrentPrice.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiCurrentPrice.Location = new Point(496, 67);
+            lblKpiCurrentPrice.Location = new Point(511, 67);
             lblKpiCurrentPrice.Margin = new Padding(2, 0, 2, 0);
             lblKpiCurrentPrice.Name = "lblKpiCurrentPrice";
             lblKpiCurrentPrice.Size = new Size(24, 23);
@@ -568,7 +512,7 @@
             lblKpiCurrentPriceCaption.AutoSize = true;
             lblKpiCurrentPriceCaption.Font = new Font("Times New Roman", 15.75F);
             lblKpiCurrentPriceCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiCurrentPriceCaption.Location = new Point(496, 36);
+            lblKpiCurrentPriceCaption.Location = new Point(511, 36);
             lblKpiCurrentPriceCaption.Margin = new Padding(2, 0, 2, 0);
             lblKpiCurrentPriceCaption.Name = "lblKpiCurrentPriceCaption";
             lblKpiCurrentPriceCaption.Size = new Size(128, 23);
@@ -604,7 +548,7 @@
             lblKpiAvgCost.AutoSize = true;
             lblKpiAvgCost.Font = new Font("Times New Roman", 15.75F);
             lblKpiAvgCost.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiAvgCost.Location = new Point(264, 67);
+            lblKpiAvgCost.Location = new Point(268, 67);
             lblKpiAvgCost.Margin = new Padding(2, 0, 2, 0);
             lblKpiAvgCost.Name = "lblKpiAvgCost";
             lblKpiAvgCost.Size = new Size(24, 23);
@@ -616,7 +560,7 @@
             lblKpiAvgCostCaption.AutoSize = true;
             lblKpiAvgCostCaption.Font = new Font("Times New Roman", 15.75F);
             lblKpiAvgCostCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiAvgCostCaption.Location = new Point(264, 36);
+            lblKpiAvgCostCaption.Location = new Point(268, 36);
             lblKpiAvgCostCaption.Margin = new Padding(2, 0, 2, 0);
             lblKpiAvgCostCaption.Name = "lblKpiAvgCostCaption";
             lblKpiAvgCostCaption.Size = new Size(92, 23);
@@ -628,7 +572,7 @@
             lblKpiEntryPrice.AutoSize = true;
             lblKpiEntryPrice.Font = new Font("Times New Roman", 15.75F);
             lblKpiEntryPrice.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiEntryPrice.Location = new Point(135, 67);
+            lblKpiEntryPrice.Location = new Point(149, 67);
             lblKpiEntryPrice.Margin = new Padding(2, 0, 2, 0);
             lblKpiEntryPrice.Name = "lblKpiEntryPrice";
             lblKpiEntryPrice.Size = new Size(24, 23);
@@ -640,7 +584,7 @@
             lblKpiEntryPriceCaption.AutoSize = true;
             lblKpiEntryPriceCaption.Font = new Font("Times New Roman", 15.75F);
             lblKpiEntryPriceCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiEntryPriceCaption.Location = new Point(132, 36);
+            lblKpiEntryPriceCaption.Location = new Point(146, 36);
             lblKpiEntryPriceCaption.Margin = new Padding(2, 0, 2, 0);
             lblKpiEntryPriceCaption.Name = "lblKpiEntryPriceCaption";
             lblKpiEntryPriceCaption.Size = new Size(109, 23);
@@ -652,7 +596,7 @@
             lblKpiSymbol.AutoSize = true;
             lblKpiSymbol.Font = new Font("Times New Roman", 15.75F);
             lblKpiSymbol.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiSymbol.Location = new Point(27, 67);
+            lblKpiSymbol.Location = new Point(42, 67);
             lblKpiSymbol.Margin = new Padding(2, 0, 2, 0);
             lblKpiSymbol.Name = "lblKpiSymbol";
             lblKpiSymbol.Size = new Size(24, 23);
@@ -664,7 +608,7 @@
             lblKpiSymbolCaption.AutoSize = true;
             lblKpiSymbolCaption.Font = new Font("Times New Roman", 15.75F);
             lblKpiSymbolCaption.ForeColor = Color.FromArgb(156, 163, 175);
-            lblKpiSymbolCaption.Location = new Point(25, 36);
+            lblKpiSymbolCaption.Location = new Point(43, 36);
             lblKpiSymbolCaption.Margin = new Padding(2, 0, 2, 0);
             lblKpiSymbolCaption.Name = "lblKpiSymbolCaption";
             lblKpiSymbolCaption.Size = new Size(79, 23);
@@ -713,9 +657,6 @@
         private System.Windows.Forms.Label lblAlcTradeDate;
         private System.Windows.Forms.DateTimePicker dtpAlcTradeDate;
 
-        private System.Windows.Forms.TextBox txtAlcExitPrice;
-        private System.Windows.Forms.Label lblAlcExitPrice;
-
         private System.Windows.Forms.TextBox txtAlcMargin;
         private System.Windows.Forms.Label lblAlcMargin;
 
@@ -725,9 +666,6 @@
 
         private System.Windows.Forms.TextBox txtAlcQuantity;
         private System.Windows.Forms.Label lblAlcQuantity;
-
-        private System.Windows.Forms.TextBox txtAlcProfit;
-        private System.Windows.Forms.Label lblAlcProfit;
 
         private System.Windows.Forms.Panel pnlAlcGrid;
         private System.Windows.Forms.Label lblAlcListCaption;

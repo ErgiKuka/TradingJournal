@@ -21,54 +21,60 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
         private readonly BindingSource _bs = new BindingSource();
         private int? _updateId = null;
         private readonly System.Windows.Forms.Timer _priceTimer;
+        private RecoveryCase? _case;
 
-        private RecoveryCase? _case; // loaded for KPIs
+        // Notify parent (optional) when status flips (so parent can refresh its grid)
+        public event Action<int, RecoveryCaseStatus>? CaseStatusChanged;
 
-        // guards to prevent accidental double-handling (e.g., duplicate event wiring)
-        private bool _inAddHandler = false;
-        private bool _inUpdateHandler = false;
+        // header text variants (Normal vs Maximized)
+        private readonly Dictionary<string, (string Short, string Full)> _headerText = new()
+        {
+            { "EntryPrice", ("Entry", "Entry Price") },
+            { "InvestedUSDT", ("Inv...", "Invested (USDT)") },
+            { "Quantity", ("Qty", "Qty (Base)") },
+            { "RunningTotalQty", ("Run Qty", "Run Total Qty") },
+            { "RunningTotalInvested", ("Run Inv", "Run Total Invested") },
+            { "RunningAvgEntry", ("Run Avg", "Run Avg Entry") }
+        };
 
-        // ----- constructor receives the Case Id -----
         public FrmAllocations(int recoveryCaseId)
         {
             _caseId = recoveryCaseId;
             InitializeComponent();
 
-            // Round panels & buttons to match Journal
             TryRoundUi();
 
-            // theme + UI
             ThemeManager.ThemeChanged += async (s, e) =>
             {
                 ApplyTheme();
-                await RefreshKpisAsync();   // re-evaluate & recolor KPIs using current values
+                await RefreshKpisAsync();
             };
             ApplyTheme();
 
-            // grid
             SetupGrid();
             ApplyBaseGridStyling();
             ApplyReadableGridFonts();
+
             dataGridView1.CellContentClick += DataGrid_CellContentClick;
             dataGridView1.CellPainting += DataGrid_CellPainting;
+            dataGridView1.CellFormatting += DataGrid_CellFormatting;
 
-            // amount mode toggles
+            // Only Invested/Quantity modes; no Exit/Profit columns
             rbAlcModeMargin.CheckedChanged += (_, __) => ToggleAmountInputs();
             rbAlcModeQuantity.CheckedChanged += (_, __) => ToggleAmountInputs();
             ToggleAmountInputs();
 
-            // buttons
-            btnAlcAdd.Click += btnAlcAdd_Click;   // single, guarded
             btnAlcUpdate.Click += btnAlcUpdate_Click;
             btnAlcCancelUpdate.Click += (_, __) => ExitUpdateMode();
             btnAlcClear.Click += (_, __) => ClearInputs();
 
-            // periodic price (for KPIs display)
+            // Keep your dynamic maximize behavior
+            this.SizeChanged += (_, __) => ApplyWindowStateLayout();
+
             _priceTimer = new System.Windows.Forms.Timer { Interval = 60_000 };
             _priceTimer.Tick += async (_, __) => await RefreshKpisAsync();
             _priceTimer.Start();
 
-            // initial load
             _ = LoadCaseAndAllocationsAsync();
         }
 
@@ -85,18 +91,14 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
                 RoundedFormHelper.MakeButtonRounded(btnAlcCancelUpdate, 24);
                 RoundedFormHelper.MakeButtonRounded(btnAlcClear, 24);
             }
-            catch { /* ignore */ }
+            catch { }
         }
 
-        private static decimal ComputeProfitOrZero(decimal entry, decimal? exit, decimal? margin, decimal? qty)
+        private static decimal ComputeQuantity(decimal entry, decimal? invested, decimal? qty)
         {
-            if (!exit.HasValue) return 0m;
-
-            decimal effectiveQty = qty ?? ((margin.HasValue && entry > 0m) ? (margin.Value / entry) : 0m);
-            if (effectiveQty <= 0m) return 0m;
-
-            var p = (exit.Value - entry) * effectiveQty;
-            return p < 0m ? 0m : p; // clamp negatives to 0 for “allocated”
+            if (qty.HasValue) return qty.Value;
+            if (invested.HasValue && entry > 0m) return invested.Value / entry;
+            return 0m;
         }
 
         #region Theme
@@ -107,39 +109,24 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             foreach (var p in new[] { pnlAlcEditor, pnlAlcGrid, pnlAlcKpis })
                 p.BackColor = ThemeManager.PanelColor;
 
-            // Labels (all containers)
             foreach (var lbl in pnlAlcEditor.Controls.OfType<Label>()
                          .Concat(pnlAlcGrid.Controls.OfType<Label>())
                          .Concat(pnlAlcKpis.Controls.OfType<Label>()))
                 lbl.ForeColor = ThemeManager.DataTextColor;
 
-            // Inputs
-            foreach (var tb in new[] { txtAlcEntryPrice, txtAlcExitPrice, txtAlcMargin, txtAlcQuantity, txtAlcProfit })
+            foreach (var tb in new[] { txtAlcEntryPrice, txtAlcMargin, txtAlcQuantity })
             {
                 tb.BackColor = ThemeManager.TextBoxColor;
                 tb.ForeColor = ThemeManager.TextColor;
                 tb.BorderStyle = BorderStyle.None;
             }
 
-            // GroupBoxes + radios (apply generically so we don't depend on designer names)
-            foreach (var grp in pnlAlcEditor.Controls.OfType<GroupBox>())
-            {
-                grp.BackColor = ThemeManager.PanelColor;
-                grp.ForeColor = ThemeManager.DataTextColor;
-                foreach (var rb in grp.Controls.OfType<RadioButton>())
-                    rb.ForeColor = ThemeManager.TextColor;
-            }
-
-            foreach (var b in new[] { btnAlcAdd, btnAlcUpdate, btnAlcCancelUpdate, btnAlcClear })
-                b.ForeColor = ThemeManager.ActionButtonTextColor;
-
-            // progress bar
             prgKpiProgress.Style = ProgressBarStyle.Continuous;
             prgKpiProgress.Minimum = 0;
             prgKpiProgress.Maximum = 100;
 
-            // DataGrid: match Journal alternation/selection
             ApplyBaseGridStyling();
+            ApplyWindowStateLayout();   // respect current state immediately
         }
         #endregion
 
@@ -149,7 +136,6 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.ReadOnly = true;
-
             dataGridView1.SelectionMode = DataGridViewSelectionMode.CellSelect;
             dataGridView1.MultiSelect = false;
             dataGridView1.RowHeadersVisible = false;
@@ -157,66 +143,54 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
 
             dataGridView1.Columns.Clear();
 
-            var updateCol = new DataGridViewButtonColumn
-            {
-                Name = "UpdateColumn",
-                HeaderText = "Update",
-                Text = "Update",
-                UseColumnTextForButtonValue = true,
-                Width = 70
-            };
-            var deleteCol = new DataGridViewButtonColumn
-            {
-                Name = "DeleteColumn",
-                HeaderText = "Delete",
-                Text = "Delete",
-                UseColumnTextForButtonValue = true,
-                Width = 70
-            };
+            var updateCol = new DataGridViewButtonColumn { Name = "UpdateColumn", HeaderText = "Update", Text = "Update", UseColumnTextForButtonValue = true, Width = 70 };
+            var deleteCol = new DataGridViewButtonColumn { Name = "DeleteColumn", HeaderText = "Delete", Text = "Delete", UseColumnTextForButtonValue = true, Width = 70 };
 
             dataGridView1.Columns.Add(updateCol);
             dataGridView1.Columns.Add(deleteCol);
 
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Id", Name = "AllocationId", Visible = false });
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "TradeDate", HeaderText = "Date" });
-            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "EntryPrice", HeaderText = "Entry Price" });
-            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "ExitPrice", HeaderText = "Exit Price" });
-            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "MarginUSDT", HeaderText = "Margin (USDT)" });
-            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Quantity", HeaderText = "Qty (Base)" });
-            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "AllocatedUSDT", HeaderText = "Profit Alloc (USDT)" });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "EntryPrice", Name = "EntryPrice", HeaderText = "Entry Price" });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "InvestedUSDT", Name = "InvestedUSDT", HeaderText = "Invested (USDT)" });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Quantity", Name = "Quantity", HeaderText = "Qty (Base)" });
+
+            // running totals/avg come from your row-projection
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "RunningTotalQty", Name = "RunningTotalQty", HeaderText = "Run Total Qty" });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "RunningTotalInvested", Name = "RunningTotalInvested", HeaderText = "Run Total Invested" });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "RunningAvgEntry", Name = "RunningAvgEntry", HeaderText = "Run Avg Entry" });
 
             dataGridView1.DataSource = _bs;
         }
 
         private void ApplyBaseGridStyling()
         {
-            // Colors consistent with Journal
             dataGridView1.BackgroundColor = ThemeManager.PanelColor;
             dataGridView1.BorderStyle = BorderStyle.None;
             dataGridView1.GridColor = Color.FromArgb(45, 51, 73);
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            // Headers
             dataGridView1.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = ThemeManager.DataGridHeader;
             dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = ThemeManager.TextColor;
             dataGridView1.EnableHeadersVisualStyles = false;
 
-            // Prevent header highlighting looking odd
             dataGridView1.ColumnHeadersDefaultCellStyle.SelectionBackColor = ThemeManager.DataGridHeader;
             dataGridView1.ColumnHeadersDefaultCellStyle.SelectionForeColor = ThemeManager.TextColor;
 
-            // Rows (primary) + selection
             dataGridView1.DefaultCellStyle.BackColor = ThemeManager.DataPanelColor;
             dataGridView1.DefaultCellStyle.ForeColor = ThemeManager.TextColor;
             dataGridView1.DefaultCellStyle.SelectionBackColor = ThemeManager.BackgroundColor;
             dataGridView1.DefaultCellStyle.SelectionForeColor = ThemeManager.TextColor;
 
-            // Alternating row colors + selection (match Journal)
             dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = ThemeManager.DataGrid;
             dataGridView1.AlternatingRowsDefaultCellStyle.ForeColor = ThemeManager.TextColor;
             dataGridView1.AlternatingRowsDefaultCellStyle.SelectionBackColor = ThemeManager.BackgroundColor;
             dataGridView1.AlternatingRowsDefaultCellStyle.SelectionForeColor = ThemeManager.TextColor;
+
+            grpAlcAmountMode.ForeColor = ThemeManager.TextColor;
+
+            lblKpiInvested.ForeColor = ThemeManager.WarningColor;
         }
 
         private void ApplyReadableGridFonts()
@@ -231,42 +205,64 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
         {
             if (e.RowIndex < 0) return;
 
-            // DELETE button style (match Journal)
             if (e.ColumnIndex == dataGridView1.Columns["DeleteColumn"].Index)
             {
                 e.Paint(e.CellBounds, DataGridViewPaintParts.All);
-
-                var buttonBounds = e.CellBounds;
-                buttonBounds.Inflate(-2, -2);
-                var buttonColor = Color.FromArgb(220, 53, 69); // red
-
-                ControlPaint.DrawButton(e.Graphics, buttonBounds, ButtonState.Normal);
+                var buttonBounds = e.CellBounds; buttonBounds.Inflate(-2, -2);
+                var buttonColor = Color.FromArgb(220, 53, 69);
                 using var br = new SolidBrush(buttonColor);
                 e.Graphics.FillRectangle(br, buttonBounds);
-
                 TextRenderer.DrawText(e.Graphics, "Delete", e.CellStyle.Font, buttonBounds, Color.White,
                     TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter);
-
                 e.Handled = true;
             }
 
-            // UPDATE button style (match Journal)
             if (e.ColumnIndex == dataGridView1.Columns["UpdateColumn"].Index)
             {
                 e.Paint(e.CellBounds, DataGridViewPaintParts.All);
-
-                var buttonBounds = e.CellBounds;
-                buttonBounds.Inflate(-2, -2);
-                var buttonColor = Color.FromArgb(0, 123, 255); // blue
-
-                ControlPaint.DrawButton(e.Graphics, buttonBounds, ButtonState.Normal);
+                var buttonBounds = e.CellBounds; buttonBounds.Inflate(-2, -2);
+                var buttonColor = Color.FromArgb(0, 123, 255);
                 using var br = new SolidBrush(buttonColor);
                 e.Graphics.FillRectangle(br, buttonBounds);
-
                 TextRenderer.DrawText(e.Graphics, "Update", e.CellStyle.Font, buttonBounds, Color.White,
                     TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter);
-
                 e.Handled = true;
+            }
+        }
+
+        // Format numbers: money -> 2dp, prices/qty -> up to 3dp (or more if <1)
+        private void DataGrid_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.Value is null) return;
+            var col = dataGridView1.Columns[e.ColumnIndex];
+
+            bool IsMoneyCol = col.Name is "InvestedUSDT" or "RunningTotalInvested";
+            bool IsPriceCol = col.Name is "EntryPrice" or "RunningAvgEntry";
+            bool IsQtyCol = col.Name is "Quantity" or "RunningTotalQty";
+
+            if (IsMoneyCol && decimal.TryParse(e.Value.ToString(), out var money))
+                e.Value = money.ToString("0.00", CultureInfo.CurrentCulture);
+            else if ((IsPriceCol || IsQtyCol) && decimal.TryParse(e.Value.ToString(), out var num))
+                e.Value = num >= 1m ? num.ToString("0.###", CultureInfo.CurrentCulture)
+                                    : num.ToString("0.########", CultureInfo.CurrentCulture);
+        }
+        #endregion
+
+        #region Window state layout (restore your normal/max behavior)
+        private void ApplyWindowStateLayout()
+        {
+            bool maximized = this.WindowState == FormWindowState.Maximized;
+
+            // header height
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font =
+                new Font("Segoe UI", maximized ? 12 : 11, FontStyle.Bold);
+            dataGridView1.ColumnHeadersHeight = maximized ? 36 : 26;
+
+            // header captions
+            foreach (DataGridViewColumn c in dataGridView1.Columns)
+            {
+                if (_headerText.TryGetValue(c.Name, out var t))
+                    c.HeaderText = maximized ? t.Full : t.Short;
             }
         }
         #endregion
@@ -284,11 +280,9 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
 
             UpdateWindowTitle();
 
-            // header values
             lblKpiSymbol.Text = _case.Symbol;
-            lblKpiEntryPrice.Text = _case.EntryPrice.ToString("0.########");
+            lblKpiEntryPrice.Text = _case.EntryPrice.ToString(_case.EntryPrice >= 1m ? "0.###" : "0.########");
 
-            // grid
             var rows = await _alcMgr.GetRowsAsync(_caseId);
             _bs.DataSource = rows;
 
@@ -299,7 +293,6 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
         {
             if (_case == null) return;
 
-            // e.g., "Allocations – SOL/USDT • Entry: 10/18/2025 • Status: Active"
             var nice = _case.Symbol?.EndsWith("USDT", StringComparison.OrdinalIgnoreCase) == true
                 ? _case.Symbol.Replace("USDT", "/USDT", StringComparison.OrdinalIgnoreCase)
                 : _case.Symbol;
@@ -314,96 +307,102 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
         {
             if (_case == null) return;
 
-            // live price
             decimal currentPrice = 0m;
             try { currentPrice = await _binance.GetLastPriceAsync(_case.Symbol); }
-            catch { /* network hiccup: leave zero */ }
+            catch { }
 
-            lblKpiCurrentPrice.Text = currentPrice > 0 ? currentPrice.ToString(currentPrice >= 1m ? "0.00####" : "0.########") : "--";
+            lblKpiCurrentPrice.Text = currentPrice > 0 ? (currentPrice >= 1m ? currentPrice.ToString("0.###") : currentPrice.ToString("0.########")) : "--";
 
-            // compute derived values
-            decimal qty = _case.Quantity ?? (_case.InvestedUSDT.HasValue && _case.EntryPrice > 0m
+            // totals = initial + allocations
+            var rows = (_bs.List as IEnumerable<AllocationRow>) ?? Enumerable.Empty<AllocationRow>();
+
+            decimal initQty = _case.Quantity ?? (_case.InvestedUSDT.HasValue && _case.EntryPrice > 0m
                             ? _case.InvestedUSDT.Value / _case.EntryPrice : 0m);
-            lblKpiQuantity.Text = qty > 0 ? qty.ToString("0.########") : "--";
+            decimal initInv = _case.InvestedUSDT ?? (initQty * _case.EntryPrice);
 
-            decimal invested = _case.InvestedUSDT ?? (qty * _case.EntryPrice);
-            lblKpiInvested.Text = invested > 0 ? invested.ToString("0.00") : "--";
+            // Use the single Quantity column; if a row is in USDT, infer its qty just for math
+            decimal addQty = rows.Sum(r =>
+            {
+                if (r.Quantity.HasValue) return r.Quantity.Value;
+                if (r.InvestedUSDT.HasValue && r.EntryPrice > 0m) return r.InvestedUSDT.Value / r.EntryPrice;
+                return 0m;
+            });
+            decimal addInv = rows.Sum(r => r.InvestedUSDT ?? ((r.Quantity ?? 0m) * r.EntryPrice));
 
-            decimal avgCost = qty > 0 ? invested / qty : 0m;
-            lblKpiAvgCost.Text = qty > 0 ? avgCost.ToString("0.########") : "--";
+            decimal totalQty = initQty + addQty;
+            decimal totalInv = initInv + addInv;
 
-            decimal currentValue = qty * currentPrice;
+            lblKpiQuantity.Text = totalQty > 0 ? (totalQty >= 1m ? totalQty.ToString("0.###") : totalQty.ToString("0.########")) : "--";
+            lblKpiInvested.Text = totalInv > 0 ? totalInv.ToString("0.00") : "--";
+
+            decimal avgCost = totalQty > 0 ? totalInv / totalQty : 0m;
+            lblKpiAvgCost.Text = totalQty > 0 ? (avgCost >= 1m ? avgCost.ToString("0.###") : avgCost.ToString("0.########")) : "--";
+
+            decimal currentValue = totalQty * currentPrice;
             lblKpiCurrentValue.Text = currentPrice > 0 ? currentValue.ToString("0.00") : "--";
 
-            // recovered so far
-            decimal recovered;
-            using (var db = new TradingJournal.Core.Data.AppDbContext())
-                recovered = await RecoveryAllocationManager.GetRecoveredSoFarAsync(db, _caseId);
-            lblKpiRecovered.Text = recovered.ToString("0.00");
+            // Break-even = avg cost
+            lblKpiRecoveredCaption.Text = "Break-even Price:";
+            lblKpiRecovered.Text = totalQty > 0
+                ? (avgCost >= 1m ? avgCost.ToString("0.###") : avgCost.ToString("0.########"))
+                : "--";
+            lblKpiRecovered.ForeColor = ThemeManager.AccentColor;
 
-            // needed to break even
-            decimal lossNow = Math.Max(0m, invested - currentValue);
-            decimal needed = Math.Max(0m, lossNow - recovered);
-            lblKpiNeeded.Text = needed.ToString("0.00");
-            lblKpiNeeded.ForeColor = needed <= 0m ? Color.FromArgb(46, 204, 113) : Color.FromArgb(231, 76, 60);
+            // Decide secondary KPI (profit vs delta-to-BE)
+            decimal unreal = currentValue - totalInv; // define ONCE
+            decimal neededPriceDelta = 0m;            // keep in scope for color use below
 
-            // progress — 100% at break-even
+            if (currentPrice > 0 && totalQty > 0 && currentPrice >= avgCost)
+            {
+                // Above BE -> show current profit
+                lblKpiNeededCaption.Text = "Current Profit:";
+                lblKpiNeeded.Text = unreal.ToString("0.00");
+                lblKpiNeeded.ForeColor = unreal >= 0 ? ThemeManager.PositiveColor : ThemeManager.NegativeColor;
+            }
+            else
+            {
+                lblKpiNeededCaption.Text = "Current Profit:";
+                lblKpiNeeded.Text = unreal.ToString("0.00");
+                lblKpiNeeded.ForeColor = unreal <= 0 ? ThemeManager.NegativeColor : ThemeManager.NegativeColor;
+            }
+
+            // Progress %
             int progress;
-            var denom = recovered + needed;
-            if (denom <= 0m) progress = 0;
-            else progress = (int)Math.Round((double)(recovered / denom) * 100.0, MidpointRounding.AwayFromZero);
-            progress = Math.Max(0, Math.Min(100, progress));
-            prgKpiProgress.Value = progress;
+            if (avgCost <= 0m || currentPrice <= 0m) progress = 0;
+            else progress = (int)Math.Round(Math.Min(100.0, Math.Max(0.0, (double)(currentPrice / avgCost) * 100.0)),
+                                            MidpointRounding.AwayFromZero);
+            prgKpiProgress.Value = Math.Max(prgKpiProgress.Minimum, Math.Min(prgKpiProgress.Maximum, progress));
             lblKpiProgressPct.Text = $"{progress}%";
 
-            decimal unreal = currentValue - invested;
-
-            // Current price: accent (readable on both themes)
-            lblKpiCurrentPrice.ForeColor = ThemeManager.AccentColor;
-
-            // Current value: green if up vs invested, red if down, neutral if flat
-            lblKpiCurrentValue.ForeColor =
-                unreal > 0m ? ThemeManager.PositiveColor :
-                unreal < 0m ? ThemeManager.NegativeColor :
-                ThemeManager.DataTextColor;
-
-            // Invested & Avg Cost stay neutral for readability
-            lblKpiInvested.ForeColor = ThemeManager.DataTextColor;
-            lblKpiAvgCost.ForeColor = ThemeManager.DataTextColor;
-
-            // Quantity neutral (it’s not a “good/bad” metric)
-            lblKpiQuantity.ForeColor = ThemeManager.DataTextColor;
-
-            // Recovered is always “good”
-            lblKpiRecovered.ForeColor = ThemeManager.PositiveColor;
-
-            // Needed: amber if still needed, green if done
-            lblKpiNeeded.ForeColor = needed > 0m ? ThemeManager.WarningColor : ThemeManager.PositiveColor;
-
-            // Progress %: gradient by thresholds
-            if (progress >= 100)
-                lblKpiProgressPct.ForeColor = ThemeManager.PositiveColor;
-            else if (progress >= 60)
-                lblKpiProgressPct.ForeColor = ThemeManager.AccentColor;
-            else if (progress >= 20)
-                lblKpiProgressPct.ForeColor = ThemeManager.WarningColor;
-            else
-                lblKpiProgressPct.ForeColor = ThemeManager.NegativeColor;
-
-            // Auto-close the case when recovered enough
-            if (needed <= 0m && _case.Status == RecoveryCaseStatus.Active)
+            // Auto-flip status (with a tiny epsilon to avoid jitter)
+            try
             {
-                try
+                const decimal EPS = 0.0000001m;
+                if (avgCost > 0m && currentPrice > 0m)
                 {
-                    _caseMgr.ChangeStatus(_case.Id, RecoveryCaseStatus.Closed);
-                    _case.Status = RecoveryCaseStatus.Closed;
-                    UpdateWindowTitle(); // reflect status change in title
-                }
-                catch
-                {
-                    // ignore — non-critical UX enhancement
+                    var target = (currentPrice + EPS >= avgCost)
+                        ? RecoveryCaseStatus.WrittenOff
+                        : RecoveryCaseStatus.Active;
+
+                    if (_case.Status != target)
+                    {
+                        _caseMgr.ChangeStatus(_case.Id, target);
+                        _case.Status = target; // keep local in sync
+                        UpdateWindowTitle();
+                        CaseStatusChanged?.Invoke(_case.Id, _case.Status); // notify parent (optional)
+                    }
                 }
             }
+            catch
+            {
+                // best-effort, non-fatal
+            }
+
+            // Colors for primary KPIs
+            lblKpiCurrentPrice.ForeColor = ThemeManager.AccentColor;
+            lblKpiCurrentValue.ForeColor = unreal > 0m ? ThemeManager.PositiveColor :
+                                           unreal < 0m ? ThemeManager.NegativeColor :
+                                           ThemeManager.DataTextColor;
         }
         #endregion
 
@@ -411,27 +410,20 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
         private void ToggleAmountInputs()
         {
             bool marginMode = rbAlcModeMargin.Checked;
-
             lblAlcMargin.Visible = marginMode;
             txtAlcMargin.Visible = marginMode;
-
             lblAlcQuantity.Visible = !marginMode;
             txtAlcQuantity.Visible = !marginMode;
-
-            if (marginMode)
-                txtAlcQuantity.Text = string.Empty;
-            else
-                txtAlcMargin.Text = string.Empty;
+            if (marginMode) txtAlcQuantity.Text = string.Empty;
+            else txtAlcMargin.Text = string.Empty;
         }
 
         private void ClearInputs()
         {
             dtpAlcTradeDate.Value = DateTime.Now;
             txtAlcEntryPrice.Text = "";
-            txtAlcExitPrice.Text = "";
             txtAlcMargin.Text = "";
             txtAlcQuantity.Text = "";
-            txtAlcProfit.Text = "";
             rbAlcModeMargin.Checked = true;
 
             _updateId = null;
@@ -446,188 +438,100 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
 
         private async void btnAlcAdd_Click(object sender, EventArgs e)
         {
-            if (_inAddHandler) return; // prevent duplicate execution if the click is wired twice
-            _inAddHandler = true;
-            try
+            if (!TryParseDec(txtAlcEntryPrice.Text, out var entry) || entry <= 0m)
             {
-                // 1) Entry price
-                if (!TryParseDec(txtAlcEntryPrice.Text, out var entry) || entry <= 0m)
-                {
-                    MessageBox.Show("Entry Price must be a positive number.");
-                    return;
-                }
+                MessageBox.Show("Entry Price must be a positive number.");
+                return;
+            }
 
-                // 2) Exit price (optional unless we need to auto-calc profit)
-                decimal? exit = null;
-                if (!string.IsNullOrWhiteSpace(txtAlcExitPrice.Text))
+            decimal? invested = null;
+            decimal? qty = null;
+
+            if (rbAlcModeMargin.Checked)
+            {
+                if (!string.IsNullOrWhiteSpace(txtAlcMargin.Text))
                 {
-                    if (!TryParseDec(txtAlcExitPrice.Text, out var epx) || epx <= 0m)
+                    if (!TryParseDec(txtAlcMargin.Text, out var m) || m < 0m)
                     {
-                        MessageBox.Show("Exit Price must be positive.");
+                        MessageBox.Show("Invested (USDT) must be non-negative.");
                         return;
                     }
-                    exit = epx;
-                }
-
-                // 3) Amount mode -> parse margin/qty (optional if Profit is typed)
-                decimal? margin = null;
-                decimal? qty = null;
-                if (rbAlcModeMargin.Checked)
-                {
-                    if (!string.IsNullOrWhiteSpace(txtAlcMargin.Text))
-                    {
-                        if (!TryParseDec(txtAlcMargin.Text, out var m) || m < 0m)
-                        {
-                            MessageBox.Show("Margin (USDT) must be non-negative.");
-                            return;
-                        }
-                        margin = m;
-                    }
-                }
-                else
-                {
-                    if (!string.IsNullOrWhiteSpace(txtAlcQuantity.Text))
-                    {
-                        if (!TryParseDec(txtAlcQuantity.Text, out var q) || q <= 0m)
-                        {
-                            MessageBox.Show("Quantity must be positive.");
-                            return;
-                        }
-                        qty = q;
-                    }
-                }
-
-                // 4) Profit: optional. If blank, we must be able to compute it.
-                decimal alloc;
-                if (string.IsNullOrWhiteSpace(txtAlcProfit.Text))
-                {
-                    if (!exit.HasValue)
-                    {
-                        MessageBox.Show("Exit Price is required when Profit is empty (to compute profit).");
-                        return;
-                    }
-                    if (!(qty.HasValue || margin.HasValue))
-                    {
-                        MessageBox.Show("Enter Quantity or Margin (matching the selected mode) when Profit is empty.");
-                        return;
-                    }
-                    alloc = ComputeProfitOrZero(entry, exit, margin, qty);
-                }
-                else
-                {
-                    if (!TryParseDec(txtAlcProfit.Text, out alloc) || alloc < 0m)
-                    {
-                        MessageBox.Show("Profit (USDT) must be a non-negative number.");
-                        return;
-                    }
-                }
-
-                try
-                {
-                    _alcMgr.Add(_caseId, dtpAlcTradeDate.Value.Date, entry, exit, margin, qty, alloc);
-                    await ReloadAfterChangeAsync("Allocation added!");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Add failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    invested = m;
+                    // per your request: compute & STORE Quantity (single column)
+                    qty = ComputeQuantity(entry, invested, null);
                 }
             }
-            finally
+            else
             {
-                _inAddHandler = false;
+                if (!string.IsNullOrWhiteSpace(txtAlcQuantity.Text))
+                {
+                    if (!TryParseDec(txtAlcQuantity.Text, out var q) || q <= 0m)
+                    {
+                        MessageBox.Show("Quantity must be positive.");
+                        return;
+                    }
+                    qty = q;
+                }
             }
+
+            if (!invested.HasValue && !qty.HasValue)
+            {
+                MessageBox.Show("Enter Invested (USDT) or Quantity.");
+                return;
+            }
+
+            _alcMgr.Add(_caseId, dtpAlcTradeDate.Value.Date, entry, invested, qty);
+            await ReloadAfterChangeAsync("Allocation added!");
         }
 
         private async void btnAlcUpdate_Click(object sender, EventArgs e)
         {
-            if (_inUpdateHandler) return;
-            _inUpdateHandler = true;
-            try
+            if (_updateId == null) return;
+
+            if (!TryParseDec(txtAlcEntryPrice.Text, out var entry) || entry <= 0m)
             {
-                if (_updateId == null) return;
+                MessageBox.Show("Entry Price must be a positive number.");
+                return;
+            }
 
-                if (!TryParseDec(txtAlcEntryPrice.Text, out var entry) || entry <= 0m)
-                {
-                    MessageBox.Show("Entry Price must be a positive number.");
-                    return;
-                }
+            decimal? invested = null;
+            decimal? qty = null;
 
-                decimal? exit = null;
-                if (!string.IsNullOrWhiteSpace(txtAlcExitPrice.Text))
+            if (rbAlcModeMargin.Checked)
+            {
+                if (!string.IsNullOrWhiteSpace(txtAlcMargin.Text))
                 {
-                    if (!TryParseDec(txtAlcExitPrice.Text, out var epx) || epx <= 0m)
+                    if (!TryParseDec(txtAlcMargin.Text, out var m) || m < 0m)
                     {
-                        MessageBox.Show("Exit Price must be positive.");
+                        MessageBox.Show("Invested (USDT) must be non-negative.");
                         return;
                     }
-                    exit = epx;
-                }
-
-                decimal? margin = null;
-                decimal? qty = null;
-                if (rbAlcModeMargin.Checked)
-                {
-                    if (!string.IsNullOrWhiteSpace(txtAlcMargin.Text))
-                    {
-                        if (!TryParseDec(txtAlcMargin.Text, out var m) || m < 0m)
-                        {
-                            MessageBox.Show("Margin (USDT) must be non-negative.");
-                            return;
-                        }
-                        margin = m;
-                    }
-                }
-                else
-                {
-                    if (!string.IsNullOrWhiteSpace(txtAlcQuantity.Text))
-                    {
-                        if (!TryParseDec(txtAlcQuantity.Text, out var q) || q <= 0m)
-                        {
-                            MessageBox.Show("Quantity must be positive.");
-                            return;
-                        }
-                        qty = q;
-                    }
-                }
-
-                decimal alloc;
-                if (string.IsNullOrWhiteSpace(txtAlcProfit.Text))
-                {
-                    if (!exit.HasValue)
-                    {
-                        MessageBox.Show("Exit Price is required when Profit is empty (to compute profit).");
-                        return;
-                    }
-                    if (!(qty.HasValue || margin.HasValue))
-                    {
-                        MessageBox.Show("Enter Quantity or Margin (matching the selected mode) when Profit is empty.");
-                        return;
-                    }
-                    alloc = ComputeProfitOrZero(entry, exit, margin, qty);
-                }
-                else
-                {
-                    if (!TryParseDec(txtAlcProfit.Text, out alloc) || alloc < 0m)
-                    {
-                        MessageBox.Show("Profit (USDT) must be a non-negative number.");
-                        return;
-                    }
-                }
-
-                try
-                {
-                    _alcMgr.Update(_updateId.Value, dtpAlcTradeDate.Value.Date, entry, exit, margin, qty, alloc);
-                    await ReloadAfterChangeAsync("Allocation updated!");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Update failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    invested = m;
+                    // Keep single quantity column policy on updates too
+                    qty = ComputeQuantity(entry, invested, null);
                 }
             }
-            finally
+            else
             {
-                _inUpdateHandler = false;
+                if (!string.IsNullOrWhiteSpace(txtAlcQuantity.Text))
+                {
+                    if (!TryParseDec(txtAlcQuantity.Text, out var q) || q <= 0m)
+                    {
+                        MessageBox.Show("Quantity must be positive.");
+                        return;
+                    }
+                    qty = q;
+                }
             }
+
+            if (!invested.HasValue && !qty.HasValue)
+            {
+                MessageBox.Show("Enter Invested (USDT) or Quantity.");
+                return;
+            }
+
+            _alcMgr.Update(_updateId.Value, dtpAlcTradeDate.Value.Date, entry, invested, qty);
+            await ReloadAfterChangeAsync("Allocation updated!");
         }
 
         private async Task ReloadAfterChangeAsync(string okMessage)
@@ -664,25 +568,21 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
 
             if (dataGridView1.Columns[e.ColumnIndex].Name == "UpdateColumn")
             {
-                // load row into editor
                 dtpAlcTradeDate.Value = row.TradeDate;
-                txtAlcEntryPrice.Text = row.EntryPrice.ToString();
-                txtAlcExitPrice.Text = row.ExitPrice?.ToString() ?? "";
+                txtAlcEntryPrice.Text = row.EntryPrice.ToString("0.###");
 
                 if (row.Quantity.HasValue)
                 {
                     rbAlcModeQuantity.Checked = true;
-                    txtAlcQuantity.Text = row.Quantity.Value.ToString();
+                    txtAlcQuantity.Text = row.Quantity.Value.ToString("0.###");
                     txtAlcMargin.Text = "";
                 }
                 else
                 {
                     rbAlcModeMargin.Checked = true;
-                    txtAlcMargin.Text = row.MarginUSDT?.ToString() ?? "";
+                    txtAlcMargin.Text = row.InvestedUSDT?.ToString("0.00") ?? "";
                     txtAlcQuantity.Text = "";
                 }
-
-                txtAlcProfit.Text = row.AllocatedUSDT.ToString();
 
                 EnterUpdateMode(row.Id);
             }

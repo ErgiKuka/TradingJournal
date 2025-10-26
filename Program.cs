@@ -24,7 +24,6 @@ namespace TradingJournal
 
 
 
-
                                 [STAThread]
         static void Main()
         {

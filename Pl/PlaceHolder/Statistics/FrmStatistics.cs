@@ -265,63 +265,43 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
         }
 
         private (double[] xs, double[] ys, List<double> dailyPnL, List<DateTime> dates)
-            BuildSeries(List<Trade> trades, ChartResolution res, DateTime? rangeStart = null, DateTime? rangeEnd = null)
+    BuildSeries(List<Trade> trades, ChartResolution res, DateTime? rangeStart = null, DateTime? rangeEnd = null)
         {
-            // Defensive sort by time
+            // 1) always sort by the trade's date (not insertion order)
             trades = trades.OrderBy(t => t.Date).ToList();
 
-            if (res == ChartResolution.Intraday)
+            // 2) aggregate by CALENDAR DAY so a trade saved for 2025-10-23 plots at 2025-10-23
+            var pnlByDay = trades
+                .GroupBy(t => t.Date.Date)
+                .ToDictionary(g => g.Key, g => (double)g.Sum(x => x.ProfitLoss));
+
+            if (pnlByDay.Count == 0)
+                return (Array.Empty<double>(), Array.Empty<double>(), new List<double>(), new List<DateTime>());
+
+            // 3) build a continuous day range and fill missing days with 0
+            DateTime start = (rangeStart ?? pnlByDay.Keys.Min()).Date;
+            DateTime end = (rangeEnd ?? pnlByDay.Keys.Max()).Date;
+
+            var days = new List<DateTime>();
+            for (var d = start; d <= end; d = d.AddDays(1))
+                days.Add(d);
+
+            var dailyPnL = days.Select(d => pnlByDay.TryGetValue(d, out var v) ? v : 0.0).ToList();
+
+            // 4) cumulative PnL across time (this is what makes later points shift
+            //    when a back-dated trade is added/edited)
+            var xs = days.Select(d => d.ToOADate()).ToArray();
+            var ys = new double[dailyPnL.Count];
+            double cum = 0;
+            for (int i = 0; i < dailyPnL.Count; i++)
             {
-                // One point per trade (today), cumulative along the day
-                var xs = new List<double>();
-                var ys = new List<double>();
-                var perPointPnL = new List<double>();
-                var dates = new List<DateTime>();
-
-                double cum = 0;
-                foreach (var t in trades)
-                {
-                    cum += (double)t.ProfitLoss;
-                    xs.Add(t.Date.ToOADate());
-                    ys.Add(cum);
-                    perPointPnL.Add((double)t.ProfitLoss);
-                    dates.Add(t.Date);
-                }
-
-                return (xs.ToArray(), ys.ToArray(), perPointPnL, dates);
+                cum += dailyPnL[i];
+                ys[i] = cum;
             }
-            else
-            {
-                // One point per DAY (aggregate all trades that calendar day)
-                // 1) sum by day
-                var byDay = trades
-                    .GroupBy(t => t.Date.Date)
-                    .ToDictionary(g => g.Key, g => (double)g.Sum(x => x.ProfitLoss));
 
-                // 2) build a continuous day range (fill missing days with 0)
-                DateTime start = rangeStart?.Date ?? (byDay.Count > 0 ? byDay.Keys.Min() : DateTime.Today);
-                DateTime end = rangeEnd?.Date ?? (byDay.Count > 0 ? byDay.Keys.Max() : DateTime.Today);
-
-                var days = new List<DateTime>();
-                for (var d = start; d <= end; d = d.AddDays(1))
-                    days.Add(d);
-
-                // 3) create daily and cumulative arrays
-                var dailyPnL = days.Select(d => byDay.TryGetValue(d, out var v) ? v : 0.0).ToList();
-
-                var xs = days.Select(d => d.ToOADate()).ToArray();
-
-                var ys = new double[dailyPnL.Count];
-                double cum = 0;
-                for (int i = 0; i < dailyPnL.Count; i++)
-                {
-                    cum += dailyPnL[i];
-                    ys[i] = cum;
-                }
-
-                return (xs, ys, dailyPnL, days);
-            }
+            return (xs, ys, dailyPnL, days);
         }
+
 
         // Calendar-aligned helpers (place here in the same file)
         private static DateTime StartOfWeek(DateTime dt, DayOfWeek firstDayOfWeek = DayOfWeek.Monday)
