@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TradingJournal.Core.Data;
 
@@ -10,9 +11,11 @@ using TradingJournal.Core.Data;
 namespace TradingJournal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251026141003_CleanRecoverySchema")]
+    partial class CleanRecoverySchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
@@ -30,8 +33,7 @@ namespace TradingJournal.Migrations
                         .HasColumnType("decimal(18,8)");
 
                     b.Property<decimal?>("InvestedUSDT")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("MarginUSDT");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1000)
