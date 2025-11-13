@@ -536,7 +536,6 @@
             Controls.Add(pnlCaseEditor);
             Controls.Add(pnlCaseEditor_Max);
             Controls.Add(pnlCases_Max);
-            FormBorderStyle = FormBorderStyle.None;
             Name = "FrmRecoveryPlanner";
             Text = "FrmRecoveryPlanner";
             pnlCases.ResumeLayout(false);

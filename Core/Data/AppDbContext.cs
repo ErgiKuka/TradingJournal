@@ -11,6 +11,7 @@ namespace TradingJournal.Core.Data
         public DbSet<Trade> Trades { get; set; }
         public DbSet<RecoveryCase> RecoveryCases { get; set; } = default!;
         public DbSet<RecoveryAllocation> RecoveryAllocations { get; set; } = default!;
+        public DbSet<RecycleBinItem> RecycleBinItems { get; set; } = null!;
 
         // Default constructor for design-time tools (like migrations)
         public AppDbContext()
@@ -39,6 +40,11 @@ namespace TradingJournal.Core.Data
             Trade.ConfigureForDb(modelBuilder.Entity<Trade>());
             RecoveryCase.ConfigureForDb(modelBuilder.Entity<RecoveryCase>());
             RecoveryAllocation.ConfigureForDb(modelBuilder.Entity<RecoveryAllocation>());
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<RecycleBinItem>()
+                .HasIndex(x => x.EntityType);
+            modelBuilder.Entity<RecycleBinItem>()
+                .HasIndex(x => x.ExpiresUtc);
         }
     }
 }

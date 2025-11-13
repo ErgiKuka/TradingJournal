@@ -21,6 +21,8 @@ namespace TradingJournal.Core.Data.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+        public string? CaseRef { get; set; }
+
         public ICollection<RecoveryAllocation> Allocations { get; set; } = new List<RecoveryAllocation>();
 
         internal static void ConfigureForDb(EntityTypeBuilder<RecoveryCase> e)

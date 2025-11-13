@@ -14,7 +14,7 @@ using ScottPlot;
 
 namespace TradingJournal.Pl.PlaceHolder.Statistics
 {
-    public partial class FrmStatistics : Form, IResponsiveChildForm
+    public partial class FrmStatistics : UserControl, IResponsiveChildForm
     {
         private readonly ResponsiveLayoutManager _layoutManager;
         private FrmCalculator? _calculatorFormInstance;

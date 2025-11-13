@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmHome));
             panel1 = new Panel();
             pnlTopBar = new Panel();
@@ -49,6 +50,7 @@
             btnDashboard = new FontAwesome.Sharp.IconButton();
             panel5 = new Panel();
             pnlControls = new Panel();
+            notifyIcon1 = new NotifyIcon(components);
             pnlTopBar.SuspendLayout();
             panel6.SuspendLayout();
             pnlNavigation.SuspendLayout();
@@ -338,6 +340,11 @@
             pnlControls.Size = new Size(983, 690);
             pnlControls.TabIndex = 10;
             // 
+            // notifyIcon1
+            // 
+            notifyIcon1.Text = "notifyIcon1";
+            notifyIcon1.Visible = true;
+            // 
             // FrmHome
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
@@ -382,5 +389,6 @@
         private FontAwesome.Sharp.IconButton btnSettings;
         private Panel panel8;
         private FontAwesome.Sharp.IconButton btnRecoveryPlanner;
+        private NotifyIcon notifyIcon1;
     }
 }

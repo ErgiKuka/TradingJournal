@@ -15,7 +15,7 @@ using TradingJournal.Core.Managers;
 
 namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
 {
-    public partial class FrmRecoveryPlanner : Form, IResponsiveChildForm
+    public partial class FrmRecoveryPlanner : UserControl, IResponsiveChildForm
     {
         private readonly BinanceApiService _binance = new BinanceApiService();
         private readonly RecoveryCaseManager _manager = new RecoveryCaseManager();
@@ -30,7 +30,7 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
         // Whole words (no odd mid-word abbreviations).
 
         // Short/Full labels tightened so they fit on fullscreen without truncation.
-                private readonly Dictionary<string, (string Short, string Full)> _headerText = new()
+        private readonly Dictionary<string, (string Short, string Full)> _headerText = new()
         {
             { "Symbol",              ("Symbol",         "Symbol") },
             { "EntryDate",           ("Start Date",     "Start Date") },
@@ -346,7 +346,6 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
         private void ApplyBaseGridStyling()
         {
             dgvRecoveryCases.BackgroundColor = ThemeManager.DataGrid;
-            dgvRecoveryCases.BorderStyle = BorderStyle.None;
             dgvRecoveryCases.GridColor = Color.FromArgb(45, 51, 73);
             dgvRecoveryCases.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
 
@@ -666,7 +665,7 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             txtRcQuantity.Text = "";
             lblRcCurrentPrice.Text = "--";
             lblRcCurrentValue.Text = "--";
-            lblRcUnrealized.Text = "--";;
+            lblRcUnrealized.Text = "--"; ;
             UpdateFormTitle();
         }
         #endregion
@@ -850,7 +849,9 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
         }
         private void ApplyWindowStateLayout()
         {
-            bool maximized = this.WindowState == FormWindowState.Maximized;
+            var host = this.FindForm();
+            bool maximized = host != null && host.WindowState == FormWindowState.Maximized;
+
 
             foreach (DataGridViewColumn c in dgvRecoveryCases.Columns)
                 if (_headerText.TryGetValue(c.Name, out var t))

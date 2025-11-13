@@ -14,7 +14,7 @@ using TradingJournal.Core.Logic.Manager;
 
 namespace TradingJournal.Pl.PlaceHolder.RiskManagement
 {
-    public partial class FrmRiskManagement : Form, IResponsiveChildForm
+    public partial class FrmRiskManagement : UserControl, IResponsiveChildForm
     {
         public int DefaultRisk;
         private readonly ResponsiveLayoutManager _layoutManager;
