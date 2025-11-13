@@ -488,7 +488,6 @@
             ClientSize = new Size(1684, 791);
             Controls.Add(pnlRiskInformation);
             Controls.Add(pnlRiskInformationMax);
-            FormBorderStyle = FormBorderStyle.None;
             Margin = new Padding(3, 2, 3, 2);
             Name = "FrmRiskManagement";
             Text = "FrmRiskManagement";

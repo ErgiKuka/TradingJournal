@@ -14,6 +14,7 @@ namespace TradingJournal.Core.Logic
 
     public interface IResponsiveChildForm
     {
-        void SetWindowState(FormWindowStateExtended newState);
+        void SetWindowState(TradingJournal.Core.Logic.FormWindowStateExtended newState);
     }
 }
+

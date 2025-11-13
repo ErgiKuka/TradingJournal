@@ -18,7 +18,7 @@ using TradingJournal.Core.Managers;
 
 namespace TradingJournal.Pl.PlaceHolder.Dashboard
 {
-    public partial class FrmDashboard : Form, IResponsiveChildForm
+    public partial class FrmDashboard : UserControl, IResponsiveChildForm
     {
         private readonly ResponsiveLayoutManager _layoutManager;
         private readonly BinanceApiService _binanceService;
@@ -43,6 +43,13 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             InitializeResponsiveLayouts();
 
             _refreshTimer = new System.Windows.Forms.Timer { Interval = 60000 };
+
+            this.HandleCreated += (s, e) =>
+            {
+                var host = this.FindForm();
+                if (host != null)
+                    host.FormClosing += Host_FormClosing;
+            };
 
             ThemeManager.ThemeChanged += (s, e) =>
             {
@@ -71,6 +78,9 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             lblTradingBalanceValue.ForeColor = ThemeManager.TextColor;
             lblCurrentDate.ForeColor = ThemeManager.TextColor;
             btnRefresh.BackColor = ThemeManager.ButtonColor;
+
+            label1.ForeColor = ThemeManager.TextColor;
+            label3.ForeColor = ThemeManager.TextColor;
 
             // Optionally loop over controls inside live prices panel
             foreach (Control ctrl in pnlLivePrices.Controls)
@@ -294,6 +304,23 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             }
         }
 
+        private void Host_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            Cleanup();
+        }
+
+        private void Cleanup()
+        {
+            try
+            {
+                _refreshTimer?.Stop();
+                _refreshTimer?.Dispose();
+                foreach (var icon in _cryptoIcons.Values)
+                    icon?.Dispose();
+                _cryptoIcons.Clear();
+            }
+            catch { /* swallow */ }
+        }
 
         private void ApplyTodaysPnlColor(decimal value)
         {
@@ -314,14 +341,6 @@ namespace TradingJournal.Pl.PlaceHolder.Dashboard
             ApplyTodaysPnlColor(report.TodaysPnL);
         }
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            _refreshTimer?.Stop();
-            _refreshTimer?.Dispose();
-            foreach (var icon in _cryptoIcons.Values) { icon?.Dispose(); }
-            _cryptoIcons.Clear();
-            base.OnFormClosing(e);
-        }
 
         private void panel1_Paint(object? sender, PaintEventArgs e)
         {

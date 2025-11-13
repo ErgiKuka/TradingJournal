@@ -187,7 +187,6 @@
             Controls.Add(pnlPortfolio);
             Controls.Add(pnlLivePrices_Max);
             Controls.Add(pnlPortfolio_Max);
-            FormBorderStyle = FormBorderStyle.None;
             Margin = new Padding(2);
             Name = "FrmDashboard";
             Text = "FrmDashboard";

@@ -542,7 +542,6 @@
             Controls.Add(pnlInformations);
             Controls.Add(pnlData_Max);
             Controls.Add(pnlInformations_Max);
-            FormBorderStyle = FormBorderStyle.None;
             Margin = new Padding(2);
             Name = "FrmJournal";
             Load += FrmJournal_Load;

@@ -6,35 +6,39 @@ using System.Windows.Forms;
 
 namespace TradingJournal.Core.Logic.Manager
 {
+    /// <summary>
+    /// Works with BOTH Form and UserControl.
+    /// Host is any Control (Form, UserControl, Panel, etc.).
+    /// </summary>
     public class ResponsiveLayoutManager
     {
-        private readonly Form _hostForm;
-        private readonly Dictionary<Control, ControlLayoutInfo> _controlLayouts = new Dictionary<Control, ControlLayoutInfo>();
+        private readonly Control _host; // was Form
+        private readonly Dictionary<Control, ControlLayoutInfo> _controlLayouts = new();
         private FormWindowStateExtended _currentState = FormWindowStateExtended.Normal;
 
-        private readonly List<Action> _normalStateActions = new List<Action>();
-        private readonly List<Action> _maximizedStateActions = new List<Action>();
+        private readonly List<Action> _normalStateActions = new();
+        private readonly List<Action> _maximizedStateActions = new();
 
-        // THE FIX: Change Panel to the more generic Control type.
         private class ControlLayoutInfo
         {
-            public Control NormalParent { get; set; }
+            public Control NormalParent { get; set; } = null!;
             public Point NormalLocation { get; set; }
             public Size NormalSize { get; set; }
 
-            public Control MaximizedParent { get; set; }
+            public Control MaximizedParent { get; set; } = null!;
             public Point MaximizedLocation { get; set; }
             public Size MaximizedSize { get; set; }
         }
 
-        public ResponsiveLayoutManager(Form hostForm)
+        public ResponsiveLayoutManager(Control host)
         {
-            _hostForm = hostForm;
+            _host = host ?? throw new ArgumentNullException(nameof(host));
         }
 
-        // THE FIX: Change Panel to Control in the method signature.
-        public void RegisterControl(Control control, Control normalParent, Control maximizedParent, Point maximizedLocation, Size maximizedSize)
+        public void RegisterControl(Control control, Control normalParent, Control maximizedParent,
+                                    Point maximizedLocation, Size maximizedSize)
         {
+            if (control is null) throw new ArgumentNullException(nameof(control));
             if (_controlLayouts.ContainsKey(control)) return;
 
             _controlLayouts[control] = new ControlLayoutInfo
@@ -50,6 +54,7 @@ namespace TradingJournal.Core.Logic.Manager
 
         public void RegisterStateAction(FormWindowStateExtended state, Action action)
         {
+            if (action is null) return;
             if (state == FormWindowStateExtended.Normal) _normalStateActions.Add(action);
             else _maximizedStateActions.Add(action);
         }
@@ -59,69 +64,56 @@ namespace TradingJournal.Core.Logic.Manager
             if (_currentState == newState) return;
             _currentState = newState;
 
-            _hostForm.SuspendLayout();
+            _host.SuspendLayout();
 
-            foreach (var entry in _controlLayouts)
+            foreach (var (control, li) in _controlLayouts)
             {
-                var control = entry.Key;
-                var layoutInfo = entry.Value;
-
                 if (newState == FormWindowStateExtended.Maximized)
                 {
-                    // Check if the parent needs to change before re-parenting
-                    if (control.Parent != layoutInfo.MaximizedParent)
-                    {
-                        layoutInfo.MaximizedParent.Controls.Add(control);
-                    }
-                    control.Location = layoutInfo.MaximizedLocation;
-                    control.Size = layoutInfo.MaximizedSize;
+                    if (control.Parent != li.MaximizedParent)
+                        li.MaximizedParent.Controls.Add(control);
+
+                    control.Location = li.MaximizedLocation;
+                    control.Size = li.MaximizedSize;
                 }
                 else
                 {
-                    if (control.Parent != layoutInfo.NormalParent)
-                    {
-                        layoutInfo.NormalParent.Controls.Add(control);
-                    }
-                    control.Location = layoutInfo.NormalLocation;
-                    control.Size = layoutInfo.NormalSize;
+                    if (control.Parent != li.NormalParent)
+                        li.NormalParent.Controls.Add(control);
+
+                    control.Location = li.NormalLocation;
+                    control.Size = li.NormalSize;
                 }
             }
 
             if (newState == FormWindowStateExtended.Maximized)
-            {
-                foreach (var action in _maximizedStateActions) action.Invoke();
-            }
+                foreach (var a in _maximizedStateActions) a();
             else
-            {
-                foreach (var action in _normalStateActions) action.Invoke();
-            }
+                foreach (var a in _normalStateActions) a();
 
             ToggleParentPanelVisibility(newState);
-            _hostForm.ResumeLayout(true);
+
+            _host.ResumeLayout(true);
         }
 
         private void ToggleParentPanelVisibility(FormWindowStateExtended state)
         {
-            // This logic now correctly handles any Control, including Panels.
-            var allParents = _controlLayouts.Values
-                .Select(info => info.NormalParent)
-                .Concat(_controlLayouts.Values.Select(info => info.MaximizedParent))
-                .Where(p => p is Panel) // We only need to toggle visibility of Panels
-                .Distinct();
+            // Only toggle Panels (don’t hide random Controls).
+            var parents = _controlLayouts.Values
+                .Select(v => v.NormalParent).Concat(_controlLayouts.Values.Select(v => v.MaximizedParent))
+                .OfType<Panel>()
+                .Distinct()
+                .ToList();
 
-            foreach (var parent in allParents)
+            foreach (var parent in parents)
             {
-                bool isNormalParent = _controlLayouts.Values.Any(info => info.NormalParent == parent);
-                bool isMaximizedParent = _controlLayouts.Values.Any(info => info.MaximizedParent == parent);
+                // visible if it contains at least one child in the current state
+                bool shouldBeVisible =
+                    state == FormWindowStateExtended.Normal
+                        ? _controlLayouts.Values.Any(v => v.NormalParent == parent)
+                        : _controlLayouts.Values.Any(v => v.MaximizedParent == parent);
 
-                if (state == FormWindowStateExtended.Normal)
-                {
-                    parent.Visible = isNormalParent;
-                }
-                else // Maximized
-                {
-                    parent.Visible = isMaximizedParent;
-                }
+                parent.Visible = shouldBeVisible;
             }
         }
     }

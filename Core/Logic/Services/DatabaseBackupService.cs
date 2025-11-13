@@ -311,11 +311,38 @@ namespace TradingJournal.Core.Logic.Services
         {
             try
             {
-                var files = GetBackups().ToList();
-                foreach (var f in files.Skip(keep))
-                    f.Delete();
+                if (keep < 1) keep = 1;
+
+                var dir = new DirectoryInfo(BackupRoot);
+
+                if (!dir.Exists) return;
+
+                // Only real backup files (ignore undo/markers/etc)
+                var backups = dir.GetFiles(BackupPattern)
+                                 .OrderByDescending(f => f.CreationTimeUtc) // stable ordering
+                                 .ToList();
+
+                // Nothing to do
+                if (backups.Count <= keep) return;
+
+                // Delete older ones and their companions
+                foreach (var f in backups.Skip(keep))
+                {
+                    TryDelete(f.FullName);
+                    TryDelete(f.FullName + "-wal");
+                    TryDelete(f.FullName + "-shm");
+                }
+
+                // (Optional) light housekeeping: remove stale marker files older than 14 days
+                var staleMarkers = dir.GetFiles("auto-*.flag")
+                                      .Where(m => (DateTime.UtcNow - m.CreationTimeUtc).TotalDays > 14);
+                foreach (var m in staleMarkers)
+                    TryDelete(m.FullName);
             }
-            catch { /* best-effort */ }
+            catch
+            {
+                // best-effort – never throw
+            }
         }
 
         /// <summary>
@@ -365,6 +392,11 @@ namespace TradingJournal.Core.Logic.Services
                 return true;
             }
             catch { return false; }
+        }
+
+        public void EnforceRetention(int keep)
+        {
+            RotateBackups(keep);
         }
 
         private static bool TrySqliteOnlineBackup(string srcPath, string destPath)

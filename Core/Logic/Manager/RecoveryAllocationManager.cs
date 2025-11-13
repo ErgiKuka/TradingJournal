@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TradingJournal.Core.Data;
 using TradingJournal.Core.Data.Entities;
+using TradingJournal.Core.Logic.Manager;
+using TradingJournal.Core.Logic.Services;
 
 namespace TradingJournal.Core.Managers
 {
@@ -117,11 +119,14 @@ namespace TradingJournal.Core.Managers
             db.SaveChanges();
         }
 
-        public void Delete(int id)
+        public void Delete(int allocationId, int? retentionDays = null)
         {
             using var db = new AppDbContext();
-            var a = db.RecoveryAllocations.Find(id);
+            var a = db.RecoveryAllocations.Find(allocationId);
             if (a == null) return;
+
+            var days = retentionDays ?? SettingsManager.Load().RecycleBin.RetentionDays;
+            RecycleBinService.CaptureAllocationAsync(db, a, days, "Allocation deleted").GetAwaiter().GetResult();
 
             db.RecoveryAllocations.Remove(a);
             db.SaveChanges();

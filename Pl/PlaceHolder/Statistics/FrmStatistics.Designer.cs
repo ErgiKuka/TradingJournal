@@ -493,8 +493,6 @@
             Controls.Add(pnlProfitFactor_Max);
             Controls.Add(pnlWinRate_Max);
             Controls.Add(pnlTotalPnl_Max);
-            FormBorderStyle = FormBorderStyle.None;
-            Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(2);
             Name = "FrmStatistics";
             Text = "FrmStatistics";

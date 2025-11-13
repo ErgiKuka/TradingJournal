@@ -166,7 +166,6 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
         private void ApplyBaseGridStyling()
         {
             dataGridView1.BackgroundColor = ThemeManager.PanelColor;
-            dataGridView1.BorderStyle = BorderStyle.None;
             dataGridView1.GridColor = Color.FromArgb(45, 51, 73);
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 

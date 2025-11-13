@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TradingJournal.Core.Data;
 using TradingJournal.Core.Data.Entities;
+using TradingJournal.Core.Logic.Manager;
 using TradingJournal.Core.Logic.Services;
 
 namespace TradingJournal.Core.Managers
@@ -83,12 +84,20 @@ namespace TradingJournal.Core.Managers
             db.SaveChanges();
         }
 
-        public void DeleteCase(int id)
+        public void DeleteCase(int caseId, int? retentionDays = null)
         {
             using var db = new AppDbContext();
-            var rc = db.RecoveryCases.Find(id);
-            if (rc == null) return;
-            db.RecoveryCases.Remove(rc);
+            var c = db.RecoveryCases.FirstOrDefault(x => x.Id == caseId);
+            if (c == null) return;
+
+            var alcs = db.RecoveryAllocations.Where(x => x.RecoveryCaseId == caseId).ToList();
+
+            var days = retentionDays ?? SettingsManager.Load().RecycleBin.RetentionDays;
+            RecycleBinService.CaptureCaseWithAllocationsAsync(db, c, alcs, days, "Case + allocations deleted")
+                .GetAwaiter().GetResult();
+
+            db.RecoveryAllocations.RemoveRange(alcs);
+            db.RecoveryCases.Remove(c);
             db.SaveChanges();
         }
 
