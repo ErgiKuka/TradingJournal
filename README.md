@@ -13,7 +13,7 @@ Download the newest stable build here:
 **➡️ https://github.com/ErgiKuka/TradingJournal/releases/latest**
 
 1. Open the link above  
-2. Download the release asset (zip/exe)  
+2. Download the release asset (.exe)  
 3. Allow the installer to run if Windows Defender blocks it
 
 ---
