@@ -93,7 +93,7 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             };
             ApplyTheme();
 
-            _priceTimer = new System.Windows.Forms.Timer { Interval = 60000 };
+            _priceTimer = new System.Windows.Forms.Timer { Interval = 30000 };
             _priceTimer.Tick += async (s, e) => await UpdateTopLiveAsync();
             _priceTimer.Start();
 
@@ -496,6 +496,7 @@ namespace TradingJournal.Pl.PlaceHolder.Recovery_Planner
             {
                 // best effort
             }
+            ClearForm();
         }
         #endregion
 

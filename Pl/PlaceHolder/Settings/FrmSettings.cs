@@ -45,10 +45,13 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
             {
                 RoundedFormHelper.RoundPanel(pnlScroll, 20);
                 RoundedFormHelper.RoundPanel(pnlAccountMoney, 16);
+                RoundedFormHelper.RoundPanel(pnlAccountMoney_Max, 16);
                 RoundedFormHelper.RoundPanel(pnlThemeAndNotifications, 16);
+                RoundedFormHelper.RoundPanel(pnlThemeAndNotifications_Max, 16);
                 RoundedFormHelper.RoundPanel(pnlRecycleBin, 16);
                 RoundedFormHelper.RoundPanel(pnlBackupRestore, 16);
                 RoundedFormHelper.RoundPanel(pnlMaintenance, 16);
+                RoundedFormHelper.RoundPanel(pnlImportExport_Max, 16);
                 RoundedFormHelper.RoundPanel(pnlImportExport, 16);
             }
             catch { }
