@@ -266,7 +266,7 @@ namespace TradingJournal.Pl.Skeleton
 
         private void btnRiskManagement_Click(object sender, EventArgs e)
         {
-            LoadControl(new FrmRiskManagement());
+            LoadControl(new FrmRiskHub());
             SetActiveButton(btnRiskManagement);
         }
 
