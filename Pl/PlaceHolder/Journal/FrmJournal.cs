@@ -246,11 +246,11 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 return;
             }
 
-            decimal entryPrice, exitPrice = 0, stopLoss = 0, takeProfit = 0, margin = 0, profitLoss = 0;
+            decimal entryPrice, exitPrice = 0, stopLoss = 0, takeProfit = 0, margin, profitLoss = 0;
 
             if (!decimal.TryParse(txtEntryPrice.Text, out entryPrice))
             {
-                MessageBox.Show("Please enter a valid Entry Price.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Please enter a valid Entry Price and Margin.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 

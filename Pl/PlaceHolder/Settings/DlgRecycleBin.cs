@@ -82,9 +82,12 @@ namespace TradingJournal.Pl.PlaceHolder.Settings
             pnlBottom.BackColor = ThemeManager.PanelColor;
             pnlTop.BackColor = ThemeManager.PanelColor;
 
-            btnEmptyBin.BackColor = ThemeManager.ButtonColor;
-            btnPurgeExpired.BackColor = ThemeManager.ButtonColor;
-            btnRefresh.BackColor = ThemeManager.ButtonColor;
+            btnEmptyBin.ForeColor = ThemeManager.TextColor;    
+            btnEmptyBin.BackColor = ThemeManager.DarkButtonColor;
+            btnPurgeExpired.ForeColor = ThemeManager.TextColor;
+            btnPurgeExpired.BackColor = ThemeManager.DarkButtonColor;
+            btnRefresh.ForeColor = ThemeManager.TextColor;
+            btnRefresh.BackColor = ThemeManager.DarkButtonColor;
 
             cbType.BackColor = ThemeManager.PanelColor;
             cbType.ForeColor = ThemeManager.TextColor;

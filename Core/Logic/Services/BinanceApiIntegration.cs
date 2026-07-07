@@ -109,7 +109,7 @@ namespace TradingJournal.Core.Logic.Services
                             Price = price,
                             PriceChangePercent = decimal.Parse(ticker.priceChangePercent),
                             Volume = volume,
-                            MarketCap = quoteVolume, // proxy
+                            MarketCap = quoteVolume,
                             High24h = decimal.Parse(ticker.highPrice),
                             Low24h = decimal.Parse(ticker.lowPrice),
                             IconUrl = GetCryptoIconUrl(ticker.symbol)
