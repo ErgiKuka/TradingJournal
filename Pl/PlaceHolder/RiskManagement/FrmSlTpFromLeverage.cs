@@ -11,11 +11,8 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
 {
     /// <summary>
     /// "Stop-Loss & Take-Profit from Margin + Leverage" calculator.
-    ///
-    /// The designer uses fixed (absolute) panels with the UserControl's AutoScroll = true,
-    /// so maximizing just reveals more content / shows a scrollbar — no _Max panel and no
-    /// re-layout needed. All maths live in LeverageSlTpCalculator; this class reads inputs,
-    /// calls the engine, and renders the result.
+    /// Reads inputs, calls LeverageSlTpCalculator, renders the result.
+    /// Results carry semantic colour (green = healthy, amber = marginal, red = warning).
     /// </summary>
     public partial class FrmSlTpFromLeverage : UserControl, IResponsiveChildForm
     {
@@ -28,8 +25,13 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
         private const string ColQty = "colQty";
         private const string ColPnl = "colPnl";
 
+        private static readonly Color OkColor = Color.MediumSeaGreen;
+        private static readonly Color WarnColor = Color.OrangeRed;
+        private static readonly Color CautionColor = Color.Goldenrod;
+
         private static readonly string[] ComputedColumns = { ColLevel, ColMovePct, ColPrice, ColQty, ColPnl };
 
+        private readonly ResponsiveLayoutManager _layoutManager;
         private readonly LeverageSlTpCalculator _calculator = new LeverageSlTpCalculator();
         private readonly ToolTip _tip = new ToolTip();
         private bool _isUpdating;
@@ -46,6 +48,10 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             _isUpdating = false;
 
             WireEvents();
+            SetupTooltips();
+
+            _layoutManager = new ResponsiveLayoutManager(this);
+            InitializeResponsiveLayouts();
 
             ThemeManager.ThemeChanged += OnThemeChanged;
             this.Disposed += (s, e) => ThemeManager.ThemeChanged -= OnThemeChanged; // avoid static-event leak
@@ -58,10 +64,7 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
 
         // ----------------------------------------------------------------- Responsive
         public void SetWindowState(FormWindowStateExtended newState)
-        {
-            // Layout is fixed (absolute positions) and the UserControl has AutoScroll = true,
-            // so maximizing just reveals more / shows a scrollbar. Nothing to re-lay-out here.
-        }
+                => _layoutManager.SetWindowState(newState);
 
         // ----------------------------------------------------------------- Setup
         private void SetupDirectionCombo()
@@ -75,13 +78,40 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             if (cmbDirection.SelectedIndex < 0) cmbDirection.SelectedIndex = 0; // Long
         }
 
+        private void InitializeResponsiveLayouts()
+        {
+            RegisterSectionAsIs(pnlSlnTp, pnlSlnTp_Max);
+            RegisterSectionAsIs(pnlTpLevels, pnlTpLevels_Max);
+            RegisterSectionAsIs(pnlMetrics, pnlMetrics_Max);
+            RegisterSectionAsIs(pnlChecks, pnlChecks_Max);
+        }
+
+        private void RegisterSectionAsIs(Panel normal, Panel max)
+        {
+            foreach (Control c in normal.Controls)
+                _layoutManager.RegisterControl(c, normal, max, c.Location, c.Size);
+        }
+
         private void SetupGrid()
         {
             dgvTakeProfits.AllowUserToAddRows = false;
             dgvTakeProfits.AllowUserToDeleteRows = false;
             dgvTakeProfits.RowHeadersVisible = false;
             dgvTakeProfits.MultiSelect = false;
+            dgvTakeProfits.ScrollBars = ScrollBars.None;               // 3 fixed rows never scroll
             dgvTakeProfits.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            // Taller header + rows (set BEFORE adding rows) so the table doesn't look starved.
+            dgvTakeProfits.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgvTakeProfits.ColumnHeadersHeight = 36;
+            dgvTakeProfits.RowTemplate.Height = 44;
+
+            // Stretch to fill the panel width, and keep it filled if the panel resizes.
+            if (dgvTakeProfits.Parent is Control host)
+            {
+                dgvTakeProfits.Width = host.ClientSize.Width - (2 * dgvTakeProfits.Left);
+                dgvTakeProfits.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            }
 
             foreach (var name in ComputedColumns)
                 if (dgvTakeProfits.Columns.Contains(name))
@@ -106,6 +136,34 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
         {
             if (string.IsNullOrWhiteSpace(txtRiskPercent.Text)) txtRiskPercent.Text = "2";
             if (string.IsNullOrWhiteSpace(txtLeverage.Text)) txtLeverage.Text = "10";
+        }
+
+        // Contextual notes live as hover text on the field they apply to, so the screen stays clean.
+        private void SetupTooltips()
+        {
+            _tip.InitialDelay = 300;
+            _tip.ReshowDelay = 100;
+            _tip.AutoPopDelay = 30000; // keep long tips on screen long enough to read
+
+            _tip.SetToolTip(lblTitle,
+                "How this works: it runs backward — it finds the stop-loss price that loses exactly your " +
+                "risk amount for the margin and leverage you chose.\n" +
+                "It ignores funding and trading fees, so real P&L on perps will be slightly lower.");
+
+            _tip.SetToolTip(lblTableTitle,
+                "TP1/TP2/TP3 are multiples of the SL distance %: 1× = same move as the SL but in the profit " +
+                "direction, 2× = double, etc.\nThe % move, TP price, Qty and PnL columns are auto-calculated.");
+
+            _tip.SetToolTip(txtRiskPercent,
+                "Risk per trade as a % of balance. The stop is placed so a full stop-out loses exactly this amount.");
+
+            _tip.SetToolTip(txtMargin,
+                "Margin you post. Position size = margin × leverage. If the risk amount is larger than the margin, " +
+                "you'd be liquidated before the stop is reached.");
+
+            _tip.SetToolTip(txtLeverage,
+                "Liquidation distance shown is a rough 1/leverage estimate — it ignores exchange maintenance margin " +
+                "and fees. Check your exchange's real liquidation price before trading.");
         }
 
         private void PrefillBalanceFromSettings()
@@ -259,9 +317,16 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
                 ? "All take-profit levels total 100%."
                 : (FindWarning(r, "allocation totals") ?? "Take-profit % must total 100%."));
 
-            ColorWarning(lblMarginCheck, marginWarn);
-            ColorWarning(lblLiqCheck, liqWarn);
-            ColorWarning(lblAllocationCheck, !r.AllocationIsComplete);
+            // Semantic colours: green = healthy, red = warning.
+            lblMarginCheck.ForeColor = marginWarn ? WarnColor : OkColor;
+            lblLiqCheck.ForeColor = liqWarn ? WarnColor : OkColor;
+            lblAllocationCheck.ForeColor = r.AllocationIsComplete ? OkColor : WarnColor;
+
+            // Reward-to-risk by quality of the setup.
+            lblRewardToRisk.ForeColor =
+                r.RewardToRisk >= 2m ? OkColor :        // solid
+                r.RewardToRisk >= 1m ? CautionColor :   // marginal
+                                       WarnColor;       // losing edge
 
             _isUpdating = true;
             for (int i = 0; i < r.TakeProfits.Count && i < dgvTakeProfits.Rows.Count; i++)
@@ -272,6 +337,10 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
                 row.Cells[ColPrice].Value = FormatPrice(tp.TargetPrice);
                 row.Cells[ColQty].Value = FormatMoney(tp.QuantityUsdt);
                 row.Cells[ColPnl].Value = FormatMoney(tp.ProfitLoss);
+
+                // Green = profit, red = loss (edge case), neutral = flat.
+                row.Cells[ColPnl].Style.ForeColor =
+                    tp.ProfitLoss > 0 ? OkColor : tp.ProfitLoss < 0 ? WarnColor : ThemeManager.TextColor;
             }
             _isUpdating = false;
 
@@ -287,17 +356,22 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             _tip.SetToolTip(lblLiqCheck, string.Empty);
             _tip.SetToolTip(lblAllocationCheck, string.Empty);
 
+            // Reset semantic colours so no stale green/red lingers while input is incomplete.
+            lblMarginCheck.ForeColor = lblLiqCheck.ForeColor =
+                lblAllocationCheck.ForeColor = lblRewardToRisk.ForeColor = ThemeManager.TextColor;
+
             _isUpdating = true;
             foreach (DataGridViewRow row in dgvTakeProfits.Rows)
             {
                 if (row.IsNewRow) continue;
                 row.Cells[ColMovePct].Value = row.Cells[ColPrice].Value =
                     row.Cells[ColQty].Value = row.Cells[ColPnl].Value = string.Empty;
+                row.Cells[ColPnl].Style.ForeColor = ThemeManager.TextColor;
             }
             _isUpdating = false;
 
             lblStatus.Text = message ?? "Waiting for valid input…";
-            lblStatus.ForeColor = Color.OrangeRed;
+            lblStatus.ForeColor = WarnColor;
         }
 
         private IEnumerable<Label> ValueLabels()
@@ -342,9 +416,7 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             BackColor = ThemeManager.BackgroundColor;
             StyleRecursively(this);
             StyleGrid();
-
-            if (!string.IsNullOrEmpty(lblStatus.Text))
-                lblStatus.ForeColor = Color.OrangeRed;
+            Recalculate(); // re-applies values + semantic colours so they survive a dark/light switch
         }
 
         private void StyleRecursively(Control root)
@@ -397,8 +469,5 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
                 if (dgvTakeProfits.Columns.Contains(name))
                     dgvTakeProfits.Columns[name].DefaultCellStyle.BackColor = ThemeManager.PanelColor;
         }
-
-        private void ColorWarning(Label label, bool isWarning)
-            => label.ForeColor = isWarning ? Color.OrangeRed : ThemeManager.TextColor;
     }
 }
