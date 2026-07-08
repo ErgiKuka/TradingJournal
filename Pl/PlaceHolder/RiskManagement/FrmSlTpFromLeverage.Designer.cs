@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            pnlThemeAndNotifications = new Panel();
+            pnlSlnTp = new Panel();
             lblTitle = new Label();
             cmbDirection = new ComboBox();
             txtMargin = new TextBox();
@@ -42,7 +42,7 @@
             lblCapDirection = new Label();
             lblCapRisk = new Label();
             lblCapBalance = new Label();
-            panel1 = new Panel();
+            pnlTpLevels = new Panel();
             lblTableTitle = new Label();
             dgvTakeProfits = new DataGridView();
             colLevel = new DataGridViewTextBoxColumn();
@@ -52,7 +52,7 @@
             colPrice = new DataGridViewTextBoxColumn();
             colQty = new DataGridViewTextBoxColumn();
             colPnl = new DataGridViewTextBoxColumn();
-            panel2 = new Panel();
+            pnlMetrics = new Panel();
             lblMetricsTitile = new Label();
             lblRewardToRisk = new Label();
             lblCapRr = new Label();
@@ -72,7 +72,7 @@
             lblCapPositionUsdt = new Label();
             lblCapRiskAmount = new Label();
             lblRiskAmount = new Label();
-            panel3 = new Panel();
+            pnlChecks = new Panel();
             llblChecksTitle = new Label();
             lblAllocationCheck = new Label();
             lblStatus = new Label();
@@ -81,34 +81,38 @@
             lblCapLiqCheck = new Label();
             lblCapMarginCheck = new Label();
             lblMarginCheck = new Label();
-            pnlThemeAndNotifications.SuspendLayout();
-            panel1.SuspendLayout();
+            pnlSlnTp_Max = new Panel();
+            pnlTpLevels_Max = new Panel();
+            pnlMetrics_Max = new Panel();
+            pnlChecks_Max = new Panel();
+            pnlSlnTp.SuspendLayout();
+            pnlTpLevels.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvTakeProfits).BeginInit();
-            panel2.SuspendLayout();
-            panel3.SuspendLayout();
+            pnlMetrics.SuspendLayout();
+            pnlChecks.SuspendLayout();
             SuspendLayout();
             // 
-            // pnlThemeAndNotifications
+            // pnlSlnTp
             // 
-            pnlThemeAndNotifications.BackColor = Color.FromArgb(27, 38, 59);
-            pnlThemeAndNotifications.Controls.Add(lblTitle);
-            pnlThemeAndNotifications.Controls.Add(cmbDirection);
-            pnlThemeAndNotifications.Controls.Add(txtMargin);
-            pnlThemeAndNotifications.Controls.Add(txtLeverage);
-            pnlThemeAndNotifications.Controls.Add(txtRiskPercent);
-            pnlThemeAndNotifications.Controls.Add(txtEntryPrice);
-            pnlThemeAndNotifications.Controls.Add(txtBalance);
-            pnlThemeAndNotifications.Controls.Add(lblCapLeverage);
-            pnlThemeAndNotifications.Controls.Add(lblCapMargin);
-            pnlThemeAndNotifications.Controls.Add(lblCapEntry);
-            pnlThemeAndNotifications.Controls.Add(lblCapDirection);
-            pnlThemeAndNotifications.Controls.Add(lblCapRisk);
-            pnlThemeAndNotifications.Controls.Add(lblCapBalance);
-            pnlThemeAndNotifications.Location = new Point(20, 15);
-            pnlThemeAndNotifications.Margin = new Padding(2);
-            pnlThemeAndNotifications.Name = "pnlThemeAndNotifications";
-            pnlThemeAndNotifications.Size = new Size(922, 339);
-            pnlThemeAndNotifications.TabIndex = 19;
+            pnlSlnTp.BackColor = Color.FromArgb(27, 38, 59);
+            pnlSlnTp.Controls.Add(lblTitle);
+            pnlSlnTp.Controls.Add(cmbDirection);
+            pnlSlnTp.Controls.Add(txtMargin);
+            pnlSlnTp.Controls.Add(txtLeverage);
+            pnlSlnTp.Controls.Add(txtRiskPercent);
+            pnlSlnTp.Controls.Add(txtEntryPrice);
+            pnlSlnTp.Controls.Add(txtBalance);
+            pnlSlnTp.Controls.Add(lblCapLeverage);
+            pnlSlnTp.Controls.Add(lblCapMargin);
+            pnlSlnTp.Controls.Add(lblCapEntry);
+            pnlSlnTp.Controls.Add(lblCapDirection);
+            pnlSlnTp.Controls.Add(lblCapRisk);
+            pnlSlnTp.Controls.Add(lblCapBalance);
+            pnlSlnTp.Location = new Point(20, 15);
+            pnlSlnTp.Margin = new Padding(2);
+            pnlSlnTp.Name = "pnlSlnTp";
+            pnlSlnTp.Size = new Size(922, 339);
+            pnlSlnTp.TabIndex = 19;
             // 
             // lblTitle
             // 
@@ -261,16 +265,16 @@
             lblCapBalance.TabIndex = 0;
             lblCapBalance.Text = "Account balance (USDT)";
             // 
-            // panel1
+            // pnlTpLevels
             // 
-            panel1.BackColor = Color.FromArgb(27, 38, 59);
-            panel1.Controls.Add(lblTableTitle);
-            panel1.Controls.Add(dgvTakeProfits);
-            panel1.Location = new Point(20, 386);
-            panel1.Margin = new Padding(2);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(922, 280);
-            panel1.TabIndex = 20;
+            pnlTpLevels.BackColor = Color.FromArgb(27, 38, 59);
+            pnlTpLevels.Controls.Add(lblTableTitle);
+            pnlTpLevels.Controls.Add(dgvTakeProfits);
+            pnlTpLevels.Location = new Point(20, 386);
+            pnlTpLevels.Margin = new Padding(2);
+            pnlTpLevels.Name = "pnlTpLevels";
+            pnlTpLevels.Size = new Size(922, 280);
+            pnlTpLevels.TabIndex = 20;
             // 
             // lblTableTitle
             // 
@@ -333,33 +337,33 @@
             colPnl.Name = "colPnl";
             colPnl.ReadOnly = true;
             // 
-            // panel2
+            // pnlMetrics
             // 
-            panel2.BackColor = Color.FromArgb(27, 38, 59);
-            panel2.Controls.Add(lblMetricsTitile);
-            panel2.Controls.Add(lblRewardToRisk);
-            panel2.Controls.Add(lblCapRr);
-            panel2.Controls.Add(lblReturnOnMargin);
-            panel2.Controls.Add(lblCapReturnMargin);
-            panel2.Controls.Add(lblTotalPnl);
-            panel2.Controls.Add(lblCapTotalPnl);
-            panel2.Controls.Add(lblLiqDistancePct);
-            panel2.Controls.Add(lblCapLiqDist);
-            panel2.Controls.Add(lblStopLossPrice);
-            panel2.Controls.Add(lblCapSlPrice);
-            panel2.Controls.Add(lblSlDistancePct);
-            panel2.Controls.Add(lblCapSlDist);
-            panel2.Controls.Add(lblPositionCoins);
-            panel2.Controls.Add(lblCapPositionCoins);
-            panel2.Controls.Add(lblPositionUsdt);
-            panel2.Controls.Add(lblCapPositionUsdt);
-            panel2.Controls.Add(lblCapRiskAmount);
-            panel2.Controls.Add(lblRiskAmount);
-            panel2.Location = new Point(20, 700);
-            panel2.Margin = new Padding(2);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(922, 335);
-            panel2.TabIndex = 21;
+            pnlMetrics.BackColor = Color.FromArgb(27, 38, 59);
+            pnlMetrics.Controls.Add(lblMetricsTitile);
+            pnlMetrics.Controls.Add(lblRewardToRisk);
+            pnlMetrics.Controls.Add(lblCapRr);
+            pnlMetrics.Controls.Add(lblReturnOnMargin);
+            pnlMetrics.Controls.Add(lblCapReturnMargin);
+            pnlMetrics.Controls.Add(lblTotalPnl);
+            pnlMetrics.Controls.Add(lblCapTotalPnl);
+            pnlMetrics.Controls.Add(lblLiqDistancePct);
+            pnlMetrics.Controls.Add(lblCapLiqDist);
+            pnlMetrics.Controls.Add(lblStopLossPrice);
+            pnlMetrics.Controls.Add(lblCapSlPrice);
+            pnlMetrics.Controls.Add(lblSlDistancePct);
+            pnlMetrics.Controls.Add(lblCapSlDist);
+            pnlMetrics.Controls.Add(lblPositionCoins);
+            pnlMetrics.Controls.Add(lblCapPositionCoins);
+            pnlMetrics.Controls.Add(lblPositionUsdt);
+            pnlMetrics.Controls.Add(lblCapPositionUsdt);
+            pnlMetrics.Controls.Add(lblCapRiskAmount);
+            pnlMetrics.Controls.Add(lblRiskAmount);
+            pnlMetrics.Location = new Point(20, 700);
+            pnlMetrics.Margin = new Padding(2);
+            pnlMetrics.Name = "pnlMetrics";
+            pnlMetrics.Size = new Size(922, 335);
+            pnlMetrics.TabIndex = 21;
             // 
             // lblMetricsTitile
             // 
@@ -571,22 +575,22 @@
             lblRiskAmount.TabIndex = 1;
             lblRiskAmount.Text = "--";
             // 
-            // panel3
+            // pnlChecks
             // 
-            panel3.BackColor = Color.FromArgb(27, 38, 59);
-            panel3.Controls.Add(llblChecksTitle);
-            panel3.Controls.Add(lblAllocationCheck);
-            panel3.Controls.Add(lblStatus);
-            panel3.Controls.Add(lblCapAllocation);
-            panel3.Controls.Add(lblLiqCheck);
-            panel3.Controls.Add(lblCapLiqCheck);
-            panel3.Controls.Add(lblCapMarginCheck);
-            panel3.Controls.Add(lblMarginCheck);
-            panel3.Location = new Point(20, 1079);
-            panel3.Margin = new Padding(2);
-            panel3.Name = "panel3";
-            panel3.Size = new Size(922, 293);
-            panel3.TabIndex = 22;
+            pnlChecks.BackColor = Color.FromArgb(27, 38, 59);
+            pnlChecks.Controls.Add(llblChecksTitle);
+            pnlChecks.Controls.Add(lblAllocationCheck);
+            pnlChecks.Controls.Add(lblStatus);
+            pnlChecks.Controls.Add(lblCapAllocation);
+            pnlChecks.Controls.Add(lblLiqCheck);
+            pnlChecks.Controls.Add(lblCapLiqCheck);
+            pnlChecks.Controls.Add(lblCapMarginCheck);
+            pnlChecks.Controls.Add(lblMarginCheck);
+            pnlChecks.Location = new Point(20, 1079);
+            pnlChecks.Margin = new Padding(2);
+            pnlChecks.Name = "pnlChecks";
+            pnlChecks.Size = new Size(922, 293);
+            pnlChecks.TabIndex = 22;
             // 
             // llblChecksTitle
             // 
@@ -677,47 +681,100 @@
             lblMarginCheck.TabIndex = 1;
             lblMarginCheck.Text = "--";
             // 
+            // pnlSlnTp_Max
+            // 
+            pnlSlnTp_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlSlnTp_Max.Location = new Point(20, 13);
+            pnlSlnTp_Max.Margin = new Padding(2);
+            pnlSlnTp_Max.Name = "pnlSlnTp_Max";
+            pnlSlnTp_Max.Size = new Size(1651, 341);
+            pnlSlnTp_Max.TabIndex = 23;
+            pnlSlnTp_Max.Visible = false;
+            // 
+            // pnlTpLevels_Max
+            // 
+            pnlTpLevels_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlTpLevels_Max.Location = new Point(20, 386);
+            pnlTpLevels_Max.Margin = new Padding(2);
+            pnlTpLevels_Max.Name = "pnlTpLevels_Max";
+            pnlTpLevels_Max.Size = new Size(1651, 280);
+            pnlTpLevels_Max.TabIndex = 24;
+            pnlTpLevels_Max.Visible = false;
+            // 
+            // pnlMetrics_Max
+            // 
+            pnlMetrics_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlMetrics_Max.Location = new Point(20, 700);
+            pnlMetrics_Max.Margin = new Padding(2);
+            pnlMetrics_Max.Name = "pnlMetrics_Max";
+            pnlMetrics_Max.Size = new Size(1651, 335);
+            pnlMetrics_Max.TabIndex = 25;
+            pnlMetrics_Max.Visible = false;
+            // 
+            // pnlChecks_Max
+            // 
+            pnlChecks_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlChecks_Max.Location = new Point(20, 1079);
+            pnlChecks_Max.Margin = new Padding(2);
+            pnlChecks_Max.Name = "pnlChecks_Max";
+            pnlChecks_Max.Size = new Size(1651, 293);
+            pnlChecks_Max.TabIndex = 26;
+            pnlChecks_Max.Visible = false;
+            // 
             // FrmSlTpFromLeverage
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScroll = true;
             BackColor = Color.FromArgb(13, 27, 42);
-            Controls.Add(panel3);
-            Controls.Add(panel2);
-            Controls.Add(panel1);
-            Controls.Add(pnlThemeAndNotifications);
+            Controls.Add(pnlChecks);
+            Controls.Add(pnlMetrics);
+            Controls.Add(pnlTpLevels);
+            Controls.Add(pnlSlnTp);
+            Controls.Add(pnlSlnTp_Max);
+            Controls.Add(pnlTpLevels_Max);
+            Controls.Add(pnlMetrics_Max);
+            Controls.Add(pnlChecks_Max);
             Margin = new Padding(2);
             Name = "FrmSlTpFromLeverage";
-            Size = new Size(1540, 1393);
-            pnlThemeAndNotifications.ResumeLayout(false);
-            pnlThemeAndNotifications.PerformLayout();
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
+            Size = new Size(1699, 1376);
+            pnlSlnTp.ResumeLayout(false);
+            pnlSlnTp.PerformLayout();
+            pnlTpLevels.ResumeLayout(false);
+            pnlTpLevels.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvTakeProfits).EndInit();
-            panel2.ResumeLayout(false);
-            panel2.PerformLayout();
-            panel3.ResumeLayout(false);
-            panel3.PerformLayout();
+            pnlMetrics.ResumeLayout(false);
+            pnlMetrics.PerformLayout();
+            pnlChecks.ResumeLayout(false);
+            pnlChecks.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
-        private Panel pnlThemeAndNotifications;
-        private Panel panel1;
+        private Panel pnlSlnTp;
+        private Panel pnlTpLevels;
+        private Panel pnlMetrics;
+        private Panel pnlChecks;
+
+        private Label lblTitle;
+        private Label lblTableTitle;
+        private Label lblMetricsTitile;
+        private Label llblChecksTitle;
+
         private Label lblCapBalance;
-        private Label lblCapLeverage;
-        private Label lblCapMargin;
-        private Label lblCapEntry;
-        private Label lblCapDirection;
         private Label lblCapRisk;
-        private TextBox txtMargin;
-        private TextBox txtLeverage;
+        private Label lblCapDirection;
+        private Label lblCapEntry;
+        private Label lblCapMargin;
+        private Label lblCapLeverage;
+        private TextBox txtBalance;
         private TextBox txtRiskPercent;
         private TextBox txtEntryPrice;
-        private TextBox txtBalance;
+        private TextBox txtMargin;
+        private TextBox txtLeverage;
         private ComboBox cmbDirection;
+
         private DataGridView dgvTakeProfits;
         private DataGridViewTextBoxColumn colLevel;
         private DataGridViewTextBoxColumn colMultiple;
@@ -726,42 +783,24 @@
         private DataGridViewTextBoxColumn colPrice;
         private DataGridViewTextBoxColumn colQty;
         private DataGridViewTextBoxColumn colPnl;
-        private Label lblTitle;
-        private Panel panel2;
-        private Label lblRewardToRisk;
-        private Label lblCapRr;
-        private Label lblReturnOnMargin;
-        private Label lblCapReturnMargin;
-        private Label lblTotalPnl;
-        private Label lblCapTotalPnl;
-        private Label lblLiqDistancePct;
-        private Label lblCapLiqDist;
-        private Label lblStopLossPrice;
-        private Label lblCapSlPrice;
-        private Label lblSlDistancePct;
-        private Label lblCapSlDist;
-        private Label lblPositionCoins;
-        private Label lblCapPositionCoins;
-        private Label lblPositionUsdt;
-        private Label lblCapPositionUsdt;
-        private Label lblCapRiskAmount;
-        private Label lblRiskAmount;
-        private Panel panel3;
-        private Label lblMetricsTitile;
-        private Label label2;
+
+        private Label lblCapRiskAmount; private Label lblRiskAmount;
+        private Label lblCapPositionUsdt; private Label lblPositionUsdt;
+        private Label lblCapPositionCoins; private Label lblPositionCoins;
+        private Label lblCapSlDist; private Label lblSlDistancePct;
+        private Label lblCapSlPrice; private Label lblStopLossPrice;
+        private Label lblCapLiqDist; private Label lblLiqDistancePct;
+        private Label lblCapTotalPnl; private Label lblTotalPnl;
+        private Label lblCapReturnMargin; private Label lblReturnOnMargin;
+        private Label lblCapRr; private Label lblRewardToRisk;
+
+        private Label lblCapMarginCheck; private Label lblMarginCheck;
+        private Label lblCapLiqCheck; private Label lblLiqCheck;
+        private Label lblCapAllocation; private Label lblAllocationCheck;
         private Label lblStatus;
-        private Label label9;
-        private Label label10;
-        private Label label11;
-        private Label label12;
-        private Label label13;
-        private Label lblCapAllocation;
-        private Label lblLiqCheck;
-        private Label lblCapLiqCheck;
-        private Label lblCapMarginCheck;
-        private Label lblMarginCheck;
-        private Label lblAllocationCheck;
-        private Label lblTableTitle;
-        private Label llblChecksTitle;
+        private Panel pnlSlnTp_Max;
+        private Panel pnlTpLevels_Max;
+        private Panel pnlMetrics_Max;
+        private Panel pnlChecks_Max;
     }
 }
