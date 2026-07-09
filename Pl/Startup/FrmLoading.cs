@@ -58,17 +58,15 @@ namespace TradingJournal.Pl.Startup
             // --- Start of Update Code ---
             try
             {
-                string currentVersion = "1.9.9"; // This MUST match the version in your Inno Setup script
+                string currentVersion = "1.9.10";
                 string repoOwner = "ErgiKuka";
-                string repoName = "TradingJournal"; // Your main repository
+                string repoName = "TradingJournal"; 
 
                 var updater = new GitHubUpdater(repoOwner, repoName);
-                await updater.CheckForUpdatesAsync(currentVersion, lblStatus); // Use your label here
+                await updater.CheckForUpdatesAsync(currentVersion, lblStatus);
             }
             catch (Exception ex)
             {
-                // If the update check itself fails, we don't want the app to crash.
-                // We just log it and continue.
                 Console.WriteLine("A critical error occurred in the update process: " + ex.Message);
                 lblStatus.Text = "Could not check for updates.";
             }
