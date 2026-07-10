@@ -248,7 +248,7 @@ namespace TradingJournal.Pl.Skeleton
 
         private void btnJournal_Click(object sender, EventArgs e)
         {
-            LoadControl(new FrmJournal());
+            LoadControl(new UcTradesHub());
             SetActiveButton(btnJournal);
         }
 

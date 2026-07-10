@@ -20,6 +20,7 @@ namespace TradingJournal.Core.Data.Entities
 
         // Screenshot
         public string? ScreenshotLink { get; set; }
+        public string? ExternalId { get; set; }
         public byte[]? ScreenshotImage { get; set; }
 
         // Not mapped – auto-calculated
