@@ -1,13 +1,13 @@
-﻿namespace TradingJournal.Pl.PlaceHolder.RiskManagement
+﻿namespace TradingJournal.Pl.PlaceHolder.Journal
 {
-    partial class FrmRiskHub
+    partial class UcTradesHub
     {
-        /// <summary>
+        /// <summary> 
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
+        /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -20,19 +20,19 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Component Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
             pnlContent = new Panel();
             menuStripNav = new MenuStrip();
-            mnuSlTp = new ToolStripMenuItem();
-            mnuPositionSize = new ToolStripMenuItem();
-            mnuPartialTp = new ToolStripMenuItem();
+            mnuTrading = new ToolStripMenuItem();
+            mnuJournal = new ToolStripMenuItem();
+            mnuPlatforms = new ToolStripMenuItem();
             menuStripNav.SuspendLayout();
             SuspendLayout();
             // 
@@ -49,40 +49,39 @@
             // 
             menuStripNav.Font = new Font("Times New Roman", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             menuStripNav.ImageScalingSize = new Size(20, 20);
-            menuStripNav.Items.AddRange(new ToolStripItem[] { mnuSlTp, mnuPositionSize, mnuPartialTp });
+            menuStripNav.Items.AddRange(new ToolStripItem[] { mnuTrading, mnuJournal, mnuPlatforms });
             menuStripNav.Location = new Point(0, 0);
             menuStripNav.Name = "menuStripNav";
             menuStripNav.Size = new Size(1925, 35);
             menuStripNav.TabIndex = 2;
             menuStripNav.Text = "menuStrip";
             // 
-            // mnuSlTp
+            // mnuTrading
             // 
-            mnuSlTp.Name = "mnuSlTp";
-            mnuSlTp.Size = new Size(144, 31);
-            mnuSlTp.Text = "Sl,Tp Finder";
+            mnuTrading.Name = "mnuTrading";
+            mnuTrading.Size = new Size(99, 31);
+            mnuTrading.Text = "Trading";
             // 
-            // mnuPositionSize
+            // mnuJournal
             // 
-            mnuPositionSize.Name = "mnuPositionSize";
-            mnuPositionSize.Size = new Size(137, 31);
-            mnuPositionSize.Text = "Risk Finder";
+            mnuJournal.Name = "mnuJournal";
+            mnuJournal.Size = new Size(96, 31);
+            mnuJournal.Text = "Journal";
             // 
-            // mnuPartialTp
+            // mnuPlatforms
             // 
-            mnuPartialTp.Name = "mnuPartialTp";
-            mnuPartialTp.Size = new Size(123, 31);
-            mnuPartialTp.Text = "Partial TP";
+            mnuPlatforms.Name = "mnuPlatforms";
+            mnuPlatforms.Size = new Size(119, 31);
+            mnuPlatforms.Text = "Platforms";
             // 
-            // FrmRiskHub
+            // UcTradesHub
             // 
-            AutoScaleDimensions = new SizeF(120F, 120F);
-            AutoScaleMode = AutoScaleMode.Dpi;
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 27, 42);
             Controls.Add(pnlContent);
             Controls.Add(menuStripNav);
-            Margin = new Padding(2);
-            Name = "FrmRiskHub";
+            Name = "UcTradesHub";
             Size = new Size(1925, 1055);
             menuStripNav.ResumeLayout(false);
             menuStripNav.PerformLayout();
@@ -94,8 +93,8 @@
 
         private Panel pnlContent;
         private MenuStrip menuStripNav;
-        private ToolStripMenuItem mnuSlTp;
-        private ToolStripMenuItem mnuPositionSize;
-        private ToolStripMenuItem mnuPartialTp;
+        private ToolStripMenuItem mnuTrading;
+        private ToolStripMenuItem mnuJournal;
+        private ToolStripMenuItem mnuPlatforms;
     }
 }
