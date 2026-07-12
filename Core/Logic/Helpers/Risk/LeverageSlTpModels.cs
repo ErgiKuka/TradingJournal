@@ -14,6 +14,19 @@ namespace TradingJournal.Core.Logic.Helpers
     }
 
     /// <summary>
+    /// How the user chose to size the position. Both modes resolve to the same notional
+    /// inside the calculator, so the stop-loss and take-profit ladder are identical either way.
+    /// </summary>
+    public enum SizingMode
+    {
+        /// <summary>User posts USDT margin; notional = margin × leverage.</summary>
+        Margin,
+
+        /// <summary>User enters a coin quantity; notional = quantity × entry price.</summary>
+        Coins
+    }
+
+    /// <summary>
     /// One planned take-profit level (an input row).
     /// Mirrors the "SL &amp; TP from Leverage" sheet, columns B (multiple) and E (% of position).
     /// </summary>
@@ -39,7 +52,16 @@ namespace TradingJournal.Core.Logic.Helpers
 
         public TradeDirection Direction { get; set; }
         public decimal EntryPrice { get; set; }
+
+        /// <summary>Which input the user filled. Defaults to Margin so existing callers are unaffected.</summary>
+        public SizingMode SizingMode { get; set; } = SizingMode.Margin;
+
+        /// <summary>USDT margin the user posts. Used only when SizingMode == Margin.</summary>
         public decimal Margin { get; set; }
+
+        /// <summary>Position size in coins (e.g. 3 = 3 ETH). Used only when SizingMode == Coins.</summary>
+        public decimal CoinQuantity { get; set; }
+
         public decimal Leverage { get; set; }
 
         public IReadOnlyList<TakeProfitInput> TakeProfits { get; set; } = new List<TakeProfitInput>();
@@ -83,6 +105,13 @@ namespace TradingJournal.Core.Logic.Helpers
         public decimal PositionSizeUsdt { get; set; }
 
         public decimal PositionSizeCoins { get; set; }
+
+        /// <summary>
+        /// Margin (USDT) actually backing the position. In Margin mode this equals the user's input;
+        /// in Coins mode it is derived (notional / leverage) so the margin/liquidation warnings and
+        /// return-on-margin stay meaningful.
+        /// </summary>
+        public decimal MarginUsed { get; set; }
 
         /// <summary>Stop-loss distance from entry as a FRACTION (risk amount / notional).</summary>
         public decimal StopLossDistancePercent { get; set; }

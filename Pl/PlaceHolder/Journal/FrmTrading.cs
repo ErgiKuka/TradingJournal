@@ -24,11 +24,11 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
         private const string ColQty = "colPosQty";
         private const string ColEntry = "colPosEntry";
         private const string ColMark = "colPosMark";
-        private const string ColLiq = "colPosLiq";    
-        private const string ColMargin = "colPosMargin";  
+        private const string ColLiq = "colPosLiq";
+        private const string ColMargin = "colPosMargin";
         private const string ColPnl = "colPosPnl";
-        private const string ColRoi = "colPosRoi";       
-        private const string ColLev = "colPosLev";      
+        private const string ColRoi = "colPosRoi";
+        private const string ColLev = "colPosLev";
         private const string ColTp = "colPosTp";
         private const string ColClose = "colPosClose";
 
@@ -399,7 +399,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             if (string.IsNullOrWhiteSpace(symbol)) return;
 
             if (colName == ColClose) await CloseFullAsync(symbol);
-            else if (colName == ColTp) await TakeProfitAsync(symbol, row);
+            else if (colName == ColTp) await TakeProfitAsync(symbol);
         }
 
         private async Task CloseFullAsync(string symbol)
@@ -415,51 +415,96 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             catch (Exception ex) { SetStatus(ex.Message, false); }
         }
 
-        private async Task TakeProfitAsync(string symbol, DataGridViewRow row)
+        private async Task TakeProfitAsync(string symbol)
         {
-            var pct = PromptPercent($"Close what % of {symbol} to take profit? (1-100)");
-            if (pct == null) return;
+            // Read the live position size from the exchange, never from a grid cell. Reading the cell
+            // coupled this action to the grid's columns — if one was missing it threw before the try
+            // block and took the whole app down. The exchange is the source of truth anyway.
+            decimal posQty = 0m;
+            try
+            {
+                foreach (var p in await _client.GetPositionsAsync())
+                    if (string.Equals(p.Symbol, symbol, StringComparison.OrdinalIgnoreCase))
+                    { posQty = p.Quantity; break; }
+            }
+            catch (Exception ex) { SetStatus(ex.Message, false); return; }
 
-            if (!NumericInput.TryParseDecimal(row.Cells[ColQty].Value?.ToString(), out var posQty) || posQty <= 0)
-            { SetStatus("Couldn't read the position size.", false); return; }
+            if (posQty <= 0) { SetStatus($"No open {symbol} position to reduce.", false); return; }
+
+            SymbolRules rules;
+            try { rules = await _client.GetSymbolRulesAsync(symbol); }
+            catch (Exception ex) { SetStatus(ex.Message, false); return; }
+
+            // Ask how much to take off as an absolute amount in coins (default = the whole position).
+            var requested = PromptAmount(symbol, posQty, rules.StepSize);
+            if (requested == null) return;
+
+            decimal qty = FloorToStep(requested.Value, rules.StepSize);
+            if (qty <= 0)
+            {
+                SetStatus($"That amount is below {symbol}'s step size ({FormatQty(rules.StepSize)}).", false);
+                return;
+            }
+            if (qty >= posQty) { await CloseFullAsync(symbol); return; } // asking for all (or more) = full close
 
             try
             {
-                var rules = await _client.GetSymbolRulesAsync(symbol);
-                decimal qty = FloorToStep(posQty * pct.Value / 100m, rules.StepSize);
-                if (qty <= 0) { SetStatus("That portion is below the symbol's step size.", false); return; }
-                if (qty >= posQty) { await CloseFullAsync(symbol); return; }
-
+                // reduceOnly market close of exactly this many coins (ClosePositionAsync sets reduceOnly).
                 var res = await _client.ClosePositionAsync(symbol, qty);
-                SetStatus(res.Success ? $"Took profit: closed {qty} {symbol}." : res.Message, res.Success);
-                await RefreshPositionsAsync(); await RefreshBalanceAsync();
+                SetStatus(res.Success
+                    ? $"Closed {FormatQty(qty)} {symbol}. Remaining ~{FormatQty(posQty - qty)}."
+                    : res.Message, res.Success);
             }
             catch (Exception ex) { SetStatus(ex.Message, false); }
+            finally
+            {
+                // Always resync to whatever actually happened — a full fill, a partial, or nothing.
+                await RefreshPositionsAsync();
+                await RefreshBalanceAsync();
+            }
         }
 
         private static decimal FloorToStep(decimal value, decimal step)
             => step <= 0 ? value : Math.Floor(value / step) * step;
 
-        private static decimal? PromptPercent(string prompt)
+        private static string FormatQty(decimal v) => v.ToString("0.########", Inv);
+
+        private static decimal? PromptAmount(string symbol, decimal maxQty, decimal step)
         {
             using var form = new Form
             {
-                Text = "Take profit",
+                Text = "Take profit / reduce",
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterParent,
                 MinimizeBox = false,
                 MaximizeBox = false,
-                ClientSize = new Size(330, 120),
+                ClientSize = new Size(360, 148),
                 BackColor = ThemeManager.PanelColor,
                 ForeColor = ThemeManager.TextColor
             };
-            var lbl = new Label { Text = prompt, Left = 12, Top = 14, Width = 306, ForeColor = ThemeManager.TextColor };
-            var txt = new TextBox { Left = 12, Top = 44, Width = 306, Text = "50", BackColor = ThemeManager.TextBoxColor, ForeColor = ThemeManager.TextColor };
+            var lbl = new Label
+            {
+                Text = $"Amount of {symbol} to close, in coins.\nMax {FormatQty(maxQty)}   ·   step {FormatQty(step)}",
+                Left = 12,
+                Top = 12,
+                Width = 336,
+                Height = 46,
+                ForeColor = ThemeManager.TextColor
+            };
+            var txt = new TextBox
+            {
+                Left = 12,
+                Top = 64,
+                Width = 336,
+                Text = FormatQty(maxQty),
+                BackColor = ThemeManager.TextBoxColor,
+                ForeColor = ThemeManager.TextColor
+            };
             var ok = new Button
             {
-                Text = "Close portion",
-                Left = 200,
-                Top = 80,
+                Text = "Close amount",
+                Left = 230,
+                Top = 104,
                 Width = 118,
                 DialogResult = DialogResult.OK,
                 FlatStyle = FlatStyle.Flat,
@@ -469,7 +514,8 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             form.Controls.AddRange(new Control[] { lbl, txt, ok });
             form.AcceptButton = ok;
             if (form.ShowDialog() != DialogResult.OK) return null;
-            return NumericInput.TryParseDecimal(txt.Text, out var v) && v > 0 && v <= 100 ? v : (decimal?)null;
+            if (!NumericInput.TryParseDecimal(txt.Text, out var v) || v <= 0) return null;
+            return v > maxQty ? maxQty : v; // clamp to the full position
         }
 
         private void SetStatus(string message, bool ok)

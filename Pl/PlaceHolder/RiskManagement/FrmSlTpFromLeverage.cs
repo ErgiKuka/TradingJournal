@@ -158,8 +158,12 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
                 "Risk per trade as a % of balance. The stop is placed so a full stop-out loses exactly this amount.");
 
             _tip.SetToolTip(txtMargin,
-                "Margin you post. Position size = margin × leverage. If the risk amount is larger than the margin, " +
-                "you'd be liquidated before the stop is reached.");
+                "Margin you post, in USDT. Position size = margin × leverage. Leave this empty and use the " +
+                "coins box to size the trade in coins instead.");
+
+            _tip.SetToolTip(txtCoinQty,
+                "Size the trade directly in coins (e.g. 3 for 3 ETH) instead of USDT. Filling this clears the " +
+                "USDT margin box; the stop-loss and TP ladder are then sized from this position.");
 
             _tip.SetToolTip(txtLeverage,
                 "Liquidation distance shown is a rough 1/leverage estimate — it ignores exchange maintenance margin " +
@@ -188,8 +192,37 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             foreach (var tb in InputTextBoxes())
                 tb.TextChanged += Input_Changed;
 
+            // Margin (USDT) and coin quantity are mutually exclusive: filling one clears the other,
+            // so exactly one drives the calculation.
+            txtMargin.TextChanged += MarginBox_TextChanged;
+            txtCoinQty.TextChanged += CoinBox_TextChanged;
+
             cmbDirection.SelectedIndexChanged += Input_Changed;
             dgvTakeProfits.CellEndEdit += Dgv_CellEndEdit;
+        }
+
+        private void MarginBox_TextChanged(object sender, EventArgs e)
+        {
+            if (_isUpdating) return;
+            if (txtMargin.TextLength > 0 && txtCoinQty.TextLength > 0)
+            {
+                _isUpdating = true;      // clearing the other box must not re-enter this logic
+                txtCoinQty.Clear();
+                _isUpdating = false;
+            }
+            Recalculate();
+        }
+
+        private void CoinBox_TextChanged(object sender, EventArgs e)
+        {
+            if (_isUpdating) return;
+            if (txtCoinQty.TextLength > 0 && txtMargin.TextLength > 0)
+            {
+                _isUpdating = true;
+                txtMargin.Clear();
+                _isUpdating = false;
+            }
+            Recalculate();
         }
 
         private IEnumerable<TextBox> InputTextBoxes()
@@ -197,7 +230,6 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             yield return txtBalance;
             yield return txtRiskPercent;
             yield return txtEntryPrice;
-            yield return txtMargin;
             yield return txtLeverage;
         }
 
@@ -227,10 +259,23 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             { parseError = "Enter a valid risk % (e.g. 2)."; return false; }
             if (!NumericInput.TryParseDecimal(txtEntryPrice.Text, out var entry))
             { parseError = "Enter a valid entry price."; return false; }
-            if (!NumericInput.TryParseDecimal(txtMargin.Text, out var margin))
-            { parseError = "Enter a valid margin (USDT)."; return false; }
             if (!NumericInput.TryParseDecimal(txtLeverage.Text, out var leverage))
             { parseError = "Enter a valid leverage."; return false; }
+
+            // The two size boxes are kept mutually exclusive by the TextChanged handlers, so mode is
+            // simply "whichever one has a value". Coins wins if both are somehow non-empty.
+            bool useCoins = !string.IsNullOrWhiteSpace(txtCoinQty.Text);
+            decimal margin = 0m, coinQty = 0m;
+            if (useCoins)
+            {
+                if (!NumericInput.TryParseDecimal(txtCoinQty.Text, out coinQty))
+                { parseError = "Enter a valid coin quantity."; return false; }
+            }
+            else if (!NumericInput.TryParseDecimal(txtMargin.Text, out margin))
+            {
+                parseError = "Enter a margin in USDT, or a position size in coins.";
+                return false;
+            }
 
             var takeProfits = new List<TakeProfitInput>();
             foreach (DataGridViewRow row in dgvTakeProfits.Rows)
@@ -252,7 +297,9 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
                 RiskFraction = riskPercent / 100m,
                 Direction = ReadDirection(),
                 EntryPrice = entry,
+                SizingMode = useCoins ? SizingMode.Coins : SizingMode.Margin,
                 Margin = margin,
+                CoinQuantity = coinQty,
                 Leverage = leverage,
                 TakeProfits = takeProfits
             };

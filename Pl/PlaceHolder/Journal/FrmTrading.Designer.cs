@@ -81,6 +81,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             colPosLiq = new DataGridViewTextBoxColumn();
             colPosRoi = new DataGridViewTextBoxColumn();
             colPosClose = new DataGridViewButtonColumn();
+            colPosTp = new DataGridViewButtonColumn();
             colPosSide = new DataGridViewTextBoxColumn();
             colPosQty = new DataGridViewTextBoxColumn();
             colPosEntry = new DataGridViewTextBoxColumn();
@@ -236,7 +237,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             // dgvPositions
             // 
             dgvPositions.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvPositions.Columns.AddRange(new DataGridViewColumn[] { colPosSymbol, colPosLiq, colPosRoi, colPosClose, colPosSide, colPosQty, colPosEntry, colPosMark, colPosPnl, colPosLev, colPosMargin });
+            dgvPositions.Columns.AddRange(new DataGridViewColumn[] { colPosSymbol, colPosLiq, colPosRoi, colPosClose, colPosTp, colPosSide, colPosQty, colPosEntry, colPosMark, colPosPnl, colPosLev, colPosMargin });
             dgvPositions.Location = new Point(21, 95);
             dgvPositions.Margin = new Padding(4);
             dgvPositions.Name = "dgvPositions";
@@ -736,6 +737,16 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             colPosClose.UseColumnTextForButtonValue = true;
             colPosClose.Width = 125;
             // 
+            // colPosTp
+            // 
+            colPosTp.HeaderText = "";
+            colPosTp.MinimumWidth = 6;
+            colPosTp.Name = "colPosTp";
+            colPosTp.ReadOnly = true;
+            colPosTp.Text = "TP";
+            colPosTp.UseColumnTextForButtonValue = true;
+            colPosTp.Width = 125;
+            // 
             // colPosSide
             // 
             colPosSide.HeaderText = "Side";
@@ -878,6 +889,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
         private DataGridViewTextBoxColumn colPosLiq;
         private DataGridViewTextBoxColumn colPosRoi;
         private DataGridViewButtonColumn colPosClose;
+        private DataGridViewButtonColumn colPosTp;
         private DataGridViewTextBoxColumn colPosSide;
         private DataGridViewTextBoxColumn colPosQty;
         private DataGridViewTextBoxColumn colPosEntry;
