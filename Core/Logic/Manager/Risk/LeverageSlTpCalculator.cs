@@ -26,7 +26,14 @@ namespace TradingJournal.Core.Logic.Manager
             if (input.AccountBalance <= 0) result.Errors.Add("Account balance must be greater than 0.");
             if (input.RiskFraction <= 0) result.Errors.Add("Risk per trade must be greater than 0.");
             if (input.EntryPrice <= 0) result.Errors.Add("Entry price must be greater than 0.");
-            if (input.Margin <= 0) result.Errors.Add("Margin must be greater than 0.");
+            if (input.SizingMode == SizingMode.Coins)
+            {
+                if (input.CoinQuantity <= 0) result.Errors.Add("Coin quantity must be greater than 0.");
+            }
+            else
+            {
+                if (input.Margin <= 0) result.Errors.Add("Margin must be greater than 0.");
+            }
             if (input.Leverage <= 0) result.Errors.Add("Leverage must be greater than 0.");
 
             if (result.Errors.Count > 0)
@@ -34,8 +41,24 @@ namespace TradingJournal.Core.Logic.Manager
 
             // --- Core figures ---
             result.RiskAmount = input.AccountBalance * input.RiskFraction;      // B7
-            result.PositionSizeUsdt = input.Margin * input.Leverage;           // B14 (notional)
-            result.PositionSizeCoins = result.PositionSizeUsdt / input.EntryPrice; // B15
+
+            // Sizing: both modes resolve to a notional (PositionSizeUsdt). Everything after this block —
+            // the entire TP ladder — is driven by notional + entry price, so it is unchanged. In Coins
+            // mode the notional is computed directly as quantity × entry (no round-trip), so it is exact.
+            decimal margin;
+            if (input.SizingMode == SizingMode.Coins)
+            {
+                result.PositionSizeCoins = input.CoinQuantity;                      // user typed the coin amount
+                result.PositionSizeUsdt = input.CoinQuantity * input.EntryPrice;    // notional from coins
+                margin = result.PositionSizeUsdt / input.Leverage;                 // derived margin requirement
+            }
+            else
+            {
+                margin = input.Margin;
+                result.PositionSizeUsdt = input.Margin * input.Leverage;           // B14 (notional)
+                result.PositionSizeCoins = result.PositionSizeUsdt / input.EntryPrice; // B15
+            }
+            result.MarginUsed = margin;
 
             result.StopLossDistancePercent = result.RiskAmount / result.PositionSizeUsdt; // B19
             result.StopLossPrice = input.Direction == TradeDirection.Long                 // B20
@@ -45,7 +68,7 @@ namespace TradingJournal.Core.Logic.Manager
             result.LiquidationDistancePercent = 1m / input.Leverage;           // B21
 
             // --- Soft warnings (plan still computes, but flag the danger) ---
-            if (result.RiskAmount > input.Margin) // B16
+            if (result.RiskAmount > margin) // B16
             {
                 result.Warnings.Add(
                     "Risk amount exceeds your margin. You would be liquidated before the stop is reached — " +
@@ -97,8 +120,8 @@ namespace TradingJournal.Core.Logic.Manager
                 level++;
             }
 
-            // Margin and RiskAmount are guaranteed > 0 above, so these divisions are safe.
-            result.ReturnOnMargin = result.TotalProfitLoss / input.Margin;   // D35
+            // margin and RiskAmount are guaranteed > 0 above, so these divisions are safe.
+            result.ReturnOnMargin = result.TotalProfitLoss / margin;   // D35
             result.RewardToRisk = result.TotalProfitLoss / result.RiskAmount; // D36
 
             result.AllocationIsComplete = allocation == 100m; // B31

@@ -276,6 +276,10 @@
             // 
             // dgvPlatforms
             // 
+            dgvPlatforms.AllowUserToAddRows = false;
+            dgvPlatforms.AllowUserToDeleteRows = false;
+            dgvPlatforms.AllowUserToResizeColumns = false;
+            dgvPlatforms.AllowUserToResizeRows = false;
             dgvPlatforms.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvPlatforms.Columns.AddRange(new DataGridViewColumn[] { colId, colPlatName, colExchange, colTestnet, colCreated, colDelete });
             dgvPlatforms.Location = new Point(21, 95);

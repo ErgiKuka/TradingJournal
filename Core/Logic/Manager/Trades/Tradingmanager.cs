@@ -67,7 +67,30 @@ namespace TradingJournal.Core.Logic.Manager
 
             decimal actualNotional = qty * sizingPrice;
             if (rules.MinNotional > 0 && actualNotional < rules.MinNotional)
+            {
                 return (false, $"Position value {actualNotional:0.##} USDT is below the exchange minimum of {rules.MinNotional:0.##}. Increase margin or leverage.", null, 0);
+            }
+
+
+            // --- Leverage-bracket guard: turn Binance -4028 / -2027 into a clear pre-submit message. ---
+            var bracket = await client.GetLeverageBracketAsync(r.Symbol);
+
+            if (r.Leverage > bracket.MaxLeverage)
+                return (false,
+                    $"{r.Symbol} allows at most {bracket.MaxLeverage}x leverage — you entered {r.Leverage}x.",
+                    null, 0);
+
+            decimal maxNotional = bracket.MaxNotionalAt(r.Leverage);
+            if (maxNotional > 0 && actualNotional > maxNotional)
+            {
+                int allowedLev = bracket.MaxLeverageForNotional(actualNotional);
+                decimal maxMargin = maxNotional / r.Leverage;
+                return (false,
+                    $"At {r.Leverage}x, {r.Symbol} caps the position at {maxNotional:0.##} USDT " +
+                    $"(~{maxMargin:0.##} USDT margin). Reduce the amount, or drop leverage to " +
+                    $"{allowedLev}x for a position this size.",
+                    null, 0);
+            }
 
             var order = new OrderRequest
             {

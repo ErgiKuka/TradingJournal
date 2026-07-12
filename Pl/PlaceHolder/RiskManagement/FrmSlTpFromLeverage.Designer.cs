@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             pnlSlnTp = new Panel();
+            txtCoinQty = new TextBox();
+            lblCapPosCoin = new Label();
             lblTitle = new Label();
             cmbDirection = new ComboBox();
             txtMargin = new TextBox();
@@ -85,8 +87,6 @@
             pnlTpLevels_Max = new Panel();
             pnlMetrics_Max = new Panel();
             pnlChecks_Max = new Panel();
-            textBox1 = new TextBox();
-            label1 = new Label();
             pnlSlnTp.SuspendLayout();
             pnlTpLevels.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvTakeProfits).BeginInit();
@@ -97,8 +97,8 @@
             // pnlSlnTp
             // 
             pnlSlnTp.BackColor = Color.FromArgb(27, 38, 59);
-            pnlSlnTp.Controls.Add(textBox1);
-            pnlSlnTp.Controls.Add(label1);
+            pnlSlnTp.Controls.Add(txtCoinQty);
+            pnlSlnTp.Controls.Add(lblCapPosCoin);
             pnlSlnTp.Controls.Add(lblTitle);
             pnlSlnTp.Controls.Add(cmbDirection);
             pnlSlnTp.Controls.Add(txtMargin);
@@ -117,6 +117,30 @@
             pnlSlnTp.Name = "pnlSlnTp";
             pnlSlnTp.Size = new Size(1152, 424);
             pnlSlnTp.TabIndex = 19;
+            // 
+            // txtCoinQty
+            // 
+            txtCoinQty.BackColor = Color.FromArgb(30, 58, 95);
+            txtCoinQty.BorderStyle = BorderStyle.None;
+            txtCoinQty.Font = new Font("Times New Roman", 13.8F);
+            txtCoinQty.Location = new Point(302, 340);
+            txtCoinQty.Margin = new Padding(2);
+            txtCoinQty.Name = "txtCoinQty";
+            txtCoinQty.Size = new Size(202, 27);
+            txtCoinQty.TabIndex = 14;
+            txtCoinQty.Text = "   ";
+            // 
+            // lblCapPosCoin
+            // 
+            lblCapPosCoin.AutoSize = true;
+            lblCapPosCoin.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapPosCoin.ForeColor = Color.FromArgb(156, 163, 175);
+            lblCapPosCoin.Location = new Point(298, 314);
+            lblCapPosCoin.Margin = new Padding(4, 0, 4, 0);
+            lblCapPosCoin.Name = "lblCapPosCoin";
+            lblCapPosCoin.Size = new Size(200, 22);
+            lblCapPosCoin.TabIndex = 13;
+            lblCapPosCoin.Text = "Margin per trade (Coin)";
             // 
             // lblTitle
             // 
@@ -303,7 +327,7 @@
             dgvTakeProfits.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvTakeProfits.Columns.AddRange(new DataGridViewColumn[] { colLevel, colMultiple, colPercent, colMovePct, colPrice, colQty, colPnl });
             dgvTakeProfits.Location = new Point(21, 95);
-            dgvTakeProfits.Margin = new Padding(4, 4, 4, 4);
+            dgvTakeProfits.Margin = new Padding(4);
             dgvTakeProfits.Name = "dgvTakeProfits";
             dgvTakeProfits.RowHeadersWidth = 51;
             dgvTakeProfits.Size = new Size(1101, 255);
@@ -772,30 +796,6 @@
             pnlChecks_Max.TabIndex = 26;
             pnlChecks_Max.Visible = false;
             // 
-            // textBox1
-            // 
-            textBox1.BackColor = Color.FromArgb(30, 58, 95);
-            textBox1.BorderStyle = BorderStyle.None;
-            textBox1.Font = new Font("Times New Roman", 13.8F);
-            textBox1.Location = new Point(302, 340);
-            textBox1.Margin = new Padding(2);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(202, 27);
-            textBox1.TabIndex = 14;
-            textBox1.Text = "   ";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.ForeColor = Color.FromArgb(156, 163, 175);
-            label1.Location = new Point(298, 314);
-            label1.Margin = new Padding(4, 0, 4, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(200, 22);
-            label1.TabIndex = 13;
-            label1.Text = "Margin per trade (Coin)";
-            // 
             // FrmSlTpFromLeverage
             // 
             AutoScaleDimensions = new SizeF(120F, 120F);
@@ -828,6 +828,7 @@
         #endregion
 
         private Panel pnlSlnTp;
+        private TextBox txtCoinQty;
         private Panel pnlTpLevels;
         private Panel pnlMetrics;
         private Panel pnlChecks;
@@ -878,6 +879,6 @@
         private Panel pnlMetrics_Max;
         private Panel pnlChecks_Max;
         private TextBox textBox1;
-        private Label label1;
+        private Label lblCapPosCoin;
     }
 }

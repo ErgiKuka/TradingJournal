@@ -25,6 +25,8 @@ namespace TradingJournal.Core.Logic.Services.Exchange
         private static readonly HttpClient Http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
         private static readonly ConcurrentDictionary<string, SymbolRules> RulesCache = new();
 
+        private readonly ConcurrentDictionary<string, LeverageBracket> _bracketCache = new();
+
         private readonly string _apiKey;
         private readonly string _apiSecret;
         private readonly string _baseUrl;
@@ -98,6 +100,52 @@ namespace TradingJournal.Core.Logic.Services.Exchange
                 return rules;
             }
             throw new Exception($"Symbol {symbol} not found on the exchange.");
+        }
+
+        public async Task<LeverageBracket> GetLeverageBracketAsync(string symbol)
+        {
+            if (_bracketCache.TryGetValue(symbol, out var cached)) return cached;
+
+            using var doc = await SignedRequestAsync(HttpMethod.Get, "/fapi/v1/leverageBracket",
+                $"symbol={symbol}").ConfigureAwait(false);
+
+            // With a symbol supplied, Binance may return a one-element array OR a bare object.
+            JsonElement node = doc.RootElement;
+            if (node.ValueKind == JsonValueKind.Array)
+            {
+                JsonElement match = default; bool found = false;
+                foreach (var e in node.EnumerateArray())
+                    if (e.GetProperty("symbol").GetString() == symbol) { match = e; found = true; break; }
+                if (!found) throw new Exception($"No leverage bracket returned for {symbol}.");
+                node = match;
+            }
+
+            var tiers = new List<LeverageTier>();
+            foreach (var b in node.GetProperty("brackets").EnumerateArray())
+                tiers.Add(new LeverageTier
+                {
+                    Bracket = (int)DecAny(b, "bracket"),
+                    MaxLeverage = (int)DecAny(b, "initialLeverage"),
+                    NotionalFloor = DecAny(b, "notionalFloor"),
+                    NotionalCap = DecAny(b, "notionalCap")
+                });
+            tiers.Sort((a, c) => a.NotionalFloor.CompareTo(c.NotionalFloor));
+
+            var bracket = new LeverageBracket { Symbol = symbol, Tiers = tiers };
+            _bracketCache[symbol] = bracket;
+            return bracket;
+        }
+
+        // leverageBracket returns numbers (not strings); the string-only Dec() would throw on them.
+        private static decimal DecAny(JsonElement e, string prop)
+        {
+            if (!e.TryGetProperty(prop, out var v)) return 0m;
+            return v.ValueKind switch
+            {
+                JsonValueKind.Number => v.GetDecimal(),
+                JsonValueKind.String => decimal.TryParse(v.GetString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var d) ? d : 0m,
+                _ => 0m
+            };
         }
 
         public async Task<IReadOnlyList<PositionInfo>> GetPositionsAsync()

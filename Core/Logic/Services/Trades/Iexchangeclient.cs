@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TradingJournal.Core.Logic.Services; // ClosedTrade
+using TradingJournal.Core.Logic.Services;
 
 namespace TradingJournal.Core.Logic.Services.Exchange
 {
-    public enum OrderSide { Buy, Sell }              // Buy = Long, Sell = Short (for opening)
+    public enum OrderSide { Buy, Sell }           
     public enum OrderKind { Market, Limit, Conditional }
     public enum MarginMode { Cross, Isolated }
 
@@ -52,6 +52,41 @@ namespace TradingJournal.Core.Logic.Services.Exchange
         public decimal MinNotional { get; set; }
     }
 
+    public class LeverageTier
+    {
+        public int Bracket { get; set; }
+        public int MaxLeverage { get; set; }        // Binance "initialLeverage"
+        public decimal NotionalFloor { get; set; }
+        public decimal NotionalCap { get; set; }
+    }
+
+    public class LeverageBracket
+    {
+        public string Symbol { get; set; } = string.Empty;
+
+        /// <summary>Tiers ascending by notional floor (tier 1 = smallest size, highest leverage).</summary>
+        public IReadOnlyList<LeverageTier> Tiers { get; set; } = new List<LeverageTier>();
+
+        /// <summary>Highest leverage the symbol allows (tier 1).</summary>
+        public int MaxLeverage => Tiers.Count > 0 ? Tiers[0].MaxLeverage : 1;
+
+        /// <summary>Largest position notional (USDT) allowed while keeping the given leverage.</summary>
+        public decimal MaxNotionalAt(int leverage)
+        {
+            decimal cap = 0m;
+            foreach (var t in Tiers)
+                if (t.MaxLeverage >= leverage && t.NotionalCap > cap) cap = t.NotionalCap;
+            return cap;
+        }
+
+        /// <summary>Highest leverage still permitted for a position of the given notional.</summary>
+        public int MaxLeverageForNotional(decimal notional)
+        {
+            foreach (var t in Tiers)
+                if (notional > t.NotionalFloor && notional <= t.NotionalCap) return t.MaxLeverage;
+            return Tiers.Count > 0 ? Tiers[Tiers.Count - 1].MaxLeverage : 1;
+        }
+    }
     public class PositionInfo
     {
         public string Symbol { get; set; } = string.Empty;
@@ -85,5 +120,7 @@ namespace TradingJournal.Core.Logic.Services.Exchange
         Task<OrderResult> UpdateStopTakeAsync(string symbol, decimal? stopLoss, decimal? takeProfit);
 
         Task<IReadOnlyList<ClosedTrade>> GetRecentClosedTradesAsync(DateTime sinceUtc);
+
+        Task<LeverageBracket> GetLeverageBracketAsync(string symbol);
     }
 }
