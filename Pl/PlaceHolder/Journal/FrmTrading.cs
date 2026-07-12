@@ -40,6 +40,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
         private readonly PlatformManager _platforms = new PlatformManager();
         private readonly TradingManager _trading = new TradingManager();
+        private readonly ResponsiveLayoutManager _layoutManager;
         private readonly System.Windows.Forms.Timer _positionsTimer;
         private readonly System.Windows.Forms.Timer _priceTimer;
 
@@ -61,6 +62,9 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             SetupGrid();
             SetupOrderControls();
             SetupSideButtons();
+
+            _layoutManager = new ResponsiveLayoutManager(this);
+            InitializeResponsiveLayouts();
 
             btnConnect.Click += async (s, e) => await ConnectAsync();
             btnBuy.Click += async (s, e) => await PlaceOrderAsync(OrderSide.Buy);
@@ -88,7 +92,22 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
         private void OnThemeChanged(object sender, EventArgs e) => ApplyTheme();
 
-        public void SetWindowState(FormWindowStateExtended newState) { }
+        public void SetWindowState(FormWindowStateExtended newState) => _layoutManager.SetWindowState(newState);
+
+        // Move each panel's controls into its wider *_Max twin when the window is maximized, so the
+        // module spans the full width instead of sitting at fixed width with empty space beside it.
+        private void InitializeResponsiveLayouts()
+        {
+            RegisterSectionAsIs(pnlPlatforms, pnlPlatforms_Max);
+            RegisterSectionAsIs(pnlActiveTrades, pnlActiveTrades_Max);
+            RegisterSectionAsIs(pnlAddTrades, pnlAddTrades_Max);
+        }
+
+        private void RegisterSectionAsIs(Panel normal, Panel max)
+        {
+            foreach (Control c in normal.Controls)
+                _layoutManager.RegisterControl(c, normal, max, c.Location, c.Size);
+        }
 
         // Stop the AutoScroll panel from jumping to whatever control gets focus/updates.
         protected override Point ScrollToControl(Control activeControl) => AutoScrollPosition;
@@ -417,48 +436,54 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
         private async Task TakeProfitAsync(string symbol)
         {
-            // Read the live position size from the exchange, never from a grid cell. Reading the cell
-            // coupled this action to the grid's columns — if one was missing it threw before the try
-            // block and took the whole app down. The exchange is the source of truth anyway.
-            decimal posQty = 0m;
+            // Live position size + unrealized PnL from the exchange (source of truth; a grid cell was fragile).
+            decimal posQty = 0m, pnl = 0m;
             try
             {
                 foreach (var p in await _client.GetPositionsAsync())
                     if (string.Equals(p.Symbol, symbol, StringComparison.OrdinalIgnoreCase))
-                    { posQty = p.Quantity; break; }
+                    { posQty = p.Quantity; pnl = p.UnrealizedPnl; break; }
             }
             catch (Exception ex) { SetStatus(ex.Message, false); return; }
 
             if (posQty <= 0) { SetStatus($"No open {symbol} position to reduce.", false); return; }
+            if (pnl <= 0)
+            {
+                SetStatus($"{symbol} isn't in profit (uPnL {FormatUsdt(pnl)}) — nothing to take.", false);
+                return;
+            }
 
             SymbolRules rules;
             try { rules = await _client.GetSymbolRulesAsync(symbol); }
             catch (Exception ex) { SetStatus(ex.Message, false); return; }
 
-            // Ask how much to take off as an absolute amount in coins (default = the whole position).
-            var requested = PromptAmount(symbol, posQty, rules.StepSize);
-            if (requested == null) return;
+            // Ask how much PROFIT to realise, in USDT. Max is the current unrealized PnL — that's all you've made.
+            var requestedProfit = PromptUsdt(symbol, pnl);
+            if (requestedProfit == null) return;
 
-            decimal qty = FloorToStep(requested.Value, rules.StepSize);
+            // Profit is uniform per coin, so realising P of the total PnL means closing exactly P/PnL of the
+            // position. Take half the profit and half the position closes; take all of it and the trade closes.
+            decimal fraction = requestedProfit.Value / pnl;
+            decimal qty = FloorToStep(posQty * fraction, rules.StepSize);
             if (qty <= 0)
             {
-                SetStatus($"That amount is below {symbol}'s step size ({FormatQty(rules.StepSize)}).", false);
+                SetStatus($"That amount is too small to close a whole step of {symbol}.", false);
                 return;
             }
-            if (qty >= posQty) { await CloseFullAsync(symbol); return; } // asking for all (or more) = full close
+            if (qty >= posQty) { await CloseFullAsync(symbol); return; } // taking all the profit = closing the trade
 
             try
             {
-                // reduceOnly market close of exactly this many coins (ClosePositionAsync sets reduceOnly).
-                var res = await _client.ClosePositionAsync(symbol, qty);
+                var res = await _client.ClosePositionAsync(symbol, qty); // reduceOnly; the rest stays open
+                decimal pctClosed = qty / posQty * 100m;
                 SetStatus(res.Success
-                    ? $"Closed {FormatQty(qty)} {symbol}. Remaining ~{FormatQty(posQty - qty)}."
+                    ? $"Took ≈ {FormatUsdt(requestedProfit.Value)} profit on {symbol} " +
+                      $"(closed {FormatQty(qty)}, ≈ {pctClosed.ToString("0.#", Inv)}% of the position). Rest still open."
                     : res.Message, res.Success);
             }
             catch (Exception ex) { SetStatus(ex.Message, false); }
             finally
             {
-                // Always resync to whatever actually happened — a full fill, a partial, or nothing.
                 await RefreshPositionsAsync();
                 await RefreshBalanceAsync();
             }
@@ -469,11 +494,13 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
         private static string FormatQty(decimal v) => v.ToString("0.########", Inv);
 
-        private static decimal? PromptAmount(string symbol, decimal maxQty, decimal step)
+        private static string FormatUsdt(decimal v) => v.ToString("0.00", Inv) + " USDT";
+
+        private static decimal? PromptUsdt(string symbol, decimal maxUsdt)
         {
             using var form = new Form
             {
-                Text = "Take profit / reduce",
+                Text = "Take profit",
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterParent,
                 MinimizeBox = false,
@@ -484,7 +511,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             };
             var lbl = new Label
             {
-                Text = $"Amount of {symbol} to close, in coins.\nMax {FormatQty(maxQty)}   ·   step {FormatQty(step)}",
+                Text = $"Profit to take on {symbol}, in USDT.\nMax {FormatUsdt(maxUsdt)}  (all profit — closes the trade)",
                 Left = 12,
                 Top = 12,
                 Width = 336,
@@ -496,13 +523,13 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 Left = 12,
                 Top = 64,
                 Width = 336,
-                Text = FormatQty(maxQty),
+                Text = maxUsdt.ToString("0.00", Inv),
                 BackColor = ThemeManager.TextBoxColor,
                 ForeColor = ThemeManager.TextColor
             };
             var ok = new Button
             {
-                Text = "Close amount",
+                Text = "Take profit",
                 Left = 230,
                 Top = 104,
                 Width = 118,
@@ -515,7 +542,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             form.AcceptButton = ok;
             if (form.ShowDialog() != DialogResult.OK) return null;
             if (!NumericInput.TryParseDecimal(txt.Text, out var v) || v <= 0) return null;
-            return v > maxQty ? maxQty : v; // clamp to the full position
+            return v > maxUsdt ? maxUsdt : v; // clamp to the full position value
         }
 
         private void SetStatus(string message, bool ok)
@@ -565,6 +592,24 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             dgvPositions.DefaultCellStyle.SelectionForeColor = ThemeManager.TextColor;
             dgvPositions.ColumnHeadersDefaultCellStyle.BackColor = ThemeManager.ButtonColor;
             dgvPositions.ColumnHeadersDefaultCellStyle.ForeColor = ThemeManager.TextColor;
+
+            // Colour the action buttons so they don't render as default grey Windows buttons.
+            StyleButtonColumn(ColClose, SellColor, Color.White); // red = close / exit
+            StyleButtonColumn(ColTp, BuyColor, Color.White);     // green = take profit
+        }
+
+        private void StyleButtonColumn(string columnName, Color back, Color fore)
+        {
+            if (dgvPositions.Columns.Contains(columnName) &&
+                dgvPositions.Columns[columnName] is DataGridViewButtonColumn col)
+            {
+                col.FlatStyle = FlatStyle.Flat;
+                col.DefaultCellStyle.BackColor = back;
+                col.DefaultCellStyle.ForeColor = fore;
+                col.DefaultCellStyle.SelectionBackColor = back;
+                col.DefaultCellStyle.SelectionForeColor = fore;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
         }
     }
 }
