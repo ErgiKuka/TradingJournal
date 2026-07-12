@@ -43,7 +43,7 @@
             lblCred1 = new Label();
             lblCapPlatName = new Label();
             pnlPlatforms_Max = new Panel();
-            pnlTpLevels = new Panel();
+            pnlPlatformsList = new Panel();
             lblTableTitle = new Label();
             dgvPlatforms = new DataGridView();
             colId = new DataGridViewTextBoxColumn();
@@ -52,8 +52,9 @@
             colTestnet = new DataGridViewTextBoxColumn();
             colCreated = new DataGridViewTextBoxColumn();
             colDelete = new DataGridViewButtonColumn();
+            pnlPlatformsList_Max = new Panel();
             pnlPlatforms.SuspendLayout();
-            pnlTpLevels.SuspendLayout();
+            pnlPlatformsList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvPlatforms).BeginInit();
             SuspendLayout();
             // 
@@ -250,16 +251,16 @@
             pnlPlatforms_Max.TabIndex = 25;
             pnlPlatforms_Max.Visible = false;
             // 
-            // pnlTpLevels
+            // pnlPlatformsList
             // 
-            pnlTpLevels.BackColor = Color.FromArgb(27, 38, 59);
-            pnlTpLevels.Controls.Add(lblTableTitle);
-            pnlTpLevels.Controls.Add(dgvPlatforms);
-            pnlTpLevels.Location = new Point(22, 800);
-            pnlTpLevels.Margin = new Padding(2);
-            pnlTpLevels.Name = "pnlTpLevels";
-            pnlTpLevels.Size = new Size(1152, 350);
-            pnlTpLevels.TabIndex = 26;
+            pnlPlatformsList.BackColor = Color.FromArgb(27, 38, 59);
+            pnlPlatformsList.Controls.Add(lblTableTitle);
+            pnlPlatformsList.Controls.Add(dgvPlatforms);
+            pnlPlatformsList.Location = new Point(22, 800);
+            pnlPlatformsList.Margin = new Padding(2);
+            pnlPlatformsList.Name = "pnlPlatformsList";
+            pnlPlatformsList.Size = new Size(1152, 350);
+            pnlPlatformsList.TabIndex = 26;
             // 
             // lblTableTitle
             // 
@@ -328,20 +329,32 @@
             colDelete.UseColumnTextForButtonValue = true;
             colDelete.Width = 125;
             // 
+            // pnlPlatformsList_Max
+            // 
+            pnlPlatformsList_Max.BackColor = Color.FromArgb(27, 38, 59);
+            pnlPlatformsList_Max.Location = new Point(22, 798);
+            pnlPlatformsList_Max.Margin = new Padding(2);
+            pnlPlatformsList_Max.Name = "pnlPlatformsList_Max";
+            pnlPlatformsList_Max.Size = new Size(2064, 350);
+            pnlPlatformsList_Max.TabIndex = 25;
+            pnlPlatformsList_Max.Visible = false;
+            // 
             // FrmPlatforms
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             BackColor = Color.FromArgb(13, 27, 42);
-            Controls.Add(pnlTpLevels);
+            Controls.Add(pnlPlatformsList);
             Controls.Add(pnlPlatforms);
             Controls.Add(pnlPlatforms_Max);
+            Controls.Add(pnlPlatformsList_Max);
             Name = "FrmPlatforms";
             Size = new Size(2124, 1178);
             pnlPlatforms.ResumeLayout(false);
             pnlPlatforms.PerformLayout();
-            pnlTpLevels.ResumeLayout(false);
-            pnlTpLevels.PerformLayout();
+            pnlPlatformsList.ResumeLayout(false);
+            pnlPlatformsList.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvPlatforms).EndInit();
             ResumeLayout(false);
         }
@@ -364,7 +377,7 @@
         private Label lblCapPlatName;
         private CheckBox chkTestnet;
         private FontAwesome.Sharp.IconButton btnAddPlatform;
-        private Panel pnlTpLevels;
+        private Panel pnlPlatformsList;
         private Label lblTableTitle;
         private DataGridView dgvPlatforms;
         private DataGridViewTextBoxColumn colId;
@@ -373,5 +386,6 @@
         private DataGridViewTextBoxColumn colTestnet;
         private DataGridViewTextBoxColumn colCreated;
         private DataGridViewButtonColumn colDelete;
+        private Panel pnlPlatformsList_Max;
     }
 }

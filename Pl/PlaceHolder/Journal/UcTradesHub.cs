@@ -22,7 +22,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
         public UcTradesHub()
         {
             InitializeComponent();
-            ShowSection(new FrmSlTpFromLeverage(), mnuTrading);
+            ShowSection(new FrmTrading(), mnuTrading);
 
             WireMenu();
             ThemeManager.ThemeChanged += OnThemeChanged;
@@ -35,7 +35,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
         private void FrmRiskHub_Load(object sender, EventArgs e)
         {
             _currentState = ResponsiveState.GetFor(this);
-            ShowSection(new FrmSlTpFromLeverage(), mnuTrading); // default sub-page
+            ShowSection(new FrmTrading(), mnuTrading); // default sub-page
         }
 
         // ----------------------------------------------------------------- Responsive
@@ -88,11 +88,15 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             pnlContent.BackColor = ThemeManager.BackgroundColor;
 
             menuStripNav.BackColor = ThemeManager.BackgroundColor;
-            menuStripNav.ForeColor = ThemeManager.TextColor;
             menuStripNav.Renderer = new ThemedMenuRenderer();
 
             foreach (var item in MenuItems())
+            {
                 item.ForeColor = ThemeManager.TextColor;
+                item.AutoSize = true;
+                item.Padding = new Padding(16, 8, 16, 8);
+                item.Margin = new Padding(4, 4, 4, 4);   
+            }
         }
 
         private IEnumerable<ToolStripMenuItem> MenuItems()
@@ -100,24 +104,6 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             yield return mnuTrading;
             yield return mnuJournal;
             yield return mnuPlatforms;
-        }
-        private sealed class ThemedMenuRenderer : ToolStripProfessionalRenderer
-        {
-            public ThemedMenuRenderer() : base(new ThemedColors()) { }
-
-            private sealed class ThemedColors : ProfessionalColorTable
-            {
-                public override Color ToolStripGradientBegin => ThemeManager.BackgroundColor;
-                public override Color ToolStripGradientMiddle => ThemeManager.BackgroundColor;
-                public override Color ToolStripGradientEnd => ThemeManager.BackgroundColor;
-                public override Color MenuItemSelected => ThemeManager.ButtonHoverColor;
-                public override Color MenuItemSelectedGradientBegin => ThemeManager.ButtonHoverColor;
-                public override Color MenuItemSelectedGradientEnd => ThemeManager.ButtonHoverColor;
-                public override Color MenuItemPressedGradientBegin => ThemeManager.ActiveButtonColor;
-                public override Color MenuItemPressedGradientEnd => ThemeManager.ActiveButtonColor;
-                public override Color MenuItemBorder => ThemeManager.ButtonHoverColor;
-                public override Color MenuBorder => ThemeManager.BackgroundColor;
-            }
         }
     }
 }

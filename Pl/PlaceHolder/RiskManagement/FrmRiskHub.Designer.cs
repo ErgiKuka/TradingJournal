@@ -32,7 +32,6 @@
             menuStripNav = new MenuStrip();
             mnuSlTp = new ToolStripMenuItem();
             mnuPositionSize = new ToolStripMenuItem();
-            mnuPartialTp = new ToolStripMenuItem();
             menuStripNav.SuspendLayout();
             SuspendLayout();
             // 
@@ -49,7 +48,7 @@
             // 
             menuStripNav.Font = new Font("Times New Roman", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             menuStripNav.ImageScalingSize = new Size(20, 20);
-            menuStripNav.Items.AddRange(new ToolStripItem[] { mnuSlTp, mnuPositionSize, mnuPartialTp });
+            menuStripNav.Items.AddRange(new ToolStripItem[] { mnuSlTp, mnuPositionSize });
             menuStripNav.Location = new Point(0, 0);
             menuStripNav.Name = "menuStripNav";
             menuStripNav.Size = new Size(1925, 35);
@@ -67,12 +66,6 @@
             mnuPositionSize.Name = "mnuPositionSize";
             mnuPositionSize.Size = new Size(137, 31);
             mnuPositionSize.Text = "Risk Finder";
-            // 
-            // mnuPartialTp
-            // 
-            mnuPartialTp.Name = "mnuPartialTp";
-            mnuPartialTp.Size = new Size(123, 31);
-            mnuPartialTp.Text = "Partial TP";
             // 
             // FrmRiskHub
             // 
@@ -96,6 +89,5 @@
         private MenuStrip menuStripNav;
         private ToolStripMenuItem mnuSlTp;
         private ToolStripMenuItem mnuPositionSize;
-        private ToolStripMenuItem mnuPartialTp;
     }
 }
