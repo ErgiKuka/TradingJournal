@@ -25,6 +25,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
         private const string ColDelete = "colDelete";
 
         private readonly PlatformManager _platforms = new PlatformManager();
+        private readonly ResponsiveLayoutManager _layoutManager;
 
         // The two generic credential rows, paired label + textbox.
         private Label[] _credLabels;
@@ -44,6 +45,10 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             cmbExchange.SelectedIndexChanged += (s, e) => ApplyExchangeFields();
             btnAddPlatform.Click += BtnAddPlatform_Click;
             dgvPlatforms.CellContentClick += DgvPlatforms_CellContentClick;
+            this.Load += FrmPlatforms_Load; // populate the grid when the control is shown
+
+            _layoutManager = new ResponsiveLayoutManager(this);
+            InitializeResponsiveLayouts();
 
             ThemeManager.ThemeChanged += OnThemeChanged;
             this.Disposed += (s, e) => ThemeManager.ThemeChanged -= OnThemeChanged;
@@ -54,8 +59,20 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
         private void FrmPlatforms_Load(object sender, EventArgs e) => RefreshGrid();
 
-        // Layout is fixed + AutoScroll; nothing to re-lay-out (same choice as the SL/TP panel).
-        public void SetWindowState(FormWindowStateExtended newState) { }
+        // Move each panel's controls into its wider *_Max twin on maximize (same pattern as the other modules).
+        public void SetWindowState(FormWindowStateExtended newState) => _layoutManager.SetWindowState(newState);
+
+        private void InitializeResponsiveLayouts()
+        {
+            RegisterSectionAsIs(pnlPlatforms, pnlPlatforms_Max);
+            RegisterSectionAsIs(pnlPlatformsList, pnlPlatformsList_Max);
+        }
+
+        private void RegisterSectionAsIs(Panel normal, Panel max)
+        {
+            foreach (Control c in normal.Controls)
+                _layoutManager.RegisterControl(c, normal, max, c.Location, c.Size);
+        }
 
         private void SetupExchangeCombo()
         {
@@ -200,7 +217,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                     case Button btn:
                         btn.FlatStyle = FlatStyle.Flat;
                         btn.ForeColor = ThemeManager.TextColor;
-                        btn.BackColor = ThemeManager.ButtonColor;
+                        btn.BackColor = ThemeManager.ActiveButtonColor;
                         break;
                     case Label lbl:
                         lbl.ForeColor = ThemeManager.TextColor;

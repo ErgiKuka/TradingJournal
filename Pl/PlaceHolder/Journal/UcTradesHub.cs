@@ -14,7 +14,7 @@ using TradingJournal.Pl.PlaceHolder.RiskManagement;
 
 namespace TradingJournal.Pl.PlaceHolder.Journal
 {
-    public partial class UcTradesHub : UserControl
+    public partial class UcTradesHub : UserControl, IResponsiveChildForm
     {
         private ToolStripMenuItem _activeItem;
         private FormWindowStateExtended _currentState = FormWindowStateExtended.Normal;
@@ -95,7 +95,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 item.ForeColor = ThemeManager.TextColor;
                 item.AutoSize = true;
                 item.Padding = new Padding(16, 8, 16, 8);
-                item.Margin = new Padding(4, 4, 4, 4);   
+                item.Margin = new Padding(4, 4, 4, 4);
             }
         }
 
