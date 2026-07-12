@@ -94,55 +94,22 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             pnlContent.BackColor = ThemeManager.BackgroundColor;
 
             menuStripNav.BackColor = ThemeManager.BackgroundColor;
-            menuStripNav.ForeColor = ThemeManager.TextColor;
             menuStripNav.Renderer = new ThemedMenuRenderer();
 
             foreach (var item in MenuItems())
+            {
                 item.ForeColor = ThemeManager.TextColor;
+                item.AutoSize = true;
+                item.Padding = new Padding(16, 8, 16, 8);
+                item.Margin = new Padding(4, 4, 4, 4);    
+            }
+
         }
 
         private IEnumerable<ToolStripMenuItem> MenuItems()
         {
             yield return mnuSlTp;
             yield return mnuPositionSize;
-            // yield return mnuPartialTp;
-        }
-
-
-
-        private void mnuSlTp_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void mnuPositionSize_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void mnuPartialTp_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        /// <summary>Renderer that matches the MenuStrip hover/pressed colours to the active theme.</summary>
-        private sealed class ThemedMenuRenderer : ToolStripProfessionalRenderer
-        {
-            public ThemedMenuRenderer() : base(new ThemedColors()) { }
-
-            private sealed class ThemedColors : ProfessionalColorTable
-            {
-                public override Color ToolStripGradientBegin => ThemeManager.BackgroundColor;
-                public override Color ToolStripGradientMiddle => ThemeManager.BackgroundColor;
-                public override Color ToolStripGradientEnd => ThemeManager.BackgroundColor;
-                public override Color MenuItemSelected => ThemeManager.ButtonHoverColor;
-                public override Color MenuItemSelectedGradientBegin => ThemeManager.ButtonHoverColor;
-                public override Color MenuItemSelectedGradientEnd => ThemeManager.ButtonHoverColor;
-                public override Color MenuItemPressedGradientBegin => ThemeManager.ActiveButtonColor;
-                public override Color MenuItemPressedGradientEnd => ThemeManager.ActiveButtonColor;
-                public override Color MenuItemBorder => ThemeManager.ButtonHoverColor;
-                public override Color MenuBorder => ThemeManager.BackgroundColor;
-            }
         }
     }
 }
