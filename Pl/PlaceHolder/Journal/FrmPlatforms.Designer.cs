@@ -348,6 +348,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             BackColor = Color.FromArgb(13, 27, 42);
             Controls.Add(pnlPlatformsList);
             Controls.Add(pnlPlatforms);
