@@ -706,7 +706,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             lblCapSymbol.AutoSize = true;
             lblCapSymbol.Font = new Font("Times New Roman", 14.25F);
             lblCapSymbol.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapSymbol.Location = new Point(176, 67);
+            lblCapSymbol.Location = new Point(174, 64);
             lblCapSymbol.Margin = new Padding(2, 0, 2, 0);
             lblCapSymbol.Name = "lblCapSymbol";
             lblCapSymbol.Size = new Size(68, 21);

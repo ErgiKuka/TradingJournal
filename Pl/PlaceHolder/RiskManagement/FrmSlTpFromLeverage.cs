@@ -9,14 +9,8 @@ using TradingJournal.Core.Logic.Manager;
 
 namespace TradingJournal.Pl.PlaceHolder.RiskManagement
 {
-    /// <summary>
-    /// "Stop-Loss & Take-Profit from Margin + Leverage" calculator.
-    /// Reads inputs, calls LeverageSlTpCalculator, renders the result.
-    /// Results carry semantic colour (green = healthy, amber = marginal, red = warning).
-    /// </summary>
     public partial class FrmSlTpFromLeverage : UserControl, IResponsiveChildForm
     {
-        // Column names — must match the DataGridView columns in the designer.
         private const string ColLevel = "colLevel";
         private const string ColMultiple = "colMultiple";
         private const string ColPercent = "colPercent";
@@ -36,6 +30,8 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
         private readonly ToolTip _tip = new ToolTip();
         private bool _isUpdating;
 
+        private SizingMode _sizeSource = SizingMode.Margin;
+
         public FrmSlTpFromLeverage()
         {
             InitializeComponent();
@@ -54,7 +50,7 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             InitializeResponsiveLayouts();
 
             ThemeManager.ThemeChanged += OnThemeChanged;
-            this.Disposed += (s, e) => ThemeManager.ThemeChanged -= OnThemeChanged; // avoid static-event leak
+            this.Disposed += (s, e) => ThemeManager.ThemeChanged -= OnThemeChanged; 
             ApplyTheme();
         }
 
@@ -62,11 +58,11 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
 
         private void FrmSlTpFromLeverage_Load(object sender, EventArgs e) => Recalculate();
 
-        // ----------------------------------------------------------------- Responsive
+
         public void SetWindowState(FormWindowStateExtended newState)
                 => _layoutManager.SetWindowState(newState);
 
-        // ----------------------------------------------------------------- Setup
+
         private void SetupDirectionCombo()
         {
             if (cmbDirection.Items.Count == 0)
@@ -75,7 +71,7 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
                 cmbDirection.Items.Add("Short");
             }
             cmbDirection.DropDownStyle = ComboBoxStyle.DropDownList;
-            if (cmbDirection.SelectedIndex < 0) cmbDirection.SelectedIndex = 0; // Long
+            if (cmbDirection.SelectedIndex < 0) cmbDirection.SelectedIndex = 0; 
         }
 
         private void InitializeResponsiveLayouts()
@@ -98,15 +94,15 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             dgvTakeProfits.AllowUserToDeleteRows = false;
             dgvTakeProfits.RowHeadersVisible = false;
             dgvTakeProfits.MultiSelect = false;
-            dgvTakeProfits.ScrollBars = ScrollBars.None;               // 3 fixed rows never scroll
+            dgvTakeProfits.ScrollBars = ScrollBars.None;               
             dgvTakeProfits.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            // Taller header + rows (set BEFORE adding rows) so the table doesn't look starved.
+
             dgvTakeProfits.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvTakeProfits.ColumnHeadersHeight = 36;
             dgvTakeProfits.RowTemplate.Height = 44;
 
-            // Stretch to fill the panel width, and keep it filled if the panel resizes.
+
             if (dgvTakeProfits.Parent is Control host)
             {
                 dgvTakeProfits.Width = host.ClientSize.Width - (2 * dgvTakeProfits.Left);
@@ -138,12 +134,12 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             if (string.IsNullOrWhiteSpace(txtLeverage.Text)) txtLeverage.Text = "10";
         }
 
-        // Contextual notes live as hover text on the field they apply to, so the screen stays clean.
+
         private void SetupTooltips()
         {
             _tip.InitialDelay = 300;
             _tip.ReshowDelay = 100;
-            _tip.AutoPopDelay = 30000; // keep long tips on screen long enough to read
+            _tip.AutoPopDelay = 30000; 
 
             _tip.SetToolTip(lblTitle,
                 "How this works: it runs backward — it finds the stop-loss price that loses exactly your " +
@@ -192,8 +188,8 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             foreach (var tb in InputTextBoxes())
                 tb.TextChanged += Input_Changed;
 
-            // Margin (USDT) and coin quantity are mutually exclusive: filling one clears the other,
-            // so exactly one drives the calculation.
+            // Margin (USDT) and coin quantity are linked: typing in one fills the other with the
+            // equivalent, and whichever you touched last drives the calculation.
             txtMargin.TextChanged += MarginBox_TextChanged;
             txtCoinQty.TextChanged += CoinBox_TextChanged;
 
@@ -203,26 +199,50 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
 
         private void MarginBox_TextChanged(object sender, EventArgs e)
         {
-            if (_isUpdating) return;
-            if (txtMargin.TextLength > 0 && txtCoinQty.TextLength > 0)
-            {
-                _isUpdating = true;      // clearing the other box must not re-enter this logic
-                txtCoinQty.Clear();
-                _isUpdating = false;
-            }
+            if (_isUpdating) return;   // ignore our own writes to this box
+            _sizeSource = SizingMode.Margin;
+            SyncSizeFields();          // derive the coin box from the margin
             Recalculate();
         }
 
         private void CoinBox_TextChanged(object sender, EventArgs e)
         {
             if (_isUpdating) return;
-            if (txtCoinQty.TextLength > 0 && txtMargin.TextLength > 0)
-            {
-                _isUpdating = true;
-                txtMargin.Clear();
-                _isUpdating = false;
-            }
+            _sizeSource = SizingMode.Coins;
+            SyncSizeFields();          // derive the margin box from the coins
             Recalculate();
+        }
+
+        /// <summary>
+        /// Keep the two size boxes showing the same position. The box the user last edited
+        /// (<see cref="_sizeSource"/>) is authoritative; the other is recomputed from it using entry
+        /// price and leverage — so they also stay in sync when entry or leverage changes:
+        ///   coins  = margin × leverage / entry
+        ///   margin = coins  × entry / leverage
+        /// Without a valid entry and leverage we can't convert, so the mirror box is left untouched.
+        /// </summary>
+        private void SyncSizeFields()
+        {
+            if (!NumericInput.TryParseDecimal(txtEntryPrice.Text, out var entry) || entry <= 0) return;
+            if (!NumericInput.TryParseDecimal(txtLeverage.Text, out var leverage) || leverage <= 0) return;
+
+            _isUpdating = true; // writing the mirror box must not re-enter the TextChanged handlers
+            try
+            {
+                if (_sizeSource == SizingMode.Margin)
+                {
+                    txtCoinQty.Text = NumericInput.TryParseDecimal(txtMargin.Text, out var margin) && margin > 0
+                        ? (margin * leverage / entry).ToString("0.######", Inv)
+                        : string.Empty;
+                }
+                else
+                {
+                    txtMargin.Text = NumericInput.TryParseDecimal(txtCoinQty.Text, out var coins) && coins > 0
+                        ? (coins * entry / leverage).ToString("0.##", Inv)
+                        : string.Empty;
+                }
+            }
+            finally { _isUpdating = false; }
         }
 
         private IEnumerable<TextBox> InputTextBoxes()
@@ -236,6 +256,7 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
         private void Input_Changed(object sender, EventArgs e)
         {
             if (_isUpdating) return;
+            SyncSizeFields();   // entry/leverage may have changed → re-derive the mirrored size box
             Recalculate();
         }
 
@@ -262,9 +283,9 @@ namespace TradingJournal.Pl.PlaceHolder.RiskManagement
             if (!NumericInput.TryParseDecimal(txtLeverage.Text, out var leverage))
             { parseError = "Enter a valid leverage."; return false; }
 
-            // The two size boxes are kept mutually exclusive by the TextChanged handlers, so mode is
-            // simply "whichever one has a value". Coins wins if both are somehow non-empty.
-            bool useCoins = !string.IsNullOrWhiteSpace(txtCoinQty.Text);
+            // Both boxes are kept in sync now, so they describe the same position and either would give
+            // the same result. Key off the box the user last edited to stay deterministic.
+            bool useCoins = _sizeSource == SizingMode.Coins;
             decimal margin = 0m, coinQty = 0m;
             if (useCoins)
             {

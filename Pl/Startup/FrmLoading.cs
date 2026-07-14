@@ -31,15 +31,12 @@ namespace TradingJournal.Pl.Startup
 
         private void ApplyTheme()
         {
-            // Background i formës
             this.BackColor = ThemeManager.BackgroundColor;
             pictureBox2.BackColor = ThemeManager.BackgroundColor;
 
-            // Label
+
             lblStatus.ForeColor = ThemeManager.TextColor;
 
-            // Nëse ke më shumë controls (p.sh. titull, logo, etj.)
-            // kalon nëpër ta dhe ndrysho ForeColor/BackColor sipas rastit
             foreach (Control ctrl in this.Controls)
             {
                 if (ctrl is Label lbl) lbl.ForeColor = ThemeManager.TextColor;
@@ -55,10 +52,9 @@ namespace TradingJournal.Pl.Startup
         {
             pictureBox1.Image = Properties.Resources.InfiniteGif;
 
-            // --- Start of Update Code ---
             try
             {
-                string currentVersion = "1.9.11";
+                string currentVersion = "1.9.11.2";
                 string repoOwner = "ErgiKuka";
                 string repoName = "TradingJournal"; 
 
@@ -70,12 +66,10 @@ namespace TradingJournal.Pl.Startup
                 Console.WriteLine("A critical error occurred in the update process: " + ex.Message);
                 lblStatus.Text = "Could not check for updates.";
             }
-            // --- End of Update Code ---
 
-            // If the app wasn't closed by the updater, continue starting
             if (!this.IsDisposed)
             {
-                await Task.Delay(1500); // A short delay so the user can read the final status message
+                await Task.Delay(1500);
 
                 FrmHome frm = new FrmHome();
                 frm.Show();
