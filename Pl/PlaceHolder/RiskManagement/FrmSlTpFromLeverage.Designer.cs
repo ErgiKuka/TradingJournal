@@ -112,10 +112,10 @@
             pnlSlnTp.Controls.Add(lblCapDirection);
             pnlSlnTp.Controls.Add(lblCapRisk);
             pnlSlnTp.Controls.Add(lblCapBalance);
-            pnlSlnTp.Location = new Point(25, 19);
+            pnlSlnTp.Location = new Point(20, 15);
             pnlSlnTp.Margin = new Padding(2);
             pnlSlnTp.Name = "pnlSlnTp";
-            pnlSlnTp.Size = new Size(1152, 424);
+            pnlSlnTp.Size = new Size(922, 339);
             pnlSlnTp.TabIndex = 19;
             // 
             // txtCoinQty
@@ -123,10 +123,10 @@
             txtCoinQty.BackColor = Color.FromArgb(30, 58, 95);
             txtCoinQty.BorderStyle = BorderStyle.None;
             txtCoinQty.Font = new Font("Times New Roman", 13.8F);
-            txtCoinQty.Location = new Point(302, 340);
+            txtCoinQty.Location = new Point(242, 272);
             txtCoinQty.Margin = new Padding(2);
             txtCoinQty.Name = "txtCoinQty";
-            txtCoinQty.Size = new Size(202, 27);
+            txtCoinQty.Size = new Size(162, 22);
             txtCoinQty.TabIndex = 14;
             txtCoinQty.Text = "   ";
             // 
@@ -135,10 +135,9 @@
             lblCapPosCoin.AutoSize = true;
             lblCapPosCoin.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblCapPosCoin.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapPosCoin.Location = new Point(298, 314);
-            lblCapPosCoin.Margin = new Padding(4, 0, 4, 0);
+            lblCapPosCoin.Location = new Point(238, 251);
             lblCapPosCoin.Name = "lblCapPosCoin";
-            lblCapPosCoin.Size = new Size(200, 22);
+            lblCapPosCoin.Size = new Size(154, 19);
             lblCapPosCoin.TabIndex = 13;
             lblCapPosCoin.Text = "Margin per trade (Coin)";
             // 
@@ -147,10 +146,10 @@
             lblTitle.AutoSize = true;
             lblTitle.Font = new Font("Times New Roman", 21.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblTitle.ForeColor = Color.FromArgb(156, 163, 175);
-            lblTitle.Location = new Point(24, 21);
+            lblTitle.Location = new Point(19, 17);
             lblTitle.Margin = new Padding(2, 0, 2, 0);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(644, 42);
+            lblTitle.Size = new Size(498, 32);
             lblTitle.TabIndex = 12;
             lblTitle.Text = "Stop-Loss and Take-Profit from Margin";
             // 
@@ -162,10 +161,10 @@
             cmbDirection.Font = new Font("Times New Roman", 13.8F);
             cmbDirection.FormattingEnabled = true;
             cmbDirection.Items.AddRange(new object[] { "Long", "Short" });
-            cmbDirection.Location = new Point(300, 235);
+            cmbDirection.Location = new Point(240, 188);
             cmbDirection.Margin = new Padding(2);
             cmbDirection.Name = "cmbDirection";
-            cmbDirection.Size = new Size(202, 34);
+            cmbDirection.Size = new Size(162, 28);
             cmbDirection.TabIndex = 11;
             // 
             // txtMargin
@@ -173,10 +172,10 @@
             txtMargin.BackColor = Color.FromArgb(30, 58, 95);
             txtMargin.BorderStyle = BorderStyle.None;
             txtMargin.Font = new Font("Times New Roman", 13.8F);
-            txtMargin.Location = new Point(25, 340);
+            txtMargin.Location = new Point(20, 272);
             txtMargin.Margin = new Padding(2);
             txtMargin.Name = "txtMargin";
-            txtMargin.Size = new Size(202, 27);
+            txtMargin.Size = new Size(162, 22);
             txtMargin.TabIndex = 10;
             txtMargin.Text = "   ";
             // 
@@ -185,10 +184,10 @@
             txtLeverage.BackColor = Color.FromArgb(30, 58, 95);
             txtLeverage.BorderStyle = BorderStyle.None;
             txtLeverage.Font = new Font("Times New Roman", 13.8F);
-            txtLeverage.Location = new Point(532, 139);
+            txtLeverage.Location = new Point(426, 111);
             txtLeverage.Margin = new Padding(2);
             txtLeverage.Name = "txtLeverage";
-            txtLeverage.Size = new Size(202, 27);
+            txtLeverage.Size = new Size(162, 22);
             txtLeverage.TabIndex = 9;
             // 
             // txtRiskPercent
@@ -196,10 +195,10 @@
             txtRiskPercent.BackColor = Color.FromArgb(30, 58, 95);
             txtRiskPercent.BorderStyle = BorderStyle.None;
             txtRiskPercent.Font = new Font("Times New Roman", 13.8F);
-            txtRiskPercent.Location = new Point(300, 139);
+            txtRiskPercent.Location = new Point(240, 111);
             txtRiskPercent.Margin = new Padding(2);
             txtRiskPercent.Name = "txtRiskPercent";
-            txtRiskPercent.Size = new Size(202, 27);
+            txtRiskPercent.Size = new Size(162, 22);
             txtRiskPercent.TabIndex = 8;
             txtRiskPercent.Text = "   ";
             // 
@@ -208,10 +207,10 @@
             txtEntryPrice.BackColor = Color.FromArgb(30, 58, 95);
             txtEntryPrice.BorderStyle = BorderStyle.None;
             txtEntryPrice.Font = new Font("Times New Roman", 13.8F);
-            txtEntryPrice.Location = new Point(25, 235);
+            txtEntryPrice.Location = new Point(20, 188);
             txtEntryPrice.Margin = new Padding(2);
             txtEntryPrice.Name = "txtEntryPrice";
-            txtEntryPrice.Size = new Size(202, 27);
+            txtEntryPrice.Size = new Size(162, 22);
             txtEntryPrice.TabIndex = 7;
             txtEntryPrice.Text = "   ";
             // 
@@ -220,10 +219,10 @@
             txtBalance.BackColor = Color.FromArgb(30, 58, 95);
             txtBalance.BorderStyle = BorderStyle.None;
             txtBalance.Font = new Font("Times New Roman", 13.8F);
-            txtBalance.Location = new Point(25, 139);
+            txtBalance.Location = new Point(20, 111);
             txtBalance.Margin = new Padding(2);
             txtBalance.Name = "txtBalance";
-            txtBalance.Size = new Size(202, 27);
+            txtBalance.Size = new Size(162, 22);
             txtBalance.TabIndex = 6;
             txtBalance.Text = "   ";
             // 
@@ -232,10 +231,9 @@
             lblCapLeverage.AutoSize = true;
             lblCapLeverage.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblCapLeverage.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapLeverage.Location = new Point(528, 107);
-            lblCapLeverage.Margin = new Padding(4, 0, 4, 0);
+            lblCapLeverage.Location = new Point(422, 86);
             lblCapLeverage.Name = "lblCapLeverage";
-            lblCapLeverage.Size = new Size(83, 22);
+            lblCapLeverage.Size = new Size(65, 19);
             lblCapLeverage.TabIndex = 5;
             lblCapLeverage.Text = "Leverage";
             // 
@@ -244,10 +242,9 @@
             lblCapMargin.AutoSize = true;
             lblCapMargin.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblCapMargin.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapMargin.Location = new Point(21, 314);
-            lblCapMargin.Margin = new Padding(4, 0, 4, 0);
+            lblCapMargin.Location = new Point(17, 251);
             lblCapMargin.Name = "lblCapMargin";
-            lblCapMargin.Size = new Size(212, 22);
+            lblCapMargin.Size = new Size(165, 19);
             lblCapMargin.TabIndex = 4;
             lblCapMargin.Text = "Margin per trade (USDT)";
             // 
@@ -256,10 +253,9 @@
             lblCapEntry.AutoSize = true;
             lblCapEntry.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblCapEntry.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapEntry.Location = new Point(25, 202);
-            lblCapEntry.Margin = new Padding(4, 0, 4, 0);
+            lblCapEntry.Location = new Point(20, 162);
             lblCapEntry.Name = "lblCapEntry";
-            lblCapEntry.Size = new Size(98, 22);
+            lblCapEntry.Size = new Size(75, 19);
             lblCapEntry.TabIndex = 3;
             lblCapEntry.Text = "Entry price";
             // 
@@ -268,10 +264,9 @@
             lblCapDirection.AutoSize = true;
             lblCapDirection.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblCapDirection.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapDirection.Location = new Point(300, 202);
-            lblCapDirection.Margin = new Padding(4, 0, 4, 0);
+            lblCapDirection.Location = new Point(240, 162);
             lblCapDirection.Name = "lblCapDirection";
-            lblCapDirection.Size = new Size(85, 22);
+            lblCapDirection.Size = new Size(64, 19);
             lblCapDirection.TabIndex = 2;
             lblCapDirection.Text = "Direction";
             // 
@@ -280,10 +275,9 @@
             lblCapRisk.AutoSize = true;
             lblCapRisk.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblCapRisk.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapRisk.Location = new Point(302, 112);
-            lblCapRisk.Margin = new Padding(4, 0, 4, 0);
+            lblCapRisk.Location = new Point(242, 90);
             lblCapRisk.Name = "lblCapRisk";
-            lblCapRisk.Size = new Size(158, 22);
+            lblCapRisk.Size = new Size(122, 19);
             lblCapRisk.TabIndex = 1;
             lblCapRisk.Text = "Risk per trade (%)";
             // 
@@ -292,10 +286,9 @@
             lblCapBalance.AutoSize = true;
             lblCapBalance.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblCapBalance.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapBalance.Location = new Point(22, 106);
-            lblCapBalance.Margin = new Padding(4, 0, 4, 0);
+            lblCapBalance.Location = new Point(18, 85);
             lblCapBalance.Name = "lblCapBalance";
-            lblCapBalance.Size = new Size(210, 22);
+            lblCapBalance.Size = new Size(164, 19);
             lblCapBalance.TabIndex = 0;
             lblCapBalance.Text = "Account balance (USDT)";
             // 
@@ -304,10 +297,10 @@
             pnlTpLevels.BackColor = Color.FromArgb(27, 38, 59);
             pnlTpLevels.Controls.Add(lblTableTitle);
             pnlTpLevels.Controls.Add(dgvTakeProfits);
-            pnlTpLevels.Location = new Point(25, 482);
+            pnlTpLevels.Location = new Point(20, 386);
             pnlTpLevels.Margin = new Padding(2);
             pnlTpLevels.Name = "pnlTpLevels";
-            pnlTpLevels.Size = new Size(1152, 350);
+            pnlTpLevels.Size = new Size(922, 280);
             pnlTpLevels.TabIndex = 20;
             // 
             // lblTableTitle
@@ -315,10 +308,10 @@
             lblTableTitle.AutoSize = true;
             lblTableTitle.Font = new Font("Times New Roman", 21.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblTableTitle.ForeColor = Color.FromArgb(156, 163, 175);
-            lblTableTitle.Location = new Point(25, 20);
+            lblTableTitle.Location = new Point(20, 16);
             lblTableTitle.Margin = new Padding(2, 0, 2, 0);
             lblTableTitle.Name = "lblTableTitle";
-            lblTableTitle.Size = new Size(288, 42);
+            lblTableTitle.Size = new Size(224, 32);
             lblTableTitle.TabIndex = 13;
             lblTableTitle.Text = "Take-profit levels";
             // 
@@ -326,11 +319,10 @@
             // 
             dgvTakeProfits.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvTakeProfits.Columns.AddRange(new DataGridViewColumn[] { colLevel, colMultiple, colPercent, colMovePct, colPrice, colQty, colPnl });
-            dgvTakeProfits.Location = new Point(21, 95);
-            dgvTakeProfits.Margin = new Padding(4);
+            dgvTakeProfits.Location = new Point(17, 76);
             dgvTakeProfits.Name = "dgvTakeProfits";
             dgvTakeProfits.RowHeadersWidth = 51;
-            dgvTakeProfits.Size = new Size(1101, 255);
+            dgvTakeProfits.Size = new Size(881, 204);
             dgvTakeProfits.TabIndex = 0;
             // 
             // colLevel
@@ -409,10 +401,10 @@
             pnlMetrics.Controls.Add(lblCapPositionUsdt);
             pnlMetrics.Controls.Add(lblCapRiskAmount);
             pnlMetrics.Controls.Add(lblRiskAmount);
-            pnlMetrics.Location = new Point(25, 875);
+            pnlMetrics.Location = new Point(20, 700);
             pnlMetrics.Margin = new Padding(2);
             pnlMetrics.Name = "pnlMetrics";
-            pnlMetrics.Size = new Size(1152, 419);
+            pnlMetrics.Size = new Size(922, 335);
             pnlMetrics.TabIndex = 21;
             // 
             // lblMetricsTitile
@@ -420,20 +412,19 @@
             lblMetricsTitile.AutoSize = true;
             lblMetricsTitile.Font = new Font("Times New Roman", 21.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblMetricsTitile.ForeColor = Color.FromArgb(156, 163, 175);
-            lblMetricsTitile.Location = new Point(21, 20);
+            lblMetricsTitile.Location = new Point(17, 16);
             lblMetricsTitile.Margin = new Padding(2, 0, 2, 0);
             lblMetricsTitile.Name = "lblMetricsTitile";
-            lblMetricsTitile.Size = new Size(138, 42);
+            lblMetricsTitile.Size = new Size(109, 32);
             lblMetricsTitile.TabIndex = 18;
             lblMetricsTitile.Text = "Metrics";
             // 
             // lblRewardToRisk
             // 
             lblRewardToRisk.AutoSize = true;
-            lblRewardToRisk.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblRewardToRisk.Font = new Font("Times New Roman", 15F);
             lblRewardToRisk.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRewardToRisk.Location = new Point(818, 300);
-            lblRewardToRisk.Margin = new Padding(4, 0, 4, 0);
+            lblRewardToRisk.Location = new Point(715, 240);
             lblRewardToRisk.Name = "lblRewardToRisk";
             lblRewardToRisk.Size = new Size(24, 22);
             lblRewardToRisk.TabIndex = 17;
@@ -442,22 +433,20 @@
             // lblCapRr
             // 
             lblCapRr.AutoSize = true;
-            lblCapRr.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapRr.Font = new Font("Times New Roman", 15F);
             lblCapRr.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapRr.Location = new Point(578, 300);
-            lblCapRr.Margin = new Padding(4, 0, 4, 0);
+            lblCapRr.Location = new Point(462, 240);
             lblCapRr.Name = "lblCapRr";
-            lblCapRr.Size = new Size(233, 22);
+            lblCapRr.Size = new Size(238, 22);
             lblCapRr.TabIndex = 16;
-            lblCapRr.Text = "Reward-to-risk                   :";
+            lblCapRr.Text = "Reward-to-risk                    :";
             // 
             // lblReturnOnMargin
             // 
             lblReturnOnMargin.AutoSize = true;
-            lblReturnOnMargin.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblReturnOnMargin.Font = new Font("Times New Roman", 15F);
             lblReturnOnMargin.ForeColor = Color.FromArgb(156, 163, 175);
-            lblReturnOnMargin.Location = new Point(818, 239);
-            lblReturnOnMargin.Margin = new Padding(4, 0, 4, 0);
+            lblReturnOnMargin.Location = new Point(715, 191);
             lblReturnOnMargin.Name = "lblReturnOnMargin";
             lblReturnOnMargin.Size = new Size(24, 22);
             lblReturnOnMargin.TabIndex = 15;
@@ -466,10 +455,9 @@
             // lblCapReturnMargin
             // 
             lblCapReturnMargin.AutoSize = true;
-            lblCapReturnMargin.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapReturnMargin.Font = new Font("Times New Roman", 15F);
             lblCapReturnMargin.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapReturnMargin.Location = new Point(578, 239);
-            lblCapReturnMargin.Margin = new Padding(4, 0, 4, 0);
+            lblCapReturnMargin.Location = new Point(462, 191);
             lblCapReturnMargin.Name = "lblCapReturnMargin";
             lblCapReturnMargin.Size = new Size(236, 22);
             lblCapReturnMargin.TabIndex = 14;
@@ -478,10 +466,9 @@
             // lblTotalPnl
             // 
             lblTotalPnl.AutoSize = true;
-            lblTotalPnl.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblTotalPnl.Font = new Font("Times New Roman", 15F);
             lblTotalPnl.ForeColor = Color.FromArgb(156, 163, 175);
-            lblTotalPnl.Location = new Point(818, 174);
-            lblTotalPnl.Margin = new Padding(4, 0, 4, 0);
+            lblTotalPnl.Location = new Point(715, 139);
             lblTotalPnl.Name = "lblTotalPnl";
             lblTotalPnl.Size = new Size(24, 22);
             lblTotalPnl.TabIndex = 13;
@@ -490,10 +477,9 @@
             // lblCapTotalPnl
             // 
             lblCapTotalPnl.AutoSize = true;
-            lblCapTotalPnl.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapTotalPnl.Font = new Font("Times New Roman", 15F);
             lblCapTotalPnl.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapTotalPnl.Location = new Point(578, 174);
-            lblCapTotalPnl.Margin = new Padding(4, 0, 4, 0);
+            lblCapTotalPnl.Location = new Point(462, 139);
             lblCapTotalPnl.Name = "lblCapTotalPnl";
             lblCapTotalPnl.Size = new Size(238, 22);
             lblCapTotalPnl.TabIndex = 12;
@@ -502,10 +488,9 @@
             // lblLiqDistancePct
             // 
             lblLiqDistancePct.AutoSize = true;
-            lblLiqDistancePct.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblLiqDistancePct.Font = new Font("Times New Roman", 15F);
             lblLiqDistancePct.ForeColor = Color.FromArgb(156, 163, 175);
-            lblLiqDistancePct.Location = new Point(818, 106);
-            lblLiqDistancePct.Margin = new Padding(4, 0, 4, 0);
+            lblLiqDistancePct.Location = new Point(715, 85);
             lblLiqDistancePct.Name = "lblLiqDistancePct";
             lblLiqDistancePct.Size = new Size(24, 22);
             lblLiqDistancePct.TabIndex = 11;
@@ -514,10 +499,9 @@
             // lblCapLiqDist
             // 
             lblCapLiqDist.AutoSize = true;
-            lblCapLiqDist.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapLiqDist.Font = new Font("Times New Roman", 15F);
             lblCapLiqDist.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapLiqDist.Location = new Point(578, 106);
-            lblCapLiqDist.Margin = new Padding(4, 0, 4, 0);
+            lblCapLiqDist.Location = new Point(462, 85);
             lblCapLiqDist.Name = "lblCapLiqDist";
             lblCapLiqDist.Size = new Size(244, 22);
             lblCapLiqDist.TabIndex = 10;
@@ -526,10 +510,9 @@
             // lblStopLossPrice
             // 
             lblStopLossPrice.AutoSize = true;
-            lblStopLossPrice.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblStopLossPrice.Font = new Font("Times New Roman", 15F);
             lblStopLossPrice.ForeColor = Color.FromArgb(156, 163, 175);
-            lblStopLossPrice.Location = new Point(261, 365);
-            lblStopLossPrice.Margin = new Padding(4, 0, 4, 0);
+            lblStopLossPrice.Location = new Point(264, 292);
             lblStopLossPrice.Name = "lblStopLossPrice";
             lblStopLossPrice.Size = new Size(24, 22);
             lblStopLossPrice.TabIndex = 9;
@@ -538,22 +521,20 @@
             // lblCapSlPrice
             // 
             lblCapSlPrice.AutoSize = true;
-            lblCapSlPrice.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapSlPrice.Font = new Font("Times New Roman", 15F);
             lblCapSlPrice.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapSlPrice.Location = new Point(38, 365);
-            lblCapSlPrice.Margin = new Padding(4, 0, 4, 0);
+            lblCapSlPrice.Location = new Point(30, 292);
             lblCapSlPrice.Name = "lblCapSlPrice";
-            lblCapSlPrice.Size = new Size(222, 22);
+            lblCapSlPrice.Size = new Size(227, 22);
             lblCapSlPrice.TabIndex = 8;
-            lblCapSlPrice.Text = "Stop-loss price                 :";
+            lblCapSlPrice.Text = "Stop-loss price                  :";
             // 
             // lblSlDistancePct
             // 
             lblSlDistancePct.AutoSize = true;
-            lblSlDistancePct.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblSlDistancePct.Font = new Font("Times New Roman", 15F);
             lblSlDistancePct.ForeColor = Color.FromArgb(156, 163, 175);
-            lblSlDistancePct.Location = new Point(261, 300);
-            lblSlDistancePct.Margin = new Padding(4, 0, 4, 0);
+            lblSlDistancePct.Location = new Point(264, 240);
             lblSlDistancePct.Name = "lblSlDistancePct";
             lblSlDistancePct.Size = new Size(24, 22);
             lblSlDistancePct.TabIndex = 7;
@@ -562,22 +543,20 @@
             // lblCapSlDist
             // 
             lblCapSlDist.AutoSize = true;
-            lblCapSlDist.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapSlDist.Font = new Font("Times New Roman", 15F);
             lblCapSlDist.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapSlDist.Location = new Point(38, 300);
-            lblCapSlDist.Margin = new Padding(4, 0, 4, 0);
+            lblCapSlDist.Location = new Point(30, 240);
             lblCapSlDist.Name = "lblCapSlDist";
-            lblCapSlDist.Size = new Size(219, 22);
+            lblCapSlDist.Size = new Size(224, 22);
             lblCapSlDist.TabIndex = 6;
-            lblCapSlDist.Text = "SL distance %                  :";
+            lblCapSlDist.Text = "SL distance %                   :";
             // 
             // lblPositionCoins
             // 
             lblPositionCoins.AutoSize = true;
-            lblPositionCoins.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblPositionCoins.Font = new Font("Times New Roman", 15F);
             lblPositionCoins.ForeColor = Color.FromArgb(156, 163, 175);
-            lblPositionCoins.Location = new Point(261, 239);
-            lblPositionCoins.Margin = new Padding(4, 0, 4, 0);
+            lblPositionCoins.Location = new Point(264, 191);
             lblPositionCoins.Name = "lblPositionCoins";
             lblPositionCoins.Size = new Size(24, 22);
             lblPositionCoins.TabIndex = 5;
@@ -586,10 +565,9 @@
             // lblCapPositionCoins
             // 
             lblCapPositionCoins.AutoSize = true;
-            lblCapPositionCoins.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapPositionCoins.Font = new Font("Times New Roman", 15F);
             lblCapPositionCoins.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapPositionCoins.Location = new Point(38, 239);
-            lblCapPositionCoins.Margin = new Padding(4, 0, 4, 0);
+            lblCapPositionCoins.Location = new Point(30, 191);
             lblCapPositionCoins.Name = "lblCapPositionCoins";
             lblCapPositionCoins.Size = new Size(228, 22);
             lblCapPositionCoins.TabIndex = 4;
@@ -598,10 +576,9 @@
             // lblPositionUsdt
             // 
             lblPositionUsdt.AutoSize = true;
-            lblPositionUsdt.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblPositionUsdt.Font = new Font("Times New Roman", 15F);
             lblPositionUsdt.ForeColor = Color.FromArgb(156, 163, 175);
-            lblPositionUsdt.Location = new Point(261, 174);
-            lblPositionUsdt.Margin = new Padding(4, 0, 4, 0);
+            lblPositionUsdt.Location = new Point(264, 139);
             lblPositionUsdt.Name = "lblPositionUsdt";
             lblPositionUsdt.Size = new Size(24, 22);
             lblPositionUsdt.TabIndex = 3;
@@ -610,10 +587,9 @@
             // lblCapPositionUsdt
             // 
             lblCapPositionUsdt.AutoSize = true;
-            lblCapPositionUsdt.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapPositionUsdt.Font = new Font("Times New Roman", 15F);
             lblCapPositionUsdt.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapPositionUsdt.Location = new Point(38, 174);
-            lblCapPositionUsdt.Margin = new Padding(4, 0, 4, 0);
+            lblCapPositionUsdt.Location = new Point(30, 139);
             lblCapPositionUsdt.Name = "lblCapPositionUsdt";
             lblCapPositionUsdt.Size = new Size(226, 22);
             lblCapPositionUsdt.TabIndex = 2;
@@ -622,10 +598,9 @@
             // lblCapRiskAmount
             // 
             lblCapRiskAmount.AutoSize = true;
-            lblCapRiskAmount.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapRiskAmount.Font = new Font("Times New Roman", 15F);
             lblCapRiskAmount.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapRiskAmount.Location = new Point(35, 106);
-            lblCapRiskAmount.Margin = new Padding(4, 0, 4, 0);
+            lblCapRiskAmount.Location = new Point(30, 85);
             lblCapRiskAmount.Name = "lblCapRiskAmount";
             lblCapRiskAmount.Size = new Size(223, 22);
             lblCapRiskAmount.TabIndex = 1;
@@ -634,10 +609,9 @@
             // lblRiskAmount
             // 
             lblRiskAmount.AutoSize = true;
-            lblRiskAmount.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblRiskAmount.Font = new Font("Times New Roman", 15F);
             lblRiskAmount.ForeColor = Color.FromArgb(156, 163, 175);
-            lblRiskAmount.Location = new Point(261, 106);
-            lblRiskAmount.Margin = new Padding(4, 0, 4, 0);
+            lblRiskAmount.Location = new Point(264, 85);
             lblRiskAmount.Name = "lblRiskAmount";
             lblRiskAmount.Size = new Size(24, 22);
             lblRiskAmount.TabIndex = 1;
@@ -654,10 +628,10 @@
             pnlChecks.Controls.Add(lblCapLiqCheck);
             pnlChecks.Controls.Add(lblCapMarginCheck);
             pnlChecks.Controls.Add(lblMarginCheck);
-            pnlChecks.Location = new Point(25, 1349);
+            pnlChecks.Location = new Point(20, 1079);
             pnlChecks.Margin = new Padding(2);
             pnlChecks.Name = "pnlChecks";
-            pnlChecks.Size = new Size(1152, 366);
+            pnlChecks.Size = new Size(922, 293);
             pnlChecks.TabIndex = 22;
             // 
             // llblChecksTitle
@@ -665,20 +639,19 @@
             llblChecksTitle.AutoSize = true;
             llblChecksTitle.Font = new Font("Times New Roman", 21.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             llblChecksTitle.ForeColor = Color.FromArgb(156, 163, 175);
-            llblChecksTitle.Location = new Point(24, 20);
+            llblChecksTitle.Location = new Point(19, 16);
             llblChecksTitle.Margin = new Padding(2, 0, 2, 0);
             llblChecksTitle.Name = "llblChecksTitle";
-            llblChecksTitle.Size = new Size(140, 42);
+            llblChecksTitle.Size = new Size(110, 32);
             llblChecksTitle.TabIndex = 19;
             llblChecksTitle.Text = "Checks ";
             // 
             // lblAllocationCheck
             // 
             lblAllocationCheck.AutoSize = true;
-            lblAllocationCheck.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblAllocationCheck.Font = new Font("Times New Roman", 15F);
             lblAllocationCheck.ForeColor = Color.FromArgb(156, 163, 175);
-            lblAllocationCheck.Location = new Point(261, 228);
-            lblAllocationCheck.Margin = new Padding(4, 0, 4, 0);
+            lblAllocationCheck.Location = new Point(253, 182);
             lblAllocationCheck.Name = "lblAllocationCheck";
             lblAllocationCheck.Size = new Size(24, 22);
             lblAllocationCheck.TabIndex = 16;
@@ -687,10 +660,9 @@
             // lblStatus
             // 
             lblStatus.AutoSize = true;
-            lblStatus.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblStatus.Font = new Font("Times New Roman", 15F);
             lblStatus.ForeColor = Color.FromArgb(156, 163, 175);
-            lblStatus.Location = new Point(38, 296);
-            lblStatus.Margin = new Padding(4, 0, 4, 0);
+            lblStatus.Location = new Point(30, 237);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(57, 22);
             lblStatus.TabIndex = 14;
@@ -699,10 +671,9 @@
             // lblCapAllocation
             // 
             lblCapAllocation.AutoSize = true;
-            lblCapAllocation.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapAllocation.Font = new Font("Times New Roman", 15F);
             lblCapAllocation.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapAllocation.Location = new Point(38, 228);
-            lblCapAllocation.Margin = new Padding(4, 0, 4, 0);
+            lblCapAllocation.Location = new Point(30, 182);
             lblCapAllocation.Name = "lblCapAllocation";
             lblCapAllocation.Size = new Size(215, 22);
             lblCapAllocation.TabIndex = 4;
@@ -711,10 +682,9 @@
             // lblLiqCheck
             // 
             lblLiqCheck.AutoSize = true;
-            lblLiqCheck.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblLiqCheck.Font = new Font("Times New Roman", 15F);
             lblLiqCheck.ForeColor = Color.FromArgb(156, 163, 175);
-            lblLiqCheck.Location = new Point(261, 162);
-            lblLiqCheck.Margin = new Padding(4, 0, 4, 0);
+            lblLiqCheck.Location = new Point(253, 130);
             lblLiqCheck.Name = "lblLiqCheck";
             lblLiqCheck.Size = new Size(24, 22);
             lblLiqCheck.TabIndex = 3;
@@ -723,10 +693,9 @@
             // lblCapLiqCheck
             // 
             lblCapLiqCheck.AutoSize = true;
-            lblCapLiqCheck.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapLiqCheck.Font = new Font("Times New Roman", 15F);
             lblCapLiqCheck.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapLiqCheck.Location = new Point(38, 162);
-            lblCapLiqCheck.Margin = new Padding(4, 0, 4, 0);
+            lblCapLiqCheck.Location = new Point(30, 130);
             lblCapLiqCheck.Name = "lblCapLiqCheck";
             lblCapLiqCheck.Size = new Size(217, 22);
             lblCapLiqCheck.TabIndex = 2;
@@ -735,10 +704,9 @@
             // lblCapMarginCheck
             // 
             lblCapMarginCheck.AutoSize = true;
-            lblCapMarginCheck.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCapMarginCheck.Font = new Font("Times New Roman", 15F);
             lblCapMarginCheck.ForeColor = Color.FromArgb(156, 163, 175);
-            lblCapMarginCheck.Location = new Point(38, 95);
-            lblCapMarginCheck.Margin = new Padding(4, 0, 4, 0);
+            lblCapMarginCheck.Location = new Point(32, 75);
             lblCapMarginCheck.Name = "lblCapMarginCheck";
             lblCapMarginCheck.Size = new Size(213, 22);
             lblCapMarginCheck.TabIndex = 1;
@@ -747,10 +715,9 @@
             // lblMarginCheck
             // 
             lblMarginCheck.AutoSize = true;
-            lblMarginCheck.Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblMarginCheck.Font = new Font("Times New Roman", 15F);
             lblMarginCheck.ForeColor = Color.FromArgb(156, 163, 175);
-            lblMarginCheck.Location = new Point(261, 95);
-            lblMarginCheck.Margin = new Padding(4, 0, 4, 0);
+            lblMarginCheck.Location = new Point(253, 75);
             lblMarginCheck.Name = "lblMarginCheck";
             lblMarginCheck.Size = new Size(24, 22);
             lblMarginCheck.TabIndex = 1;
@@ -759,46 +726,46 @@
             // pnlSlnTp_Max
             // 
             pnlSlnTp_Max.BackColor = Color.FromArgb(27, 38, 59);
-            pnlSlnTp_Max.Location = new Point(25, 16);
+            pnlSlnTp_Max.Location = new Point(20, 13);
             pnlSlnTp_Max.Margin = new Padding(2);
             pnlSlnTp_Max.Name = "pnlSlnTp_Max";
-            pnlSlnTp_Max.Size = new Size(2064, 426);
+            pnlSlnTp_Max.Size = new Size(1651, 341);
             pnlSlnTp_Max.TabIndex = 23;
             pnlSlnTp_Max.Visible = false;
             // 
             // pnlTpLevels_Max
             // 
             pnlTpLevels_Max.BackColor = Color.FromArgb(27, 38, 59);
-            pnlTpLevels_Max.Location = new Point(25, 482);
+            pnlTpLevels_Max.Location = new Point(20, 386);
             pnlTpLevels_Max.Margin = new Padding(2);
             pnlTpLevels_Max.Name = "pnlTpLevels_Max";
-            pnlTpLevels_Max.Size = new Size(2064, 350);
+            pnlTpLevels_Max.Size = new Size(1651, 280);
             pnlTpLevels_Max.TabIndex = 24;
             pnlTpLevels_Max.Visible = false;
             // 
             // pnlMetrics_Max
             // 
             pnlMetrics_Max.BackColor = Color.FromArgb(27, 38, 59);
-            pnlMetrics_Max.Location = new Point(25, 875);
+            pnlMetrics_Max.Location = new Point(20, 700);
             pnlMetrics_Max.Margin = new Padding(2);
             pnlMetrics_Max.Name = "pnlMetrics_Max";
-            pnlMetrics_Max.Size = new Size(2064, 419);
+            pnlMetrics_Max.Size = new Size(1651, 335);
             pnlMetrics_Max.TabIndex = 25;
             pnlMetrics_Max.Visible = false;
             // 
             // pnlChecks_Max
             // 
             pnlChecks_Max.BackColor = Color.FromArgb(27, 38, 59);
-            pnlChecks_Max.Location = new Point(25, 1349);
+            pnlChecks_Max.Location = new Point(20, 1079);
             pnlChecks_Max.Margin = new Padding(2);
             pnlChecks_Max.Name = "pnlChecks_Max";
-            pnlChecks_Max.Size = new Size(2064, 366);
+            pnlChecks_Max.Size = new Size(1651, 293);
             pnlChecks_Max.TabIndex = 26;
             pnlChecks_Max.Visible = false;
             // 
             // FrmSlTpFromLeverage
             // 
-            AutoScaleDimensions = new SizeF(120F, 120F);
+            AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScroll = true;
             BackColor = Color.FromArgb(13, 27, 42);
@@ -812,7 +779,7 @@
             Controls.Add(pnlChecks_Max);
             Margin = new Padding(2);
             Name = "FrmSlTpFromLeverage";
-            Size = new Size(2124, 1720);
+            Size = new Size(1699, 1376);
             pnlSlnTp.ResumeLayout(false);
             pnlSlnTp.PerformLayout();
             pnlTpLevels.ResumeLayout(false);
