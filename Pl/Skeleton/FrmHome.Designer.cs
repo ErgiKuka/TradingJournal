@@ -283,7 +283,7 @@
             btnJournal.Name = "btnJournal";
             btnJournal.Size = new Size(213, 46);
             btnJournal.TabIndex = 3;
-            btnJournal.Text = "   Journal";
+            btnJournal.Text = "Trading";
             btnJournal.UseVisualStyleBackColor = false;
             btnJournal.Click += btnJournal_Click;
             btnJournal.MouseEnter += MouseEnterEffect;

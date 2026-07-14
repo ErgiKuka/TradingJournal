@@ -58,7 +58,7 @@ namespace TradingJournal.Pl.Startup
             // --- Start of Update Code ---
             try
             {
-                string currentVersion = "1.9.10";
+                string currentVersion = "1.9.11";
                 string repoOwner = "ErgiKuka";
                 string repoName = "TradingJournal"; 
 
