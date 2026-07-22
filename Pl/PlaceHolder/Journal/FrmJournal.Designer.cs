@@ -504,7 +504,6 @@
             cbSymbol.Name = "cbSymbol";
             cbSymbol.Size = new Size(203, 34);
             cbSymbol.TabIndex = 0;
-            cbSymbol.Text = "  ";
             // 
             // pnlData_Max
             // 

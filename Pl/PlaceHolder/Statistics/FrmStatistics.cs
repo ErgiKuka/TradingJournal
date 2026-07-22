@@ -27,6 +27,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             InitializeResponsiveLayouts();
             RoundAllPanels();
             ThemeManager.ThemeChanged += (s, e) => ApplyTheme();
+            SetupDatePicker();
             ApplyTheme();
         }
 
@@ -79,6 +80,9 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             // Button
             btnOpenCalculator.BackColor = ThemeManager.DarkButtonColor;
             btnOpenCalculator.ForeColor = ThemeManager.TextColor;
+
+            dtpStatsDate.CalendarForeColor = ThemeManager.TextColor;
+            dtpStatsDate.CalendarMonthBackground = ThemeManager.PanelColor;
         }
 
         #region Unchanged Layout and Setup Code
@@ -123,6 +127,7 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
             _layoutManager.RegisterControl(rbMonthly, pnlChart, pnlChart_Max, new Point(815, 14), new Size(96, 26));
             _layoutManager.RegisterControl(rbAllTime, pnlChart, pnlChart_Max, new Point(939, 14), new Size(96, 26));
             _layoutManager.RegisterControl(btnOpenCalculator, pnlCalculator, pnlCalculator_Max, new Point(701, 70), new Size(310, 65));
+            _layoutManager.RegisterControl(dtpStatsDate, pnlChart, pnlChart_Max, new Point(1055, 13), new Size(230, 26));
         }
 
         public void SetWindowState(FormWindowStateExtended newState)
@@ -312,50 +317,68 @@ namespace TradingJournal.Pl.PlaceHolder.Statistics
 
         private (DateTime? start, DateTime? end, ChartResolution res) GetRequestedRange()
         {
-            var today = DateTime.Today;
+            if (rbAllTime.Checked)
+                return (null, null, ChartResolution.Daily);   // all-time ignores the picker
+
+            DateTime picked = dtpStatsDate.Value.Date;
 
             if (rbDaily.Checked)
-                return (today, today, ChartResolution.Intraday);
+                return (picked, picked, ChartResolution.Intraday);
 
             if (rbWeekly.Checked)
             {
-                DateTime weekStart = StartOfWeek(today, DayOfWeek.Monday);
-                DateTime weekEnd = weekStart.AddDays(6); // Monday .. Sunday
-                return (weekStart, weekEnd, ChartResolution.Daily);
+                DateTime weekStart = StartOfWeek(picked, DayOfWeek.Monday);
+                return (weekStart, weekStart.AddDays(6), ChartResolution.Daily); // Mon..Sun
             }
 
             if (rbMonthly.Checked)
             {
-                DateTime monthStart = new DateTime(today.Year, today.Month, 1);
-                DateTime monthEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+                DateTime monthStart = new DateTime(picked.Year, picked.Month, 1);
+                DateTime monthEnd = new DateTime(picked.Year, picked.Month,
+                    DateTime.DaysInMonth(picked.Year, picked.Month));
                 return (monthStart, monthEnd, ChartResolution.Daily);
             }
 
-            // All time: let BuildSeries derive bounds from data
             return (null, null, ChartResolution.Daily);
         }
 
-
-        private void rbDaily_CheckedChanged(object sender, EventArgs e)
+        private void SetupDatePicker()
         {
-            if (rbDaily.Checked) LoadStatistics();
+            dtpStatsDate.Value = DateTime.Today;
+            dtpStatsDate.ValueChanged += (s, e) => { if (!rbAllTime.Checked) LoadStatistics(); };
+            ConfigureDatePickerForMode();
         }
 
-        private void rbWeekly_CheckedChanged(object sender, EventArgs e)
+        private void ConfigureDatePickerForMode()
         {
-            if (rbWeekly.Checked) LoadStatistics();
+            if (rbAllTime.Checked) { dtpStatsDate.Enabled = false; return; }
+            dtpStatsDate.Enabled = true;
+
+            if (rbMonthly.Checked)
+            {
+                dtpStatsDate.Format = DateTimePickerFormat.Custom;  // month + year only
+                dtpStatsDate.CustomFormat = "MMMM yyyy";
+                dtpStatsDate.ShowUpDown = true;                     // spinner, no day calendar
+            }
+            else
+            {
+                dtpStatsDate.ShowUpDown = false;                    // Daily & Weekly: day picker
+                dtpStatsDate.Format = DateTimePickerFormat.Short;
+            }
         }
 
-        private void rbMonthly_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rbMonthly.Checked) LoadStatistics();
-        }
 
-        private void rbAllTime_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rbAllTime.Checked) LoadStatistics();
-        }
 
+        private void rbDaily_CheckedChanged(object sender, EventArgs e) { if (rbDaily.Checked) ApplySelection(); }
+        private void rbWeekly_CheckedChanged(object sender, EventArgs e) { if (rbWeekly.Checked) ApplySelection(); }
+        private void rbMonthly_CheckedChanged(object sender, EventArgs e) { if (rbMonthly.Checked) ApplySelection(); }
+        private void rbAllTime_CheckedChanged(object sender, EventArgs e) { if (rbAllTime.Checked) ApplySelection(); }
+
+        private void ApplySelection()
+        {
+            ConfigureDatePickerForMode();
+            LoadStatistics();
+        }
         private void btnOpenCalculator_Click(object sender, EventArgs e)
         {
             if (_calculatorFormInstance == null || _calculatorFormInstance.IsDisposed)
