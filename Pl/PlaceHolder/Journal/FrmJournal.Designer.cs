@@ -178,7 +178,6 @@
             txtMargin.Name = "txtMargin";
             txtMargin.Size = new Size(202, 27);
             txtMargin.TabIndex = 7;
-            txtMargin.Text = "   ";
             // 
             // txtProfitLoss
             // 
@@ -190,7 +189,6 @@
             txtProfitLoss.Name = "txtProfitLoss";
             txtProfitLoss.Size = new Size(202, 27);
             txtProfitLoss.TabIndex = 6;
-            txtProfitLoss.Text = "   ";
             // 
             // pbScreenshot
             // 
@@ -435,7 +433,6 @@
             txtTakeProfit.Name = "txtTakeProfit";
             txtTakeProfit.Size = new Size(202, 27);
             txtTakeProfit.TabIndex = 5;
-            txtTakeProfit.Text = "   ";
             // 
             // txtStopLoss
             // 
@@ -447,7 +444,6 @@
             txtStopLoss.Name = "txtStopLoss";
             txtStopLoss.Size = new Size(202, 27);
             txtStopLoss.TabIndex = 4;
-            txtStopLoss.Text = "   ";
             // 
             // txtExitPrice
             // 
@@ -459,7 +455,6 @@
             txtExitPrice.Name = "txtExitPrice";
             txtExitPrice.Size = new Size(202, 27);
             txtExitPrice.TabIndex = 3;
-            txtExitPrice.Text = "   ";
             // 
             // txtEntryPrice
             // 
@@ -471,7 +466,6 @@
             txtEntryPrice.Name = "txtEntryPrice";
             txtEntryPrice.Size = new Size(202, 27);
             txtEntryPrice.TabIndex = 2;
-            txtEntryPrice.Text = "   ";
             // 
             // cbTradeType
             // 
