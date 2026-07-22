@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using TradingJournal.Core.Logic.Helpers;
@@ -25,7 +26,10 @@ namespace TradingJournal.Core.Logic.Manager
         public BackupSettings Backup { get; set; } = new();
 
         // ---- NEW: Recycle Bin settings ----
-        public RecycleBinSettings RecycleBin { get; set; } = new(); // <— ADDED
+        public RecycleBinSettings RecycleBin { get; set; } = new();
+
+        // ---- NEW: Auto-journal (import closed exchange trades into the journal) ----
+        public AutoJournalSettings AutoJournal { get; set; } = new();
 
         public void Save()
         {
@@ -57,7 +61,11 @@ namespace TradingJournal.Core.Logic.Manager
                         s.Trading ??= new TradingSettings();
                         s.Notifications ??= new NotificationSettings();
                         s.Backup ??= new BackupSettings();
-                        s.RecycleBin ??= new RecycleBinSettings(); // <— ADDED
+                        s.RecycleBin ??= new RecycleBinSettings();
+
+                        s.AutoJournal ??= new AutoJournalSettings();               // <— ADDED
+                        s.AutoJournal.WatermarksUtc ??= new Dictionary<string, string>(); // <— ADDED
+
                         if (string.IsNullOrWhiteSpace(s.CurrencySymbol)) s.CurrencySymbol = "$";
                         return s;
                     }
@@ -86,7 +94,7 @@ namespace TradingJournal.Core.Logic.Manager
         public bool BackupStatusEnabled { get; set; } = true;
 
         // ---- NEW: used by FrmSettings for the daily summary checkbox ----
-        public bool DailySummaryEnabled { get; set; } = false; // <— ADDED
+        public bool DailySummaryEnabled { get; set; } = false;
     }
 
     public sealed class BackupSettings
@@ -104,5 +112,19 @@ namespace TradingJournal.Core.Logic.Manager
     {
         /// <summary>Days before soft-deleted items are permanently deleted.</summary>
         public int RetentionDays { get; set; } = 30;
+    }
+
+    // ---- NEW: Auto-journal section ----
+    public sealed class AutoJournalSettings
+    {
+        /// <summary>Master on/off for importing closed exchange trades into the journal.</summary>
+        public bool Enabled { get; set; } = false;
+
+        /// <summary>
+        /// Per-platform high-water mark: key "{Exchange}:{PlatformId}" -> ISO-8601 UTC time of the
+        /// newest close already imported. Only a performance hint — dedup by ExternalId is the real
+        /// guard, so an empty/lost value just triggers a redundant pull, never duplicate rows.
+        /// </summary>
+        public Dictionary<string, string> WatermarksUtc { get; set; } = new();
     }
 }

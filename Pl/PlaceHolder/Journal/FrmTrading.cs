@@ -8,6 +8,7 @@ using TradingJournal.Core.Data.Entities;
 using TradingJournal.Core.Logic;
 using TradingJournal.Core.Logic.Helpers;
 using TradingJournal.Core.Logic.Manager;
+using TradingJournal.Core.Logic.Services;
 using TradingJournal.Core.Logic.Services.Exchange;
 
 namespace TradingJournal.Pl.PlaceHolder.Journal
@@ -16,6 +17,10 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
     /// Live trading. Amount is the MARGIN committed (position = amount x leverage). Buy/Sell buttons
     /// place the order; Liq/Cost/Max preview updates live; the grid shows all positions with a Close
     /// button. Sizing/precision/cap live in TradingManager. Platform balance shows only here.
+    ///
+    /// Auto-journal: when enabled, closed exchange trades are imported into the journal on connect and
+    /// on a timer. It only imports trades closed AFTER it was switched on, and de-dupes by ExternalId
+    /// so nothing is ever journaled twice.
     /// </summary>
     public partial class FrmTrading : UserControl, IResponsiveChildForm
     {
@@ -40,9 +45,15 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
 
         private readonly PlatformManager _platforms = new PlatformManager();
         private readonly TradingManager _trading = new TradingManager();
+        private readonly TradeReconciler _reconciler = new TradeReconciler();
         private readonly ResponsiveLayoutManager _layoutManager;
         private readonly System.Windows.Forms.Timer _positionsTimer;
         private readonly System.Windows.Forms.Timer _priceTimer;
+        private readonly System.Windows.Forms.Timer _journalTimer;
+
+        private CheckBox? chkAutoJournal;
+        private string _platformKey = string.Empty;
+        private bool _reconciling;
 
         private IExchangeClient _client;
         private bool _pollingPositions;
@@ -58,10 +69,13 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             _positionsTimer.Tick += async (s, e) => await RefreshPositionsAsync();
             _priceTimer = new System.Windows.Forms.Timer { Interval = 1000 };
             _priceTimer.Tick += async (s, e) => await RefreshPriceAsync();
+            _journalTimer = new System.Windows.Forms.Timer { Interval = 30000 };
+            _journalTimer.Tick += async (s, e) => await ReconcileJournalAsync(announceIdle: false);
 
             SetupGrid();
             SetupOrderControls();
             SetupSideButtons();
+            BuildAutoJournalToggle();   // before the responsive layout so it's registered with its panel
 
             _layoutManager = new ResponsiveLayoutManager(this);
             InitializeResponsiveLayouts();
@@ -85,6 +99,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 ThemeManager.ThemeChanged -= OnThemeChanged;
                 _positionsTimer.Stop(); _positionsTimer.Dispose();
                 _priceTimer.Stop(); _priceTimer.Dispose();
+                _journalTimer.Stop(); _journalTimer.Dispose();
                 (_client as IDisposable)?.Dispose();
             };
             ApplyTheme();
@@ -191,6 +206,73 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             dgvPositions.RowTemplate.Height = 32;
         }
 
+        // ----------------------------------------------------------------- Auto-journal toggle (code-created)
+        // Built in code rather than the Designer so no .Designer.cs edit is needed. It sits in the
+        // Platforms panel between the platform dropdown (y=157) and the Connect button (y=263). If it
+        // overlaps anything on your build, just change the Location below.
+        private void BuildAutoJournalToggle()
+        {
+            chkAutoJournal = new CheckBox
+            {
+                Name = "chkAutoJournal",
+                Text = "Auto-journal closed trades",
+                AutoSize = true,
+                Location = new Point(45, 212),
+                ForeColor = ThemeManager.TextColor,
+                Checked = SettingsManager.Load().AutoJournal.Enabled
+            };
+            chkAutoJournal.CheckedChanged += async (s, e) => await OnAutoJournalToggled();
+            pnlPlatforms.Controls.Add(chkAutoJournal);
+        }
+
+        private async Task OnAutoJournalToggled()
+        {
+            if (chkAutoJournal == null) return;
+
+            var settings = SettingsManager.Load();
+            settings.AutoJournal.Enabled = chkAutoJournal.Checked;
+            settings.Save();
+
+            if (chkAutoJournal.Checked)
+            {
+                if (_client != null)
+                {
+                    _journalTimer.Start();
+                    await ReconcileJournalAsync(announceIdle: true);
+                }
+                else
+                {
+                    SetStatus("Auto-journal on. It starts importing once you connect.", true);
+                }
+            }
+            else
+            {
+                _journalTimer.Stop();
+                SetStatus("Auto-journal off.", true);
+            }
+        }
+
+        // Pulls closed trades from the exchange and journals the new ones. Overlap-guarded so the timer,
+        // the connect step and the toggle can't run it twice at once.
+        private async Task ReconcileJournalAsync(bool announceIdle)
+        {
+            if (_client == null || _reconciling) return;
+            if (chkAutoJournal == null || !chkAutoJournal.Checked) return;
+            if (string.IsNullOrEmpty(_platformKey)) return;
+
+            _reconciling = true;
+            try
+            {
+                var result = await _reconciler.ReconcileAsync(_client, _platformKey);
+                if (!result.Ok) { SetStatus($"Auto-journal: {result.Error}", false); return; }
+
+                if (result.Added > 0) SetStatus($"Auto-journaled {result.Added} new trade(s).", true);
+                else if (announceIdle) SetStatus("Auto-journal on. No new closed trades yet.", true);
+            }
+            catch (Exception ex) { SetStatus($"Auto-journal failed: {ex.Message}", false); }
+            finally { _reconciling = false; }
+        }
+
         // ----------------------------------------------------------------- Platforms / connect
         private void RefreshPlatforms()
         {
@@ -207,8 +289,9 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
         {
             if (!(cmbPlatform.SelectedItem is ExchangePlatform platform)) { SetStatus("Select a platform.", false); return; }
 
-            _positionsTimer.Stop(); _priceTimer.Stop();
+            _positionsTimer.Stop(); _priceTimer.Stop(); _journalTimer.Stop();
             (_client as IDisposable)?.Dispose(); _client = null;
+            _platformKey = $"{platform.Exchange}:{platform.Id}";
             SetOrderControlsEnabled(false);
             btnConnect.Enabled = false;
             SetStatus($"Connecting to {platform.Name}…", true);
@@ -229,6 +312,12 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
                 SetOrderControlsEnabled(true);
 
                 SetStatus($"Connected to {platform.Name} ({(creds.UseTestnet ? "TESTNET" : "LIVE")}).", true);
+
+                if (chkAutoJournal != null && chkAutoJournal.Checked)
+                {
+                    _journalTimer.Start();
+                    await ReconcileJournalAsync(announceIdle: false);
+                }
             }
             catch (Exception ex)
             {
@@ -558,6 +647,7 @@ namespace TradingJournal.Pl.PlaceHolder.Journal
             StyleRecursively(this);
             StyleGrid();
             StyleActionButton(btnConnect); // keep it visible (distinct from the panel)
+            if (chkAutoJournal != null) chkAutoJournal.ForeColor = ThemeManager.TextColor;
         }
 
         private void StyleRecursively(Control root)

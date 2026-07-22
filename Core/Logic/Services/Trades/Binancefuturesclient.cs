@@ -283,8 +283,74 @@ namespace TradingJournal.Core.Logic.Services.Exchange
         public Task<OrderResult> UpdateStopTakeAsync(string symbol, decimal? stopLoss, decimal? takeProfit)
             => throw new NotImplementedException("Mid-trade TP/SL editing is the next step (cancel + replace algo orders).");
 
-        public Task<IReadOnlyList<ClosedTrade>> GetRecentClosedTradesAsync(DateTime sinceUtc)
-            => throw new NotImplementedException("Reconcile needs fills aggregation - a later focused step.");
+        // ----------------------------------------------------------------- Closed-trade reconcile (auto-journal)
+        /// <summary>
+        /// Reconstructs completed round-trip trades since <paramref name="sinceUtc"/> so the journal can
+        /// import them. Strategy: use the realized-PnL income feed to discover which symbols had closes in
+        /// the window (cheap — one call, no per-symbol scan), then pull each symbol's fills and fold them
+        /// into round trips via <see cref="ClosedTradeBuilder"/>.
+        ///
+        /// Limits to be aware of: assumes one-way position mode; income/userTrades are capped at 1000 rows
+        /// per call here (fine for the short windows the reconciler uses, but a very old <paramref
+        /// name="sinceUtc"/> could truncate — pagination is a later step). Margin can't be recovered from
+        /// fills, so imported trades carry entry *notional* as margin (see ClosedTradeBuilder).
+        /// </summary>
+        public async Task<IReadOnlyList<ClosedTrade>> GetRecentClosedTradesAsync(DateTime sinceUtc)
+        {
+            var sinceUtcNorm = sinceUtc.ToUniversalTime();
+            long startMs = new DateTimeOffset(sinceUtcNorm).ToUnixTimeMilliseconds();
+
+            var symbols = await RealizedPnlSymbolsAsync(startMs).ConfigureAwait(false);
+            var closed = new List<ClosedTrade>();
+
+            foreach (var symbol in symbols)
+            {
+                var fills = await UserTradesAsync(symbol, startMs).ConfigureAwait(false);
+                if (fills.Count == 0) continue;
+                fills.Sort((a, b) => a.TimeUtc.CompareTo(b.TimeUtc));
+
+                foreach (var t in ClosedTradeBuilder.Fold(fills))
+                    if (t.ClosedAtUtc >= sinceUtcNorm) closed.Add(t);   // ignore lots that closed before the watermark
+            }
+
+            closed.Sort((a, b) => a.ClosedAtUtc.CompareTo(b.ClosedAtUtc));
+            return closed;
+        }
+
+        // Symbols that had a realized-PnL event since startMs (cheap discovery; avoids scanning every symbol).
+        private async Task<IReadOnlyList<string>> RealizedPnlSymbolsAsync(long startMs)
+        {
+            using var doc = await SignedRequestAsync(HttpMethod.Get, "/fapi/v1/income",
+                $"incomeType=REALIZED_PNL&startTime={startMs}&limit=1000").ConfigureAwait(false);
+
+            var set = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var e in doc.RootElement.EnumerateArray())
+                if (e.TryGetProperty("symbol", out var s) && s.GetString() is string name && name.Length > 0)
+                    set.Add(name);
+            return new List<string>(set);
+        }
+
+        private async Task<List<ExchangeFill>> UserTradesAsync(string symbol, long startMs)
+        {
+            using var doc = await SignedRequestAsync(HttpMethod.Get, "/fapi/v1/userTrades",
+                $"symbol={symbol}&startTime={startMs}&limit=1000").ConfigureAwait(false);
+
+            var fills = new List<ExchangeFill>();
+            foreach (var e in doc.RootElement.EnumerateArray())
+            {
+                fills.Add(new ExchangeFill
+                {
+                    Symbol = symbol,
+                    IsBuy = string.Equals(e.GetProperty("side").GetString(), "BUY", StringComparison.OrdinalIgnoreCase),
+                    Quantity = Dec(e, "qty"),
+                    Price = Dec(e, "price"),
+                    RealizedPnl = Dec(e, "realizedPnl"),
+                    TradeId = e.TryGetProperty("id", out var id) ? id.GetRawText() : string.Empty,
+                    TimeUtc = DateTimeOffset.FromUnixTimeMilliseconds(e.GetProperty("time").GetInt64()).UtcDateTime
+                });
+            }
+            return fills;
+        }
 
         // ----------------------------------------------------------------- HTTP
         private async Task<JsonDocument> SignedRequestAsync(HttpMethod method, string path, string query = "")
