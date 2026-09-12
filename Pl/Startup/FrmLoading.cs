@@ -58,6 +58,7 @@ namespace TradingJournal.Pl.Startup
                 string repoOwner = "ErgiKuka";
                 string repoName = "TradingJournal"; 
 
+
                 var updater = new GitHubUpdater(repoOwner, repoName);
                 await updater.CheckForUpdatesAsync(currentVersion, lblStatus);
             }
