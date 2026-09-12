@@ -11,7 +11,20 @@ namespace TradingJournal.Core.Logic.Services.Exchange
         public bool IsBuy { get; set; }
         public decimal Quantity { get; set; }        // > 0, in base asset
         public decimal Price { get; set; }
-        public decimal RealizedPnl { get; set; }     // exchange-reported realized PnL for this fill (0 on opens)
+
+        /// <summary>
+        /// Exchange-reported realized PnL for this fill (0 on opens). On Binance USDT-M this is the
+        /// GROSS figure — it excludes commission, which arrives in <see cref="Commission"/>.
+        /// </summary>
+        public decimal RealizedPnl { get; set; }
+
+        /// <summary>
+        /// Trading fee charged on this fill, as a POSITIVE amount in the quote currency (USDT).
+        /// Leave 0 when the exchange charges in another asset and no conversion rate is available —
+        /// a wrong fee is worse than a missing one, because it silently poisons every derived metric.
+        /// </summary>
+        public decimal Commission { get; set; }
+
         public string TradeId { get; set; } = string.Empty;
         public DateTime TimeUtc { get; set; }
     }
@@ -24,16 +37,33 @@ namespace TradingJournal.Core.Logic.Services.Exchange
     /// the position is closed and one <see cref="ClosedTrade"/> is emitted. A fill that overshoots
     /// (flips the sign) closes the old lot and opens a new one with the remainder.
     ///
-    /// Assumes one-way mode (no simultaneous long+short on the same symbol) — the same assumption the
-    /// rest of the client makes by reading a single signed position size. Partial scale-in / scale-out
-    /// inside a position are aggregated into that single round-trip entry (VWAP in / VWAP out).
+    /// Assumes one-way position mode (no simultaneous long+short on the same symbol) — the same
+    /// assumption the rest of the client makes by reading a single signed position size. Partial
+    /// scale-in / scale-out inside a position are aggregated into that single round-trip entry.
     ///
-    /// Recoverable from fills: symbol, side, VWAP entry/exit, realized PnL, close time, a stable id.
-    /// NOT recoverable: the leverage/margin used — so <see cref="ClosedTrade.Margin"/> is set to the
-    /// entry *notional* (VWAP × size). Treat imported ROI as return-on-notional, not return-on-margin.
+    /// FEES: the emitted RealizedPnl is NET of commission — gross exchange PnL minus the commission
+    /// of every fill in the lot, opening fills included. The previous version summed only
+    /// f.RealizedPnl, which on Binance is gross, so journal entries overstated profit by roughly
+    /// 0.1% of round-trip notional on every trade. Verified against three Binance positions where
+    /// the discrepancy matched commission to the cent.
+    ///
+    /// NOT accounted for: funding. On a perpetual held across funding intervals the exchange's own
+    /// "Realized PNL" also nets funding, which lives in a separate income feed keyed by time rather
+    /// than by fill. Positions held for minutes are unaffected; multi-hour holds will still differ
+    /// from the exchange UI by the funding amount.
+    ///
+    /// NOT recoverable from fills: the leverage/margin used — so <see cref="ClosedTrade.Margin"/> is
+    /// set to the entry *notional* (VWAP × size). Treat imported ROI as return-on-notional.
     /// </summary>
     public static class ClosedTradeBuilder
     {
+        /// <summary>
+        /// VWAP is a division and produces full decimal scale (28+ significant digits), which is both
+        /// meaningless as a price and wider than the decimal(18,4) column it lands in. 8 decimals is
+        /// past the tick size of every USDT pair.
+        /// </summary>
+        private const int PriceDecimals = 8;
+
         public static IReadOnlyList<ClosedTrade> Fold(IEnumerable<ExchangeFill> fillsOldestFirst)
         {
             var result = new List<ClosedTrade>();
@@ -45,13 +75,14 @@ namespace TradingJournal.Core.Logic.Services.Exchange
             decimal entryCost = 0m;     // Σ price*qty of the opening fills
             decimal exitQtyAbs = 0m;    // total base units closed out of the current lot
             decimal exitProceeds = 0m;  // Σ price*qty of the closing fills
-            decimal pnlAccum = 0m;      // Σ exchange realized PnL of the closing fills
+            decimal pnlAccum = 0m;      // Σ exchange realized PnL of the closing fills (GROSS)
+            decimal feeAccum = 0m;      // Σ commission of every fill in the lot, opens included
             string lastCloseId = string.Empty;
             DateTime closeTime = default;
 
             void ResetLot()
             {
-                entryQtyAbs = entryCost = exitQtyAbs = exitProceeds = pnlAccum = 0m;
+                entryQtyAbs = entryCost = exitQtyAbs = exitProceeds = pnlAccum = feeAccum = 0m;
                 lastCloseId = string.Empty;
                 closeTime = default;
             }
@@ -67,6 +98,7 @@ namespace TradingJournal.Core.Logic.Services.Exchange
                     longSide = f.IsBuy;
                     entryQtyAbs = f.Quantity;
                     entryCost = f.Price * f.Quantity;
+                    feeAccum = f.Commission;
                     netQty = d;
                     continue;
                 }
@@ -76,6 +108,7 @@ namespace TradingJournal.Core.Logic.Services.Exchange
                 {
                     entryQtyAbs += f.Quantity;
                     entryCost += f.Price * f.Quantity;
+                    feeAccum += f.Commission;
                     netQty += d;
                     continue;
                 }
@@ -90,9 +123,16 @@ namespace TradingJournal.Core.Logic.Services.Exchange
 
                 decimal newNet = netQty + d;
 
+                // A flipping fill pays fees for both the part that closes the old lot and the part
+                // that opens the new one; split the commission by quantity rather than charging it
+                // all to whichever lot happens to be convenient.
+                decimal closingFee = f.Quantity > 0m ? f.Commission * closingQty / f.Quantity : 0m;
+                feeAccum += closingFee;
+
                 if (newNet == 0m)
                 {
-                    result.Add(Emit(f.Symbol, longSide, entryQtyAbs, entryCost, exitQtyAbs, exitProceeds, pnlAccum, lastCloseId, closeTime));
+                    result.Add(Emit(f.Symbol, longSide, entryQtyAbs, entryCost, exitQtyAbs, exitProceeds,
+                        pnlAccum, feeAccum, lastCloseId, closeTime));
                     ResetLot();
                     netQty = 0m;
                 }
@@ -104,13 +144,15 @@ namespace TradingJournal.Core.Logic.Services.Exchange
                 else
                 {
                     // Sign flip: this fill closed the old lot and opens a new one with the remainder.
-                    result.Add(Emit(f.Symbol, longSide, entryQtyAbs, entryCost, exitQtyAbs, exitProceeds, pnlAccum, lastCloseId, closeTime));
+                    result.Add(Emit(f.Symbol, longSide, entryQtyAbs, entryCost, exitQtyAbs, exitProceeds,
+                        pnlAccum, feeAccum, lastCloseId, closeTime));
                     ResetLot();
 
                     decimal remainder = f.Quantity - closingQty;
                     longSide = f.IsBuy;
                     entryQtyAbs = remainder;
                     entryCost = f.Price * remainder;
+                    feeAccum = f.Commission - closingFee;   // the opening share of this fill's fee
                     netQty = newNet;
                 }
             }
@@ -120,10 +162,10 @@ namespace TradingJournal.Core.Logic.Services.Exchange
 
         private static ClosedTrade Emit(string symbol, bool longSide,
             decimal entryQtyAbs, decimal entryCost, decimal exitQtyAbs, decimal exitProceeds,
-            decimal pnl, string closeId, DateTime closeUtc)
+            decimal grossPnl, decimal fees, string closeId, DateTime closeUtc)
         {
-            decimal entryVwap = entryQtyAbs > 0 ? entryCost / entryQtyAbs : 0m;
-            decimal exitVwap = exitQtyAbs > 0 ? exitProceeds / exitQtyAbs : 0m;
+            decimal entryVwap = entryQtyAbs > 0 ? Round(entryCost / entryQtyAbs) : 0m;
+            decimal exitVwap = exitQtyAbs > 0 ? Round(exitProceeds / exitQtyAbs) : 0m;
 
             return new ClosedTrade
             {
@@ -131,11 +173,14 @@ namespace TradingJournal.Core.Logic.Services.Exchange
                 IsLong = longSide,
                 EntryPrice = entryVwap,
                 ExitPrice = exitVwap,
-                Margin = entryVwap * exitQtyAbs,   // notional at entry; leverage/margin isn't in fills
-                RealizedPnl = pnl,
+                Margin = Round(entryVwap * exitQtyAbs),   // notional at entry; leverage isn't in fills
+                RealizedPnl = grossPnl - fees,
                 ExternalId = string.IsNullOrEmpty(closeId) ? null : $"{symbol}:{closeId}",
                 ClosedAtUtc = closeUtc == default ? DateTime.UtcNow : closeUtc
             };
         }
+
+        private static decimal Round(decimal value) =>
+            Math.Round(value, PriceDecimals, MidpointRounding.ToEven);
     }
 }

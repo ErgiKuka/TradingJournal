@@ -333,15 +333,21 @@ namespace TradingJournal.Core.Logic.Services.Exchange
             var scanFrom = since - FoldLookback;
             if (scanFrom < horizon) scanFrom = horizon;
 
-            var windows = SplitWindows(scanFrom, now, MaxQueryWindow);
+            // Discovery runs over the REAL gap. The fold lookback only matters for FETCHING a
+            // discovered symbol's opening fills — a symbol with no realized-PnL event since the
+            // watermark has no trade to journal, so scanning the lookback for it is pure waste.
+            // With a 30s poll timer that waste was 2 income calls (weight 30 each) per platform
+            // per tick, forever.
+            var discoveryWindows = SplitWindows(since, now, MaxQueryWindow);
+            var fillWindows = SplitWindows(scanFrom, now, MaxQueryWindow);
 
             AutoJournalTrace.Write(
-                $"    [binance] scan {scanFrom:o} -> {now:o} in {windows.Count} window(s); " +
-                $"emit filter: closedAt >= {since:o}");
+                $"    [binance] discover {since:o} -> {now:o} in {discoveryWindows.Count} window(s); " +
+                $"fills from {scanFrom:o} in {fillWindows.Count} window(s); emit filter: closedAt >= {since:o}");
 
             // 1) Which symbols had a realized-PnL event anywhere in the range.
             var symbols = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var (from, to) in windows)
+            foreach (var (from, to) in discoveryWindows)
                 foreach (var s in await RealizedPnlSymbolsAsync(Ms(from), Ms(to)).ConfigureAwait(false))
                     symbols.Add(s);
 
@@ -355,7 +361,7 @@ namespace TradingJournal.Core.Logic.Services.Exchange
             foreach (var symbol in symbols)
             {
                 var fills = new List<ExchangeFill>();
-                foreach (var (from, to) in windows)
+                foreach (var (from, to) in fillWindows)
                     fills.AddRange(await UserTradesAsync(symbol, Ms(from), Ms(to)).ConfigureAwait(false));
 
                 if (fills.Count == 0)
@@ -456,6 +462,7 @@ namespace TradingJournal.Core.Logic.Services.Exchange
         {
             var fills = new List<ExchangeFill>();
             long cursor = startMs;
+            string? nonUsdtFeeAsset = null;
 
             while (true)
             {
@@ -472,6 +479,17 @@ namespace TradingJournal.Core.Logic.Services.Exchange
                     long tMs = e.GetProperty("time").GetInt64();
                     if (tMs > newest) newest = tMs;
 
+                    // Binance reports realizedPnl GROSS of commission; the fee is a separate field.
+                    // Only take it when it is charged in USDT — with BNB fee deduction enabled the
+                    // asset is BNB, and converting it would need a rate we do not have here. A wrong
+                    // fee is worse than a missing one, so leave it at 0 and say so in the trace.
+                    var feeAsset = e.TryGetProperty("commissionAsset", out var ca) ? ca.GetString() : null;
+                    decimal fee = 0m;
+                    if (string.Equals(feeAsset, "USDT", StringComparison.OrdinalIgnoreCase))
+                        fee = Math.Abs(Dec(e, "commission"));
+                    else if (!string.IsNullOrEmpty(feeAsset))
+                        nonUsdtFeeAsset = feeAsset;
+
                     fills.Add(new ExchangeFill
                     {
                         Symbol = symbol,
@@ -479,6 +497,7 @@ namespace TradingJournal.Core.Logic.Services.Exchange
                         Quantity = Dec(e, "qty"),
                         Price = Dec(e, "price"),
                         RealizedPnl = Dec(e, "realizedPnl"),
+                        Commission = fee,
                         TradeId = e.TryGetProperty("id", out var id) ? id.GetRawText() : string.Empty,
                         TimeUtc = DateTimeOffset.FromUnixTimeMilliseconds(tMs).UtcDateTime
                     });
@@ -489,6 +508,11 @@ namespace TradingJournal.Core.Logic.Services.Exchange
                 cursor = newest;   // not +1: fills sharing this ms must be re-fetched, then de-duplicated by id
                 if (cursor > endMs) break;
             }
+
+            if (nonUsdtFeeAsset != null)
+                AutoJournalTrace.Write(
+                    $"    [binance] WARNING {symbol}: fees charged in {nonUsdtFeeAsset}, not USDT. " +
+                    $"Commission excluded — imported PnL for this symbol is gross of fees.");
 
             return fills;
         }
