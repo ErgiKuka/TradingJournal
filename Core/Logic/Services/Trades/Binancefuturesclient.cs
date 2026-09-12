@@ -284,71 +284,212 @@ namespace TradingJournal.Core.Logic.Services.Exchange
             => throw new NotImplementedException("Mid-trade TP/SL editing is the next step (cancel + replace algo orders).");
 
         // ----------------------------------------------------------------- Closed-trade reconcile (auto-journal)
+
+        /// <summary>Binance serves at most 7 days per /fapi/v1/userTrades query.</summary>
+        private static readonly TimeSpan MaxQueryWindow = TimeSpan.FromDays(7);
+
+        /// <summary>Binance keeps 6 months of futures trade history; older windows return nothing.</summary>
+        private static readonly TimeSpan HistoryHorizon = TimeSpan.FromDays(180);
+
         /// <summary>
-        /// Reconstructs completed round-trip trades since <paramref name="sinceUtc"/> so the journal can
-        /// import them. Strategy: use the realized-PnL income feed to discover which symbols had closes in
-        /// the window (cheap — one call, no per-symbol scan), then pull each symbol's fills and fold them
-        /// into round trips via <see cref="ClosedTradeBuilder"/>.
+        /// How far BEFORE the watermark to start scanning fills. A position opened before the
+        /// watermark and closed after it has its opening fills outside the window; without them
+        /// ClosedTradeBuilder.Fold sees a closing fill with no lot open and treats it as OPENING a
+        /// fresh lot in the wrong direction, producing an inverted or missing trade. Folding from
+        /// earlier and then discarding lots that closed before the watermark fixes that.
+        /// 7 days covers any realistic swing hold; anything longer needs a manual CSV import.
+        /// </summary>
+        private static readonly TimeSpan FoldLookback = TimeSpan.FromDays(7);
+
+        private const int PageLimit = 1000;   // Binance max for both /income and /userTrades
+
+        /// <summary>
+        /// Reconstructs completed round-trip trades since <paramref name="sinceUtc"/> so the journal
+        /// can import them. Strategy: use the realized-PnL income feed to discover which symbols had
+        /// closes in the range, then pull each symbol's fills and fold them into round trips via
+        /// <see cref="ClosedTradeBuilder"/>.
         ///
-        /// Limits to be aware of: assumes one-way position mode; income/userTrades are capped at 1000 rows
-        /// per call here (fine for the short windows the reconciler uses, but a very old <paramref
-        /// name="sinceUtc"/> could truncate — pagination is a later step). Margin can't be recovered from
-        /// fills, so imported trades carry entry *notional* as margin (see ClosedTradeBuilder).
+        /// The range is split into windows of at most 7 days because Binance rejects or truncates
+        /// anything wider, and each window is paged because both endpoints cap at 1000 rows. Fills
+        /// for one symbol are concatenated across ALL windows before folding — folding per window
+        /// would cut every position that straddles a window boundary in half.
+        ///
+        /// Contract with TradeReconciler: this either covers the whole range up to now, or throws.
+        /// It must never return a partial list, because the caller advances its watermark to "now"
+        /// on any successful return.
+        ///
+        /// Still assumes one-way position mode. Margin cannot be recovered from fills, so imported
+        /// trades carry entry *notional* as margin (see ClosedTradeBuilder).
         /// </summary>
         public async Task<IReadOnlyList<ClosedTrade>> GetRecentClosedTradesAsync(DateTime sinceUtc)
         {
-            var sinceUtcNorm = sinceUtc.ToUniversalTime();
-            long startMs = new DateTimeOffset(sinceUtcNorm).ToUnixTimeMilliseconds();
+            var now = DateTime.UtcNow;
+            var since = sinceUtc.ToUniversalTime();
+            if (since >= now) return Array.Empty<ClosedTrade>();
 
-            var symbols = await RealizedPnlSymbolsAsync(startMs).ConfigureAwait(false);
+            var horizon = now - HistoryHorizon;
+            if (since < horizon) since = horizon;
+
+            var scanFrom = since - FoldLookback;
+            if (scanFrom < horizon) scanFrom = horizon;
+
+            var windows = SplitWindows(scanFrom, now, MaxQueryWindow);
+
+            AutoJournalTrace.Write(
+                $"    [binance] scan {scanFrom:o} -> {now:o} in {windows.Count} window(s); " +
+                $"emit filter: closedAt >= {since:o}");
+
+            // 1) Which symbols had a realized-PnL event anywhere in the range.
+            var symbols = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var (from, to) in windows)
+                foreach (var s in await RealizedPnlSymbolsAsync(Ms(from), Ms(to)).ConfigureAwait(false))
+                    symbols.Add(s);
+
+            // 2) Per symbol: gather every fill across the whole range, then fold once.
+            AutoJournalTrace.Write(
+                $"    [binance] income REALIZED_PNL found {symbols.Count} symbol(s): " +
+                $"[{string.Join(", ", symbols)}]");
+
             var closed = new List<ClosedTrade>();
 
             foreach (var symbol in symbols)
             {
-                var fills = await UserTradesAsync(symbol, startMs).ConfigureAwait(false);
-                if (fills.Count == 0) continue;
+                var fills = new List<ExchangeFill>();
+                foreach (var (from, to) in windows)
+                    fills.AddRange(await UserTradesAsync(symbol, Ms(from), Ms(to)).ConfigureAwait(false));
+
+                if (fills.Count == 0)
+                {
+                    AutoJournalTrace.Write($"    [binance] {symbol}: 0 fills in range");
+                    continue;
+                }
+
+                // Window edges touch and Binance's bounds are inclusive, so boundary fills arrive
+                // twice. A duplicate fill would be folded as a real scale-in and corrupt the VWAP.
+                fills = DistinctByTradeId(fills);
                 fills.Sort((a, b) => a.TimeUtc.CompareTo(b.TimeUtc));
 
-                foreach (var t in ClosedTradeBuilder.Fold(fills))
-                    if (t.ClosedAtUtc >= sinceUtcNorm) closed.Add(t);   // ignore lots that closed before the watermark
+                var folded = ClosedTradeBuilder.Fold(fills);
+                int kept = 0;
+                foreach (var t in folded)
+                    if (t.ClosedAtUtc >= since) { closed.Add(t); kept++; }   // drop lots closed before the mark
+
+                AutoJournalTrace.Write(
+                    $"    [binance] {symbol}: {fills.Count} fill(s) -> {folded.Count} round-trip(s) -> {kept} kept");
             }
 
             closed.Sort((a, b) => a.ClosedAtUtc.CompareTo(b.ClosedAtUtc));
             return closed;
         }
 
-        // Symbols that had a realized-PnL event since startMs (cheap discovery; avoids scanning every symbol).
-        private async Task<IReadOnlyList<string>> RealizedPnlSymbolsAsync(long startMs)
-        {
-            using var doc = await SignedRequestAsync(HttpMethod.Get, "/fapi/v1/income",
-                $"incomeType=REALIZED_PNL&startTime={startMs}&limit=1000").ConfigureAwait(false);
+        private static long Ms(DateTime utc) => new DateTimeOffset(utc, TimeSpan.Zero).ToUnixTimeMilliseconds();
 
+        /// <summary>
+        /// Splits [from, to] into consecutive spans of at most <paramref name="max"/>. Adjacent spans
+        /// share an endpoint; the caller de-duplicates.
+        /// </summary>
+        private static List<(DateTime From, DateTime To)> SplitWindows(DateTime from, DateTime to, TimeSpan max)
+        {
+            var list = new List<(DateTime, DateTime)>();
+            var cursor = from;
+
+            // Bounded by construction: HistoryHorizon / MaxQueryWindow = 180/7 ≈ 26 windows worst case.
+            while (cursor < to)
+            {
+                var end = cursor + max;
+                if (end > to) end = to;
+                list.Add((cursor, end));
+                cursor = end;
+            }
+            return list;
+        }
+
+        private static List<ExchangeFill> DistinctByTradeId(List<ExchangeFill> fills)
+        {
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            var result = new List<ExchangeFill>(fills.Count);
+
+            foreach (var f in fills)
+            {
+                // A fill with no id can't be de-duplicated; keep it rather than guess.
+                if (string.IsNullOrEmpty(f.TradeId) || seen.Add(f.TradeId)) result.Add(f);
+            }
+            return result;
+        }
+
+        // Symbols that had a realized-PnL event in [startMs, endMs] (cheap discovery; avoids scanning
+        // every symbol). Paged: /fapi/v1/income caps at 1000 rows per call.
+        private async Task<IReadOnlyList<string>> RealizedPnlSymbolsAsync(long startMs, long endMs)
+        {
             var set = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var e in doc.RootElement.EnumerateArray())
-                if (e.TryGetProperty("symbol", out var s) && s.GetString() is string name && name.Length > 0)
-                    set.Add(name);
+            long cursor = startMs;
+
+            while (true)
+            {
+                using var doc = await SignedRequestAsync(HttpMethod.Get, "/fapi/v1/income",
+                    $"incomeType=REALIZED_PNL&startTime={cursor}&endTime={endMs}&limit={PageLimit}")
+                    .ConfigureAwait(false);
+
+                int count = 0;
+                long newest = cursor;
+
+                foreach (var e in doc.RootElement.EnumerateArray())
+                {
+                    count++;
+                    if (e.TryGetProperty("symbol", out var s) && s.GetString() is string name && name.Length > 0)
+                        set.Add(name);
+                    if (e.TryGetProperty("time", out var t) && t.GetInt64() > newest) newest = t.GetInt64();
+                }
+
+                if (count < PageLimit) break;               // last page
+                if (newest <= cursor) break;                // all rows share one ms — cannot advance, stop
+                cursor = newest + 1;
+                if (cursor > endMs) break;
+            }
+
             return new List<string>(set);
         }
 
-        private async Task<List<ExchangeFill>> UserTradesAsync(string symbol, long startMs)
+        // Fills for one symbol in [startMs, endMs]. Paged the same way: fromId cannot be combined
+        // with startTime/endTime on this endpoint, so paging advances the start time instead.
+        private async Task<List<ExchangeFill>> UserTradesAsync(string symbol, long startMs, long endMs)
         {
-            using var doc = await SignedRequestAsync(HttpMethod.Get, "/fapi/v1/userTrades",
-                $"symbol={symbol}&startTime={startMs}&limit=1000").ConfigureAwait(false);
-
             var fills = new List<ExchangeFill>();
-            foreach (var e in doc.RootElement.EnumerateArray())
+            long cursor = startMs;
+
+            while (true)
             {
-                fills.Add(new ExchangeFill
+                using var doc = await SignedRequestAsync(HttpMethod.Get, "/fapi/v1/userTrades",
+                    $"symbol={symbol}&startTime={cursor}&endTime={endMs}&limit={PageLimit}")
+                    .ConfigureAwait(false);
+
+                int count = 0;
+                long newest = cursor;
+
+                foreach (var e in doc.RootElement.EnumerateArray())
                 {
-                    Symbol = symbol,
-                    IsBuy = string.Equals(e.GetProperty("side").GetString(), "BUY", StringComparison.OrdinalIgnoreCase),
-                    Quantity = Dec(e, "qty"),
-                    Price = Dec(e, "price"),
-                    RealizedPnl = Dec(e, "realizedPnl"),
-                    TradeId = e.TryGetProperty("id", out var id) ? id.GetRawText() : string.Empty,
-                    TimeUtc = DateTimeOffset.FromUnixTimeMilliseconds(e.GetProperty("time").GetInt64()).UtcDateTime
-                });
+                    count++;
+                    long tMs = e.GetProperty("time").GetInt64();
+                    if (tMs > newest) newest = tMs;
+
+                    fills.Add(new ExchangeFill
+                    {
+                        Symbol = symbol,
+                        IsBuy = string.Equals(e.GetProperty("side").GetString(), "BUY", StringComparison.OrdinalIgnoreCase),
+                        Quantity = Dec(e, "qty"),
+                        Price = Dec(e, "price"),
+                        RealizedPnl = Dec(e, "realizedPnl"),
+                        TradeId = e.TryGetProperty("id", out var id) ? id.GetRawText() : string.Empty,
+                        TimeUtc = DateTimeOffset.FromUnixTimeMilliseconds(tMs).UtcDateTime
+                    });
+                }
+
+                if (count < PageLimit) break;
+                if (newest <= cursor) break;
+                cursor = newest;   // not +1: fills sharing this ms must be re-fetched, then de-duplicated by id
+                if (cursor > endMs) break;
             }
+
             return fills;
         }
 
