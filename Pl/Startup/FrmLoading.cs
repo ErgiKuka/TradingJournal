@@ -54,9 +54,10 @@ namespace TradingJournal.Pl.Startup
 
             try
             {
-                string currentVersion = "1.9.11.2";
+                string currentVersion = "1.9.12.1";
                 string repoOwner = "ErgiKuka";
                 string repoName = "TradingJournal"; 
+
 
                 var updater = new GitHubUpdater(repoOwner, repoName);
                 await updater.CheckForUpdatesAsync(currentVersion, lblStatus);
